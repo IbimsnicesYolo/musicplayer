@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:audio_visualizer/audio_visualizer.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 void main() {
