@@ -6,13 +6,22 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
 final Color StandardTag = Color.fromRGBO(100, 255, 255, 255);
+final Color HomeColor = Color.fromRGBO(100, 255, 0, 255);
 
 class Song {
   String path = "";
   String title = "Song Title";
   String interpret = "Song Interpret";
   List tags = [];
-  Song();
+  Song(this.path);
+  Info() {
+    print("Song Info");
+    print(path);
+    print(title);
+    print(interpret);
+    print(tags.toString());
+  }
+
   Song.fromJson(Map<String, dynamic> json)
       : path = json['p'],
         title = json['t'],
@@ -30,7 +39,7 @@ class Tag {
   String name = "New Tag";
   Color color = StandardTag;
   int id = -1;
-  Tag();
+  Tag(this.name);
   Tag.fromJson(Map<String, dynamic> json)
       : name = json['n'],
         color = json['c'],
@@ -39,8 +48,8 @@ class Tag {
       {'n': value.name, 'c': value.color, 'i': value.id};
 }
 
-List Songs = [];
-List Tags = [];
+Map Songs = {};
+Map Tags = {};
 
 void LoadData() async {
   Directory appDocDirectory = await getApplicationDocumentsDirectory();
@@ -49,10 +58,9 @@ void LoadData() async {
       .then((File file) {
     file.readAsString().then((String contents) {
       if (contents.isNotEmpty) {
-        Map<String, dynamic> M = jsonDecode(contents);
-        var song = Song.fromJson(M);
-        print(song.title);
-        Songs.add(song);
+        jsonDecode(contents).forEach((key, value) {
+          Songs[key] = Song.fromJson(value);
+        });
       }
     });
   });
@@ -61,10 +69,9 @@ void LoadData() async {
       .then((File file) {
     file.readAsString().then((String contents) {
       if (contents.isNotEmpty) {
-        Map<String, dynamic> M = jsonDecode(contents);
-        var tag = Tag.fromJson(M);
-        print(tag.name);
-        Tags.add(tag);
+        jsonDecode(contents).forEach((key, value) {
+          Tags[key] = Tag.fromJson(value);
+        });
       }
     });
   });
@@ -72,23 +79,31 @@ void LoadData() async {
 
 void SaveSongs() async {
   Directory appDocDirectory = await getApplicationDocumentsDirectory();
-  String json = "";
-  for (Song s in Songs) {
-    json += jsonEncode(s.toJson(s));
-  }
-  File(appDocDirectory.path + '/songs.json').writeAsString(json);
+  String json = "{";
+  Songs.forEach((k, v) {
+    json += '"' + k + '":' + jsonEncode(v.toJson(v)) + ",";
+  });
+  File(appDocDirectory.path + '/songs.json').writeAsString(
+      json.substring(0, json.length - 1) +
+          "}"); // remove last comma, close json
 }
 
 void SaveTags() async {
   Directory appDocDirectory = await getApplicationDocumentsDirectory();
   String json = "";
-  for (Tag t in Tags) {
-    json += jsonEncode(t.toJson(t));
-  }
-  File(appDocDirectory.path + '/tags.json').writeAsString(json);
+  Tags.forEach((k, v) {
+    json += '"' + k + '":' + jsonEncode(v.toJson(v)) + ",";
+  });
+  File(appDocDirectory.path + '/tags.json').writeAsString(
+      json.substring(0, json.length - 1) +
+          "}"); // remove last comma, close json
 }
 
 void CreateSong(path) {
+  if (Songs.containsKey(path)) {
+    print("Trying to create existing Song!");
+    return;
+  }
   String interpret =
       path.split("/").last.split(" - ").first.replaceAll(RegExp(".mp3"), "");
 
@@ -100,16 +115,23 @@ void CreateSong(path) {
       .replaceAll(RegExp(".mp3"), "")
       .split(" _ ")
       .first;
-  //print("Path:\t\t $path");
-  //print("Interpret:\t $interpret");
-  //print("Title:\t\t $title");
-  //print("\n\n");
 
-  Song newsong = Song();
-  newsong.path = path;
+  print("Creating new Song: $path");
+  Song newsong = Song(path);
   newsong.title = title;
   newsong.interpret = interpret;
-
-  Songs.add(newsong);
+  Songs[path] = newsong;
   SaveSongs();
+}
+
+void CreateTag(name) {
+  if (Tags.containsKey(name)) {
+    print("Trying to create existing Tag!");
+    return;
+  }
+  print("Creating new Tag: $name");
+  Tag newtag = Tag(name);
+  newtag.id = Tags.length + 1;
+  Tags[name] = newtag;
+  SaveTags();
 }

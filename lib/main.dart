@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import "config.dart" as CFG;
 import 'dart:io';
-import 'dart:async';
-import 'package:path_provider/path_provider.dart';
 
 void main() {
   runApp(const MyApp());
-  CFG.LoadData();
 }
 
 class MyApp extends StatefulWidget {
@@ -18,6 +15,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
+    CFG.LoadData();
     super.initState();
   }
 
@@ -31,10 +29,21 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.amber,
+          backgroundColor: CFG.HomeColor,
         ),
         body: Container(
-          child: const Text("awas"),
+          child: ListView(
+            children: [
+              for (var i in CFG.Songs.keys)
+                ListTile(
+                  title: Text(CFG.Songs[i].title),
+                  subtitle: Text(CFG.Songs[i].interpret),
+                  onTap: () {
+                    print(CFG.Songs[i].path);
+                  },
+                )
+            ],
+          ),
         ),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.access_alarm_outlined),
@@ -67,12 +76,17 @@ class _MyAppState extends State<MyApp> {
                   Directory dir = Directory('/storage/emulated/0/');
                   String mp3Path = dir.toString();
                   List<FileSystemEntity> _files;
+                  String lastpath = "";
                   _files = dir.listSync(recursive: true, followLinks: false);
                   for (FileSystemEntity entity in _files) {
                     String path = entity.path;
-                    if (path.endsWith('.mp3')) CFG.CreateSong(path);
+                    if (path.endsWith('.mp3')) {
+                      CFG.CreateSong(path);
+                      lastpath = path;
+                    }
+                    ;
                   }
-                  print(CFG.Songs);
+                  CFG.Songs[lastpath].Info();
                 },
               ),
             ],
