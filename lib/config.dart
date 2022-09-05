@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 
 final Color StandardTag = Color.fromRGBO(100, 255, 255, 255);
 final Color HomeColor = Color.fromRGBO(100, 255, 0, 255);
+final Color ContrastColor = Color.fromRGBO(0, 0, 0, 100);
 
 class Song {
   String path = "";
@@ -52,6 +53,7 @@ Map Songs = {};
 Map Tags = {};
 
 void LoadData() async {
+  print("Loading Data");
   Directory appDocDirectory = await getApplicationDocumentsDirectory();
   new File(appDocDirectory.path + '/songs.json')
       .create(recursive: true)
@@ -60,6 +62,7 @@ void LoadData() async {
       if (contents.isNotEmpty) {
         jsonDecode(contents).forEach((key, value) {
           Songs[key] = Song.fromJson(value);
+          print("Loaded Song: " + Songs[key].title);
         });
       }
     });
@@ -71,6 +74,7 @@ void LoadData() async {
       if (contents.isNotEmpty) {
         jsonDecode(contents).forEach((key, value) {
           Tags[key] = Tag.fromJson(value);
+          print("Loaded Tag: " + Tags[key].name);
         });
       }
     });
