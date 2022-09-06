@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import "config.dart" as CFG;
+import "sites/search.dart" as SearchPage;
+import "sites/song.dart" as Song;
 import 'dart:io';
 
 void main() {
@@ -38,8 +40,8 @@ class _MainSite extends State<MainSite> {
             actions: [
               // Navigate to the Search Screen
               IconButton(
-                  onPressed: () => Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (_) => SearchPage())),
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => SearchPage.SearchPage())),
                   icon: const Icon(Icons.search))
             ],
             backgroundColor: CFG.HomeColor,
@@ -47,14 +49,8 @@ class _MainSite extends State<MainSite> {
           body: Container(
             child: ListView(
               children: [
-                for (var i in CFG.Songs.keys)
-                  ListTile(
-                    title: Text(CFG.Songs[i].title),
-                    subtitle: Text(CFG.Songs[i].interpret),
-                    onTap: () {
-                      print(CFG.Songs[i].path);
-                    },
-                  )
+                // Current Playlist Songs, also sortable via drag and drop
+                // at the top is always the current song
               ],
             ),
           ),
@@ -84,94 +80,21 @@ class _MainSite extends State<MainSite> {
                     child: const Text("Search for new Songs"),
                     onPressed: () {
                       Directory dir = Directory('/storage/emulated/0/');
-                      String mp3Path = dir.toString();
                       List<FileSystemEntity> _files;
-                      String lastpath = "";
                       _files =
                           dir.listSync(recursive: true, followLinks: false);
                       for (FileSystemEntity entity in _files) {
                         String path = entity.path;
                         if (path.endsWith('.mp3')) {
                           CFG.CreateSong(path);
-                          lastpath = path;
                         }
                         ;
                       }
-                      CFG.Songs[lastpath].Info();
                     },
                   ),
                 ],
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// Search Page
-class SearchPage extends StatelessWidget {
-  final myController = TextEditingController();
-
-  String searchtext = "";
-
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is disposed.
-    myController.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-            backgroundColor: CFG.HomeColor,
-            // The search area here
-            title: Container(
-              width: double.infinity,
-              height: 40,
-              decoration: BoxDecoration(
-                  color: CFG.ContrastColor,
-                  borderRadius: BorderRadius.circular(5)),
-              child: Center(
-                child: TextField(
-                  controller: myController,
-                  decoration: InputDecoration(
-                      prefixIcon: IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          myController.clear();
-                        },
-                      ),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.search),
-                        onPressed: () {
-                          this.searchtext = myController.text;
-                          setState() {}
-                          ;
-                        },
-                      ),
-                      hintText: 'Search...',
-                      border: InputBorder.none),
-                ),
-              ),
-            )),
-        body: Container(
-          child: ListView(
-            children: [
-              for (var i in CFG.Songs.keys)
-                if ((CFG.Songs[i].title.contains(this.searchtext) ||
-                    CFG.Songs[i].interpret.contains(this.searchtext)))
-                  ListTile(
-                    title: Text(CFG.Songs[i].title),
-                    subtitle: Text(CFG.Songs[i].interpret),
-                    onTap: () {
-                      print(CFG.Songs[i].path);
-                    },
-                  )
-            ],
           ),
         ),
       ),
