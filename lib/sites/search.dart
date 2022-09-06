@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import "../config.dart" as CFG;
+import "../settings.dart" as CFG;
 import "song.dart" as Song;
 
 // Search Page
@@ -65,7 +65,7 @@ class _SearchPageState extends State<SearchPage> {
                     CFG.Songs[i].interpret
                         .toLowerCase()
                         .contains(this.searchtext.toLowerCase()))
-                  Song.Song(i: i)
+                  Song.Song(s: CFG.Songs[i])
             ],
           ),
         ),

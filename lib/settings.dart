@@ -50,6 +50,7 @@ class Tag {
 }
 
 Map Songs = {};
+Map UnsortedSongs = {};
 Map Tags = {};
 
 void LoadData() async {
@@ -61,8 +62,13 @@ void LoadData() async {
     file.readAsString().then((String contents) {
       if (contents.isNotEmpty) {
         jsonDecode(contents).forEach((key, value) {
-          Songs[key] = Song.fromJson(value);
-          print("Loaded Song: " + Songs[key].title);
+          Song currentsong = Song.fromJson(value);
+          if (currentsong.tags.isEmpty) {
+            UnsortedSongs[key] = currentsong;
+          } else {
+            Songs[key] = currentsong;
+          }
+          print("Loaded Song: " + currentsong.title);
         });
       }
     });

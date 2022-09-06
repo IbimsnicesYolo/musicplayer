@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import "config.dart" as CFG;
+import "settings.dart" as CFG;
 import "sites/drawer.dart" as Side;
 import "sites/search.dart" as SearchPage;
 import "sites/song.dart" as Song;

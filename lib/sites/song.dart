@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
-import "../config.dart" as CFG;
+import "../settings.dart" as CFG;
 
 class Song extends StatelessWidget {
   const Song({
     Key? key,
-    required this.i,
+    required this.s,
   }) : super(key: key);
 
-  final String i;
+  final CFG.Song s;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(CFG.Songs[i].title),
-      subtitle: Text(CFG.Songs[i].interpret),
+      title: Text(s.title),
+      subtitle: Text(s.interpret),
       onTap: () {
-        print(CFG.Songs[i].path);
+        print(s.path);
       },
     );
   }
