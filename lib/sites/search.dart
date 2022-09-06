@@ -46,7 +46,6 @@ class _SearchPageState extends State<SearchPage> {
                       suffixIcon: IconButton(
                         icon: const Icon(Icons.search),
                         onPressed: () {
-                          print("search");
                           setState(() {});
                           this.searchtext = myController.text;
                         },

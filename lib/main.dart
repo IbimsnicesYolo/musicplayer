@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import "config.dart" as CFG;
+import "sites/drawer.dart" as Side;
 import "sites/search.dart" as SearchPage;
 import "sites/song.dart" as Song;
-import 'dart:io';
 
 void main() {
   runApp(MaterialApp(home: MainSite()));
@@ -72,30 +72,7 @@ class _MainSite extends State<MainSite> {
               ),
             ],
           ),
-          drawer: Drawer(
-            child: Center(
-              child: ButtonBar(
-                children: [
-                  TextButton(
-                    child: const Text("Search for new Songs"),
-                    onPressed: () {
-                      Directory dir = Directory('/storage/emulated/0/');
-                      List<FileSystemEntity> _files;
-                      _files =
-                          dir.listSync(recursive: true, followLinks: false);
-                      for (FileSystemEntity entity in _files) {
-                        String path = entity.path;
-                        if (path.endsWith('.mp3')) {
-                          CFG.CreateSong(path);
-                        }
-                        ;
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
+          drawer: Side.SongDrawer(),
         ),
       ),
     );
