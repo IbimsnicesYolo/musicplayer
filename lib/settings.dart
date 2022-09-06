@@ -53,7 +53,7 @@ Map Songs = {};
 Map UnsortedSongs = {};
 Map Tags = {};
 
-void LoadData(VoidCallback callback) async {
+void LoadData(VoidCallback fcallback) async {
   print("Loading Data");
   Directory appDocDirectory = await getApplicationDocumentsDirectory();
   new File(appDocDirectory.path + '/songs.json')
