@@ -18,12 +18,10 @@ class _MainSite extends State<MainSite> {
   @override
   void initState() {
     super.initState();
-    Future<void> load() async {
-      CFG.LoadData();
+    CFG.LoadData(() {
+      print("updating");
       setState(() {});
-    }
-
-    load();
+    });
   }
 
   @override
