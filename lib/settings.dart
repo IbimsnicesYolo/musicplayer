@@ -85,7 +85,7 @@ void LoadData(VoidCallback fcallback) async {
       }
     });
   });
-  callback();
+  fcallback();
 }
 
 void SaveSongs() async {
