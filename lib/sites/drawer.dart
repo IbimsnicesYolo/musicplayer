@@ -38,9 +38,8 @@ class SongDrawer extends Drawer {
                       TextButton(
                         child: const Text("Search for new Songs"),
                         onPressed: () {
-                          Directory dir = Directory(Platform.isAndroid
-                              ? '/storage/emulated/0/'
-                              : 'D:/Users');
+                          Directory dir = Directory(
+                              Platform.isAndroid ? '/storage/emulated/0/' : '');
                           List<FileSystemEntity> _files;
                           _files =
                               dir.listSync(recursive: true, followLinks: false);
