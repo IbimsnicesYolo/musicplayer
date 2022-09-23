@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import "../settings.dart" as CFG;
 import "song.dart" as Song;
-import "dart:io";
+import 'dart:io';
 
 class SongDrawer extends Drawer {
   const SongDrawer({
@@ -38,7 +38,9 @@ class SongDrawer extends Drawer {
                       TextButton(
                         child: const Text("Search for new Songs"),
                         onPressed: () {
-                          Directory dir = Directory('/storage/emulated/0/');
+                          Directory dir = Directory(Platform.isAndroid
+                              ? '/storage/emulated/0/'
+                              : 'D:/Users');
                           List<FileSystemEntity> _files;
                           _files =
                               dir.listSync(recursive: true, followLinks: false);

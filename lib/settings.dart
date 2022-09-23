@@ -62,7 +62,7 @@ void LoadData(VoidCallback fcallback) async {
     file.readAsString().then((String contents) {
       if (contents.isNotEmpty) {
         jsonDecode(contents).forEach((key, value) {
-          Song currentsong = Song.fromJson(value);
+          Song currentsong = Song.fromJson(value); // TODO: Check if file exists
           if (currentsong.tags.isEmpty) {
             UnsortedSongs[key] = currentsong;
           } else {
@@ -85,7 +85,7 @@ void LoadData(VoidCallback fcallback) async {
       }
     });
   });
-  callback();
+  fcallback();
 }
 
 void SaveSongs() async {
@@ -111,7 +111,7 @@ void SaveTags() async {
 }
 
 void CreateSong(path) {
-  if (Songs.containsKey(path)) {
+  if (Songs.containsKey(path) || UnsortedSongs.containsKey(path)) {
     print("Trying to create existing Song!");
     return;
   }
@@ -131,7 +131,7 @@ void CreateSong(path) {
   Song newsong = Song(path);
   newsong.title = title;
   newsong.interpret = interpret;
-  Songs[path] = newsong;
+  UnsortedSongs[path] = newsong;
   SaveSongs();
 }
 
