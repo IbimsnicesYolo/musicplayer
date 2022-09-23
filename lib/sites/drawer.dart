@@ -19,7 +19,7 @@ class SongDrawer extends Drawer {
             child: ListView(
               children: [
                 for (var i in CFG.UnsortedSongs.keys)
-                  Song.Song(
+                  Song.SongInfo(
                     s: CFG.UnsortedSongs[i],
                   ),
               ],
@@ -27,39 +27,42 @@ class SongDrawer extends Drawer {
           ),
           // This container holds the align
           Container(
-              // This align moves the children to the bottom
-              child: Align(
-                  alignment: FractionalOffset.bottomCenter,
-                  // This container holds all the children that will be aligned
-                  // on the bottom and should not scroll with the above ListView
-                  child: Container(
-                      child: Column(
-                    children: [
-                      TextButton(
-                        child: const Text("Search for new Songs"),
-                        onPressed: () {
-                          Directory dir = Directory(
-                              Platform.isAndroid ? '/storage/emulated/0/' : '');
-                          List<FileSystemEntity> _files;
-                          _files =
-                              dir.listSync(recursive: true, followLinks: false);
-                          for (FileSystemEntity entity in _files) {
-                            String path = entity.path;
-                            if (path.endsWith('.mp3')) {
-                              CFG.CreateSong(path);
-                            }
-                            ;
+            // This align moves the children to the bottom
+            child: Align(
+              alignment: FractionalOffset.bottomCenter,
+              // This container holds all the children that will be aligned
+              // on the bottom and should not scroll with the above ListView
+              child: Container(
+                child: Column(
+                  children: [
+                    TextButton(
+                      child: const Text("Search for new Songs"),
+                      onPressed: () {
+                        Directory dir = Directory(
+                            Platform.isAndroid ? '/storage/emulated/0/' : '');
+                        List<FileSystemEntity> _files;
+                        _files =
+                            dir.listSync(recursive: true, followLinks: false);
+                        for (FileSystemEntity entity in _files) {
+                          String path = entity.path;
+                          if (path.endsWith('.mp3')) {
+                            CFG.CreateSong(path);
                           }
-                        },
-                      ),
-                      TextButton(
-                        child: const Text("Open Settings"),
-                        onPressed: () {
-                          // open settings page...
-                        },
-                      ),
-                    ],
-                  ))))
+                          ;
+                        }
+                      },
+                    ),
+                    TextButton(
+                      child: const Text("Open Settings"),
+                      onPressed: () {
+                        // open settings page...
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

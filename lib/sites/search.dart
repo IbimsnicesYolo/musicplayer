@@ -65,7 +65,7 @@ class _SearchPageState extends State<SearchPage> {
                     CFG.Songs[i].interpret
                         .toLowerCase()
                         .contains(this.searchtext.toLowerCase()))
-                  Song.Song(s: CFG.Songs[i])
+                  Song.SongInfo(s: CFG.Songs[i])
             ],
           ),
         ),
