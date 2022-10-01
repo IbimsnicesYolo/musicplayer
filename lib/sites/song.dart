@@ -66,3 +66,32 @@ class SongInfo extends ListTile {
     );
   }
 }
+
+class TagTile extends ListTile {
+  const TagTile({
+    Key? key,
+    required this.t,
+  }) : super(key: key);
+
+  final CFG.Tag t;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton(
+      child: ListTile(
+        title: Text(t.name),
+      ),
+      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+        PopupMenuItem(
+          child: ListTile(
+            leading: Icon(Icons.add),
+            title: Text(t.name),
+          ),
+        ),
+        const PopupMenuDivider(),
+        const PopupMenuItem(child: Text('Item A')),
+        const PopupMenuItem(child: Text('Item B')),
+      ],
+    );
+  }
+}

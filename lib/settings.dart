@@ -38,22 +38,30 @@ class Song {
 
 class Tag {
   String name = "New Tag";
-  Color color = StandardTag;
+  //Color color = StandardTag;
   int id = -1;
   Tag(this.name);
   Tag.fromJson(Map<String, dynamic> json)
       : name = json['n'],
-        color = json['c'],
+        //color = json['c'],
         id = json['i'];
-  Map<String, dynamic> toJson(Tag value) =>
-      {'n': value.name, 'c': value.color, 'i': value.id};
+  Map<String, dynamic> toJson(Tag value) => {
+        'n': value.name,
+        //'c': value.color.,
+        'i': value.id
+      };
+}
+
+class CurrentPlayList {
+  List<Song> songs = [];
+  int current = 0;
 }
 
 Map Songs = {};
 Map UnsortedSongs = {};
 Map Tags = {};
 
-void LoadData(VoidCallback fcallback) async {
+void LoadData() async {
   print("Loading Data");
   Directory appDocDirectory = await getApplicationDocumentsDirectory();
   new File(appDocDirectory.path + '/songs.json')
@@ -85,7 +93,6 @@ void LoadData(VoidCallback fcallback) async {
       }
     });
   });
-  fcallback();
 }
 
 void SaveSongs() async {

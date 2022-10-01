@@ -14,17 +14,6 @@ class SongDrawer extends Drawer {
       // column holds all the widgets in the drawer
       child: Column(
         children: <Widget>[
-          Expanded(
-            // ListView contains a group of widgets that scroll inside the drawer
-            child: ListView(
-              children: [
-                for (var i in CFG.UnsortedSongs.keys)
-                  Song.SongInfo(
-                    s: CFG.UnsortedSongs[i],
-                  ),
-              ],
-            ),
-          ),
           // This container holds the align
           Container(
             // This align moves the children to the bottom
