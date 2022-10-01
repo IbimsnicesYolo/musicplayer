@@ -87,8 +87,9 @@ void LoadData() async {
     file.readAsString().then((String contents) {
       if (contents.isNotEmpty) {
         jsonDecode(contents).forEach((key, value) {
-          Tags[key] = Tag.fromJson(value);
-          print("Loaded Tag: " + Tags[key].name);
+          Tag currenttag = Tag.fromJson(value);
+          Tags[currenttag.id] = currenttag;
+          print("Loaded Tag: " + currenttag.name);
         });
       }
     });
@@ -108,7 +109,7 @@ void SaveSongs() async {
 
 void SaveTags() async {
   Directory appDocDirectory = await getApplicationDocumentsDirectory();
-  String json = "";
+  String json = "{";
   Tags.forEach((k, v) {
     json += '"' + k + '":' + jsonEncode(v.toJson(v)) + ",";
   });
@@ -150,6 +151,6 @@ void CreateTag(name) {
   print("Creating new Tag: $name");
   Tag newtag = Tag(name);
   newtag.id = Tags.length + 1;
-  Tags[name] = newtag;
+  Tags[newtag.id] = newtag;
   SaveTags();
 }
