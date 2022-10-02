@@ -1,11 +1,24 @@
 import 'package:flutter/material.dart';
+import "package:permission_handler/permission_handler.dart";
 import "settings.dart" as CFG;
 import "sites/drawer.dart" as Side;
 import "sites/search.dart" as SearchPage;
 import "sites/song.dart" as Song;
 
+void checkperms() async {
+  var status = await Permission.storage.status;
+  if (status.isDenied) {
+    await Permission.storage.request();
+  }
+  status = await Permission.manageExternalStorage.status;
+  if (status.isDenied) {
+    await Permission.manageExternalStorage.request();
+  }
+}
+
 void main() {
   runApp(MaterialApp(home: MainSite()));
+  checkperms();
 }
 
 class MainSite extends StatefulWidget {
