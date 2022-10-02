@@ -26,12 +26,40 @@ class SongDrawer extends Drawer {
                     TextButton(
                       child: const Text("Search for new Songs"),
                       onPressed: () {
-                        Directory dir = Directory('/');
+                        Directory dir = Directory('/storage/emulated/0/');
                         List<FileSystemEntity> _files;
                         _files =
                             dir.listSync(recursive: true, followLinks: false);
                         for (FileSystemEntity entity in _files) {
                           String path = entity.path;
+                          Future<void> _showMyDialog() async {
+                            return showDialog<void>(
+                              context: context,
+                              barrierDismissible: true, // user must tap button!
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('AlertDialog Title'),
+                                  content: SingleChildScrollView(
+                                    child: ListBody(
+                                      children: <Widget>[
+                                        Text(path),
+                                      ],
+                                    ),
+                                  ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: const Text('Approve'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+
+                          _showMyDialog();
                           if (path.endsWith('.mp3')) {
                             CFG.CreateSong(path);
                           }
