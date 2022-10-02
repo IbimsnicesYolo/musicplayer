@@ -80,21 +80,23 @@ class _MainSite extends State<MainSite> {
                   for (var i in CFG.Tags.keys) Song.TagTile(t: CFG.Tags[i]),
                   Align(
                     alignment: AlignmentDirectional.bottomCenter,
-                    child: SInput.StringInput(
-                      Title: "Add Tag",
-                      TitlePopup: "Create a new tag",
-                      Button1: "Create",
-                      Button2: "Cancel",
-                      context: context,
-                      OnPressed1: (text) {
-                        CFG.CreateTag(text);
-                        setState(() {});
+                    child: ElevatedButton(
+                      onPressed: () {
+                        SInput.StringInput(
+                          context,
+                          "Create new Tag",
+                          "Create",
+                          "Cancel",
+                          (String s) {
+                            CFG.CreateTag(s);
+                          },
+                          (String s) {},
+                          "",
+                        );
                       },
-                      OnPressed2: (text) {
-                        setState(() {});
-                      },
+                      child: const Text('Add Tag'),
                     ),
-                  ),
+                  )
                 ] else if (side == 2) ...[
                   for (var i in CFG.UnsortedSongs.keys)
                     Song.SongInfo(

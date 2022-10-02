@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import "../settings.dart" as CFG;
+import "string_input.dart" as SInput;
 
 class SongInfo extends ListTile {
   const SongInfo({
@@ -80,6 +81,21 @@ class TagTile extends ListTile {
     return PopupMenuButton(
       onSelected: (result) {
         if (result == 0) {
+          // Change Name
+          SInput.StringInput(
+            context,
+            "Rename Tag",
+            "Save",
+            "Cancel",
+            (String s) {
+              CFG.UpdateTagName(t.id, s);
+            },
+            (String s) {},
+            t.name,
+          );
+        }
+        if (result == 1) {
+          // Delete
           CFG.DeleteTag(context, t);
         }
       },
@@ -94,8 +110,8 @@ class TagTile extends ListTile {
           ),
         ),
         const PopupMenuDivider(),
-        const PopupMenuItem(child: Text('Delete Tag'), value: 0),
-        const PopupMenuItem(child: Text('Item B')),
+        const PopupMenuItem(child: Text('Edit Name'), value: 0),
+        const PopupMenuItem(child: Text('Delete Tag'), value: 1),
       ],
     );
   }
