@@ -1,6 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:external_path/external_path.dart';
 import "../settings.dart" as CFG;
 import 'dart:io';
+
+Future<void> SearchPaths(context) async {
+  var path = await ExternalPath.getExternalStorageDirectories();
+  for (var i = 0; i < path.length; i++) {
+    Directory dir = Directory(path[i]);
+    List<FileSystemEntity> _files;
+    _files = dir.listSync(recursive: true, followLinks: true);
+
+    for (FileSystemEntity entity in _files) {
+      String path = entity.path;
+
+      ShowSth(path, context);
+
+      if (path.endsWith('.mp3')) {
+        CFG.CreateSong(path);
+      }
+    }
+  }
+}
+
+Future<void> ShowSth(String info, context) async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: true, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(info),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text("pressed Button"),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Approve'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
 
 class SongDrawer extends Drawer {
   const SongDrawer({
@@ -24,108 +71,15 @@ class SongDrawer extends Drawer {
                 child: Column(
                   children: [
                     TextButton(
-                      child: const Text("Search for new Songs"),
-                      onPressed: () {
-                        Future<void> _showMyDialog1() async {
-                          return showDialog<void>(
-                            context: context,
-                            barrierDismissible: true, // user must tap button!
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text('AlertDialog Title'),
-                                content: SingleChildScrollView(
-                                  child: ListBody(
-                                    children: <Widget>[
-                                      Text("pressed Button"),
-                                    ],
-                                  ),
-                                ),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: const Text('Approve'),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        }
-
-                        _showMyDialog1();
-                        Directory dir = Directory(
-                            '/storage'); // works on debugger, not on real phone wtf
-                        List<FileSystemEntity> _files;
-                        _files =
-                            dir.listSync(recursive: true, followLinks: false);
-                        for (FileSystemEntity entity in _files) {
-                          String path = entity.path;
-                          Future<void> _showMyDialog() async {
-                            return showDialog<void>(
-                              context: context,
-                              barrierDismissible: true, // user must tap button!
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('AlertDialog Title'),
-                                  content: SingleChildScrollView(
-                                    child: ListBody(
-                                      children: <Widget>[
-                                        Text(path),
-                                      ],
-                                    ),
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      child: const Text('Approve'),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          }
-
-                          _showMyDialog();
-                          if (path.endsWith('.mp3')) {
-                            CFG.CreateSong(path);
-                          }
-                        }
-                      },
-                    ),
+                        child: const Text("Search for new Songs"),
+                        onPressed: () {
+                          ShowSth("Pressed Search", context);
+                          SearchPaths(context);
+                        }),
                     TextButton(
                       child: const Text("Open Settings"),
                       onPressed: () {
-                        Future<void> _showMyDialog1() async {
-                          return showDialog<void>(
-                            context: context,
-                            barrierDismissible: true, // user must tap button!
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text('AlertDialog Title'),
-                                content: SingleChildScrollView(
-                                  child: ListBody(
-                                    children: <Widget>[
-                                      Text("pressed Button"),
-                                    ],
-                                  ),
-                                ),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: const Text('Approve'),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        }
-
-                        _showMyDialog1();
+                        ShowSth("Pressed Settings", context);
                         // open settings page...
                       },
                     ),
