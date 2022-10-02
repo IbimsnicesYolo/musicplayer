@@ -5,9 +5,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:external_path/external_path.dart';
 
-final Color StandardTag = Color.fromRGBO(100, 255, 255, 255);
 final Color HomeColor = Color.fromRGBO(100, 255, 0, 255);
 final Color ContrastColor = Color.fromRGBO(0, 0, 0, 100);
+Map Songs = {};
+Map UnsortedSongs = {};
+Map Tags = {};
 
 Future<void> ShowSth(String info, context) async {
   return showDialog<void>(
@@ -36,6 +38,42 @@ Future<void> ShowSth(String info, context) async {
   );
 }
 
+void LoadData() async {
+  print("Loading Data");
+  String appDocDirectory = await ExternalPath.getExternalStoragePublicDirectory(
+      ExternalPath.DIRECTORY_DOCUMENTS);
+  File(appDocDirectory + '/songs.json')
+      .create(recursive: true)
+      .then((File file) {
+    file.readAsString().then((String contents) {
+      if (contents.isNotEmpty) {
+        jsonDecode(contents).forEach((key, value) {
+          Song currentsong = Song.fromJson(value); // TODO: Check if file exists
+          if (currentsong.tags.isEmpty) {
+            UnsortedSongs[key] = currentsong;
+          } else {
+            Songs[key] = currentsong;
+          }
+        });
+      }
+    });
+  });
+  ValidateSongs();
+  File(appDocDirectory + '/tags.json')
+      .create(recursive: true)
+      .then((File file) {
+    file.readAsString().then((String contents) {
+      if (contents.isNotEmpty) {
+        jsonDecode(contents).forEach((key, value) {
+          Tag currenttag = Tag.fromJson(value);
+          Tags[currenttag.id] = currenttag;
+        });
+      }
+    });
+  });
+}
+
+/* Songs */
 class Song {
   String path = "";
   String title = "Song Title";
@@ -63,69 +101,60 @@ class Song {
       };
 }
 
-class Tag {
-  String name = "New Tag";
-  //Color color = StandardTag;
-  int id = -1;
-  Tag(this.name);
-  Tag.fromJson(Map<String, dynamic> json)
-      : name = json['n'],
-        //color = json['c'],
-        id = json['i'];
-  Map<String, dynamic> toJson(Tag value) => {
-        'n': value.name,
-        //'c': value.color.,
-        'i': value.id
-      };
-}
-
 class CurrentPlayList {
   List<Song> songs = [];
   int current = 0;
 }
 
-Map Songs = {};
-Map UnsortedSongs = {};
-Map Tags = {};
+void CreateSong(path) {
+  if (Songs.containsKey(path) || UnsortedSongs.containsKey(path)) {
+    print("Trying to create existing Song!");
+    return;
+  }
+  String interpret =
+      path.split("/").last.split(" - ").first.replaceAll(RegExp(".mp3"), "");
 
-void LoadData() async {
-  print("Loading Data");
-  String appDocDirectory = await ExternalPath.getExternalStoragePublicDirectory(
-      ExternalPath.DIRECTORY_DOCUMENTS);
-  File(appDocDirectory + '/songs.json')
-      .create(recursive: true)
-      .then((File file) {
-    file.readAsString().then((String contents) {
-      if (contents.isNotEmpty) {
-        jsonDecode(contents).forEach((key, value) {
-          Song currentsong = Song.fromJson(value); // TODO: Check if file exists
-          if (currentsong.tags.isEmpty) {
-            UnsortedSongs[key] = currentsong;
-          } else {
-            Songs[key] = currentsong;
-          }
-          print("Loaded Song: " + currentsong.title);
-        });
-      }
-    });
-  });
-  File(appDocDirectory + '/tags.json')
-      .create(recursive: true)
-      .then((File file) {
-    file.readAsString().then((String contents) {
-      if (contents.isNotEmpty) {
-        jsonDecode(contents).forEach((key, value) {
-          Tag currenttag = Tag.fromJson(value);
-          Tags[currenttag.id] = currenttag;
-          print("Loaded Tag: " + currenttag.name);
-        });
-      }
-    });
-  });
+  String title = path
+      .split("/")
+      .last
+      .split(" - ")
+      .last
+      .replaceAll(RegExp(".mp3"), "")
+      .split(" _ ")
+      .first;
+
+  Song newsong = Song(path);
+  newsong.title = title;
+  newsong.interpret = interpret;
+  UnsortedSongs[path] = newsong;
 }
 
-void SaveSongs(context) async {
-  ShowSth("Saving Songs", context);
+void UpdateSongInterpret(Song s, String newtitle) {
+  Songs[s.path].interpret = newtitle;
+  SaveSongs();
+}
+
+void UpdateSongTitle(Song s, String newtitle) {
+  Songs[s.path].title = newtitle;
+  SaveSongs();
+}
+
+void UpdateSongTags(Song s, List newtags) {
+  Songs[s.path].tags = newtags;
+  SaveSongs();
+}
+
+void DeleteSong(Song s) {
+  if (Songs.containsKey(s.path)) {
+    Songs.remove(s.path);
+  }
+  if (UnsortedSongs.containsKey(s.path)) {
+    UnsortedSongs.remove(s.path);
+  }
+  SaveSongs();
+}
+
+void SaveSongs() async {
   String appDocDirectory = await ExternalPath.getExternalStoragePublicDirectory(
       ExternalPath.DIRECTORY_DOCUMENTS);
   String json = "{";
@@ -138,6 +167,53 @@ void SaveSongs(context) async {
   File(appDocDirectory + '/songs.json')
       .writeAsString(json.substring(0, json.length - 1) + "}");
   // remove last comma, close json
+}
+
+// Check if file in Song path still exists
+void ValidateSongs() async {
+  Songs.forEach((k, v) {
+    if (!File(v.path).existsSync()) {
+      print("Song " + v.path + " does not exist anymore!");
+      DeleteSong(v);
+    }
+  });
+  UnsortedSongs.forEach((k, v) {
+    if (!File(v.path).existsSync()) {
+      print("Song " + v.path + " does not exist anymore!");
+      DeleteSong(v);
+    }
+  });
+}
+
+/* Tags */
+
+class Tag {
+  String name = "New Tag";
+  int id = -1;
+  Tag(this.name);
+  Tag.fromJson(Map<String, dynamic> json)
+      : name = json['n'],
+        id = json['i'];
+  Map<String, dynamic> toJson(Tag value) => {'n': value.name, 'i': value.id};
+}
+
+void CreateTag(name) {
+  if (Tags.containsKey(name)) {
+    print("Trying to create existing Tag!");
+    return;
+  }
+
+  Tag newtag = Tag(name);
+  newtag.id = Tags.length + 1;
+  Tags[newtag.id] = newtag;
+  SaveTags();
+}
+
+void UpdateTagName(tag, name) {
+  if (Tags.containsKey(tag)) {
+    Tags[tag].name = name;
+    SaveTags();
+  }
 }
 
 void SaveTags() async {
@@ -166,39 +242,4 @@ void DeleteTag(context, Tag t) {
   );
   SaveTags();
   ShowSth("Deleted Tag successfully", context);
-}
-
-void CreateSong(path) {
-  if (Songs.containsKey(path) || UnsortedSongs.containsKey(path)) {
-    print("Trying to create existing Song!");
-    return;
-  }
-  String interpret =
-      path.split("/").last.split(" - ").first.replaceAll(RegExp(".mp3"), "");
-
-  String title = path
-      .split("/")
-      .last
-      .split(" - ")
-      .last
-      .replaceAll(RegExp(".mp3"), "")
-      .split(" _ ")
-      .first;
-
-  Song newsong = Song(path);
-  newsong.title = title;
-  newsong.interpret = interpret;
-  UnsortedSongs[path] = newsong;
-}
-
-void CreateTag(name) {
-  if (Tags.containsKey(name)) {
-    print("Trying to create existing Tag!");
-    return;
-  }
-
-  Tag newtag = Tag(name);
-  newtag.id = Tags.length + 1;
-  Tags[newtag.id] = newtag;
-  SaveTags();
 }

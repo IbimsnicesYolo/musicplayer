@@ -6,15 +6,16 @@ import 'dart:io';
 Future<void> SearchPaths(context) async {
   CFG.ShowSth("Loading Paths...", context);
   List<String> path = await ExternalPath.getExternalStorageDirectories();
+  path.add(await ExternalPath.getExternalStoragePublicDirectory(
+      ExternalPath.DIRECTORY_MUSIC));
   for (String a in path) {
     CFG.ShowSth(a, context);
   }
-  if (path.length < 1) {
+  if (path.length < 2) {
     CFG.ShowSth("Nothing Found weird...", context);
     return;
   }
   for (var i = 0; i < path.length; i++) {
-    CFG.ShowSth(path[i], context);
     Directory dir = Directory(path[i]);
     List<FileSystemEntity> _files;
     _files = dir.listSync(recursive: true, followLinks: true);
@@ -27,7 +28,7 @@ Future<void> SearchPaths(context) async {
       }
     }
   }
-  CFG.SaveSongs(context);
+  CFG.SaveSongs();
 }
 
 class SongDrawer extends Drawer {

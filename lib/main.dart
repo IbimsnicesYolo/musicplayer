@@ -4,6 +4,7 @@ import "settings.dart" as CFG;
 import "sites/drawer.dart" as Side;
 import "sites/search.dart" as SearchPage;
 import "sites/song.dart" as Song;
+import "sites/string_input.dart" as SInput;
 
 void checkperms() async {
   PermissionStatus status = await Permission.storage.status;
@@ -37,11 +38,9 @@ class _MainSite extends State<MainSite> {
   @override
   void dispose() {
     super.dispose();
-    _textFieldController.dispose();
   }
 
   int side = 0;
-  TextEditingController _textFieldController = TextEditingController();
   CFG.CurrentPlayList? Playlist;
 
   @override
@@ -81,53 +80,21 @@ class _MainSite extends State<MainSite> {
                   for (var i in CFG.Tags.keys) Song.TagTile(t: CFG.Tags[i]),
                   Align(
                     alignment: AlignmentDirectional.bottomCenter,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => AlertDialog(
-                              title: Text('Create New Tag'),
-                              content: TextField(
-                                onChanged: (value) {},
-                                controller: _textFieldController,
-                                decoration:
-                                    InputDecoration(hintText: "Tag Name"),
-                              ),
-                              actions: <Widget>[
-                                TextButton(
-                                  style: TextButton.styleFrom(
-                                    primary: Colors.white,
-                                    backgroundColor: Colors.red,
-                                  ),
-                                  child: Text('Back'),
-                                  onPressed: () {
-                                    _textFieldController.clear();
-                                    Navigator.pop(context);
-                                    setState(() {});
-                                  },
-                                ),
-                                TextButton(
-                                  style: TextButton.styleFrom(
-                                    primary: Colors.white,
-                                    backgroundColor: Colors.green,
-                                  ),
-                                  child: Text('Create'),
-                                  onPressed: () {
-                                    CFG.CreateTag(_textFieldController.text);
-                                    _textFieldController.clear();
-                                    Navigator.pop(context);
-                                    setState(() {});
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
+                    child: SInput.StringInput(
+                      Title: "Add Tag",
+                      TitlePopup: "Create a new tag",
+                      Button1: "Create",
+                      Button2: "Cancel",
+                      context: context,
+                      OnPressed1: (text) {
+                        CFG.CreateTag(text);
+                        setState(() {});
                       },
-                      child: const Text('Create New',
-                          style: TextStyle(fontSize: 20)),
+                      OnPressed2: (text) {
+                        setState(() {});
+                      },
                     ),
-                  )
+                  ),
                 ] else if (side == 2) ...[
                   for (var i in CFG.UnsortedSongs.keys)
                     Song.SongInfo(
