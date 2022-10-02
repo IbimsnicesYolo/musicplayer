@@ -6,12 +6,12 @@ import "sites/search.dart" as SearchPage;
 import "sites/song.dart" as Song;
 
 void checkperms() async {
-  var status = await Permission.storage.status;
-  if (status.isDenied) {
+  PermissionStatus status = await Permission.storage.status;
+  if (!status.isGranted) {
     await Permission.storage.request();
   }
   status = await Permission.manageExternalStorage.status;
-  if (status.isDenied) {
+  if (!status.isGranted) {
     await Permission.manageExternalStorage.request();
   }
 }

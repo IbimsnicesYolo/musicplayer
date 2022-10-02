@@ -55,7 +55,7 @@ class SongDrawer extends Drawer {
 
                         _showMyDialog1();
                         Directory dir = Directory(
-                            '/storage/emulated/0/'); // works on debugger, not on real phone wtf
+                            '/storage'); // works on debugger, not on real phone wtf
                         List<FileSystemEntity> _files;
                         _files =
                             dir.listSync(recursive: true, followLinks: false);
