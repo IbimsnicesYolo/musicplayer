@@ -1,5 +1,6 @@
 import 'dart:core';
 import 'dart:io';
+import "dart:collection";
 import "dart:ui";
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:external_path/external_path.dart';
 
 final Color HomeColor = Color.fromRGBO(100, 255, 0, 255);
 final Color ContrastColor = Color.fromRGBO(0, 0, 0, 100);
+
 Map Songs = {};
 Map UnsortedSongs = {};
 Map Tags = {};
@@ -20,9 +22,7 @@ Future<void> ShowSth(String info, context) async {
         title: Text(info),
         content: SingleChildScrollView(
           child: ListBody(
-            children: <Widget>[
-              Text("pressed Button"),
-            ],
+            children: <Widget>[],
           ),
         ),
         actions: <Widget>[
@@ -59,6 +59,7 @@ void LoadData() async {
     });
   });
   ValidateSongs();
+
   File(appDocDirectory + '/tags.json')
       .create(recursive: true)
       .then((File file) {
@@ -76,6 +77,7 @@ void LoadData() async {
 /* Songs */
 class Song {
   String path = "";
+  String filename = "";
   String title = "Song Title";
   String interpret = "Song Interpret";
   List tags = [];
@@ -83,6 +85,7 @@ class Song {
   Info() {
     print("Song Info");
     print(path);
+    print(filename);
     print(title);
     print(interpret);
     print(tags.toString());
@@ -90,11 +93,13 @@ class Song {
 
   Song.fromJson(Map<String, dynamic> json)
       : path = json['p'],
+        filename = json['f'],
         title = json['t'],
         interpret = json['i'],
         tags = json['ta'];
   Map<String, dynamic> toJson(Song value) => {
         'p': value.path,
+        'f': value.filename,
         't': value.title,
         'i': value.interpret,
         'ta': value.tags
@@ -106,8 +111,9 @@ class CurrentPlayList {
   int current = 0;
 }
 
-void CreateSong(path) {
-  if (Songs.containsKey(path) || UnsortedSongs.containsKey(path)) {
+void CreateSong(path, context) {
+  String filename = path.split("/").last;
+  if (Songs.containsKey(filename) || UnsortedSongs.containsKey(filename)) {
     print("Trying to create existing Song!");
     return;
   }
@@ -125,31 +131,33 @@ void CreateSong(path) {
 
   Song newsong = Song(path);
   newsong.title = title;
+  newsong.filename = filename;
   newsong.interpret = interpret;
-  UnsortedSongs[path] = newsong;
+  UnsortedSongs[filename] = newsong;
+  ShowSth("Created Song: " + title, context);
 }
 
 void UpdateSongInterpret(Song s, String newtitle) {
-  Songs[s.path].interpret = newtitle;
+  Songs[s.filename].interpret = newtitle;
   SaveSongs();
 }
 
 void UpdateSongTitle(Song s, String newtitle) {
-  Songs[s.path].title = newtitle;
+  Songs[s.filename].title = newtitle;
   SaveSongs();
 }
 
 void UpdateSongTags(Song s, List newtags) {
-  Songs[s.path].tags = newtags;
+  Songs[s.filename].tags = newtags;
   SaveSongs();
 }
 
 void DeleteSong(Song s) {
-  if (Songs.containsKey(s.path)) {
-    Songs.remove(s.path);
+  if (Songs.containsKey(s.filename)) {
+    Songs.remove(s.filename);
   }
-  if (UnsortedSongs.containsKey(s.path)) {
-    UnsortedSongs.remove(s.path);
+  if (UnsortedSongs.containsKey(s.filename)) {
+    UnsortedSongs.remove(s.filename);
   }
   SaveSongs();
 }
@@ -167,6 +175,7 @@ void SaveSongs() async {
   File(appDocDirectory + '/songs.json')
       .writeAsString(json.substring(0, json.length - 1) + "}");
   // remove last comma, close json
+  LoadData();
 }
 
 // Check if file in Song path still exists
@@ -228,6 +237,7 @@ void SaveTags() async {
   File(appDocDirectory + '/tags.json').writeAsString(
       json.substring(0, json.length - 1) +
           "}"); // remove last comma, close json
+  LoadData();
 }
 
 void DeleteTag(context, Tag t) {

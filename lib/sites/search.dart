@@ -66,6 +66,7 @@ class _SearchPageState extends State<SearchPage> {
                         .toLowerCase()
                         .contains(this.searchtext.toLowerCase()))
                   Song.SongInfo(s: CFG.Songs[i])
+              // TO:Do Make Tags Searchable and show Songs sorted after Tags
             ],
           ),
         ),

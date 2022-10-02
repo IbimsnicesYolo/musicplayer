@@ -98,7 +98,7 @@ class _MainSite extends State<MainSite> {
                     ),
                   )
                 ] else if (side == 2) ...[
-                  for (var i in CFG.UnsortedSongs.keys)
+                  for (String i in CFG.UnsortedSongs.keys)
                     Song.SongInfo(
                       s: CFG.UnsortedSongs[i],
                     ),

@@ -13,56 +13,96 @@ class SongInfo extends ListTile {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton(
+      onSelected: (result) {
+        if (result == 0) {
+          // Change Title
+          SInput.StringInput(
+            context,
+            "New Song Title",
+            "Save",
+            "Cancel",
+            (String si) {
+              CFG.UpdateSongTitle(s, si);
+            },
+            (String si) {},
+            s.title,
+          );
+        }
+        if (result == 1) {
+          // Change Interpret
+          SInput.StringInput(
+            context,
+            "New Song Interpret",
+            "Save",
+            "Cancel",
+            (String si) {
+              CFG.UpdateSongInterpret(s, si);
+            },
+            (String si) {},
+            s.interpret,
+          );
+        }
+        if (result == 2) {
+          CFG.ShowSth("Not Programmed", context);
+          // Change Tags
+          /*
+          showModalBottomSheet<void>(
+            context: context,
+            builder: (BuildContext context) {
+              return Container(
+                height: 200,
+                color: Colors.black,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      const Text('Modal BottomSheet'),
+                      ElevatedButton(
+                        child: const Align(
+                            alignment: AlignmentDirectional.bottomCenter,
+                            child: Text('Close BottomSheet')),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+          */
+        }
+        if (result == 3) {
+          CFG.DeleteSong(s);
+        }
+        if (result == 4) {
+          CFG.ShowSth("Not Programmed", context);
+          // Play as next Song
+        }
+        if (result == 5) {
+          CFG.ShowSth("Not Programmed", context);
+          // Add Song to End of Playlist
+        }
+      },
       child: ListTile(
         title: Text(s.title),
         subtitle: Text(s.interpret),
       ),
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
         PopupMenuItem(
-          child: ListTile(
-            leading: Icon(Icons.add),
-            title: Text(s.title),
-          ),
+          child: Text(s.title),
+          value: 0,
         ),
         PopupMenuItem(
-          child: ListTile(
-            leading: Icon(Icons.anchor),
-            title: Text(s.interpret),
-          ),
-        ),
-        PopupMenuItem(
-          child: ListTile(
-            leading: Icon(Icons.article),
-            title: Text("Edit Tags"),
-            onTap: () {
-              showModalBottomSheet<void>(
-                context: context,
-                builder: (BuildContext context) {
-                  return Container(
-                    height: 200,
-                    color: Colors.amber,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          const Text('Modal BottomSheet'),
-                          ElevatedButton(
-                            child: const Text('Close BottomSheet'),
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
-          ),
+          child: Text(s.interpret),
+          value: 1,
         ),
         const PopupMenuDivider(),
-        const PopupMenuItem(child: Text('Item A')),
-        const PopupMenuItem(child: Text('Item B')),
+        const PopupMenuItem(child: Text('Edit Tags'), value: 2),
+        const PopupMenuItem(child: Text('Delete Song'), value: 3),
+        const PopupMenuDivider(),
+        const PopupMenuItem(child: Text('Play Next'), value: 4),
+        const PopupMenuItem(child: Text('Add to Playlist'), value: 5),
       ],
     );
   }
@@ -104,10 +144,7 @@ class TagTile extends ListTile {
       ),
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
         PopupMenuItem(
-          child: ListTile(
-            leading: Icon(Icons.add),
-            title: Text(t.name),
-          ),
+          child: Text(t.name),
         ),
         const PopupMenuDivider(),
         const PopupMenuItem(child: Text('Edit Name'), value: 0),

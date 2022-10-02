@@ -8,6 +8,7 @@ Future<void> SearchPaths(context) async {
   List<String> path = await ExternalPath.getExternalStorageDirectories();
   path.add(await ExternalPath.getExternalStoragePublicDirectory(
       ExternalPath.DIRECTORY_MUSIC));
+  path.add("/storage/emulated/0/Music/");
   for (String a in path) {
     CFG.ShowSth(a, context);
   }
@@ -22,9 +23,8 @@ Future<void> SearchPaths(context) async {
 
     for (FileSystemEntity entity in _files) {
       String path = entity.path;
-
       if (path.endsWith('.mp3')) {
-        CFG.CreateSong(path);
+        CFG.CreateSong(path, context);
       }
     }
   }
