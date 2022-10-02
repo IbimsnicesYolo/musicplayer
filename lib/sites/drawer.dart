@@ -5,6 +5,10 @@ import 'dart:io';
 
 Future<void> SearchPaths(context) async {
   var path = await ExternalPath.getExternalStorageDirectories();
+  if (path.length < 1) {
+    CFG.ShowSth("Nothing Found weird...", context);
+    return;
+  }
   for (var i = 0; i < path.length; i++) {
     Directory dir = Directory(path[i]);
     List<FileSystemEntity> _files;
@@ -13,40 +17,13 @@ Future<void> SearchPaths(context) async {
     for (FileSystemEntity entity in _files) {
       String path = entity.path;
 
-      ShowSth(path, context);
-
+      //ShowSth(path, context);
       if (path.endsWith('.mp3')) {
         CFG.CreateSong(path);
       }
     }
   }
-}
-
-Future<void> ShowSth(String info, context) async {
-  return showDialog<void>(
-    context: context,
-    barrierDismissible: true, // user must tap button!
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text(info),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              Text("pressed Button"),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('Approve'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
+  CFG.SaveSongs(context);
 }
 
 class SongDrawer extends Drawer {
@@ -73,13 +50,13 @@ class SongDrawer extends Drawer {
                     TextButton(
                         child: const Text("Search for new Songs"),
                         onPressed: () {
-                          ShowSth("Pressed Search", context);
+                          CFG.ShowSth("Pressed Search", context);
                           SearchPaths(context);
                         }),
                     TextButton(
                       child: const Text("Open Settings"),
                       onPressed: () {
-                        ShowSth("Pressed Settings", context);
+                        CFG.ShowSth("Pressed Settings", context);
                         // open settings page...
                       },
                     ),

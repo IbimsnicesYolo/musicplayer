@@ -3,11 +3,38 @@ import 'dart:io';
 import "dart:ui";
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:external_path/external_path.dart';
 
 final Color StandardTag = Color.fromRGBO(100, 255, 255, 255);
 final Color HomeColor = Color.fromRGBO(100, 255, 0, 255);
 final Color ContrastColor = Color.fromRGBO(0, 0, 0, 100);
+
+Future<void> ShowSth(String info, context) async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: true, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(info),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text("pressed Button"),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Ok'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
 
 class Song {
   String path = "";
@@ -63,8 +90,9 @@ Map Tags = {};
 
 void LoadData() async {
   print("Loading Data");
-  Directory appDocDirectory = await getApplicationDocumentsDirectory();
-  new File(appDocDirectory.path + '/songs.json')
+  String appDocDirectory = await ExternalPath.getExternalStoragePublicDirectory(
+      ExternalPath.DIRECTORY_DOCUMENTS);
+  File(appDocDirectory + '/songs.json')
       .create(recursive: true)
       .then((File file) {
     file.readAsString().then((String contents) {
@@ -81,7 +109,7 @@ void LoadData() async {
       }
     });
   });
-  new File(appDocDirectory.path + '/tags.json')
+  File(appDocDirectory + '/tags.json')
       .create(recursive: true)
       .then((File file) {
     file.readAsString().then((String contents) {
@@ -96,24 +124,33 @@ void LoadData() async {
   });
 }
 
-void SaveSongs() async {
-  Directory appDocDirectory = await getApplicationDocumentsDirectory();
+void SaveSongs(context) async {
+  ShowSth("Saving Songs", context);
+  String appDocDirectory = await ExternalPath.getExternalStoragePublicDirectory(
+      ExternalPath.DIRECTORY_DOCUMENTS);
   String json = "{";
   Songs.forEach((k, v) {
     json += '"' + k + '":' + jsonEncode(v.toJson(v)) + ",";
   });
-  File(appDocDirectory.path + '/songs.json').writeAsString(
-      json.substring(0, json.length - 1) +
-          "}"); // remove last comma, close json
-}
-
-void SaveTags() async {
-  Directory appDocDirectory = await getApplicationDocumentsDirectory();
-  String json = "{";
-  Tags.forEach((k, v) {
+  UnsortedSongs.forEach((k, v) {
     json += '"' + k + '":' + jsonEncode(v.toJson(v)) + ",";
   });
-  File(appDocDirectory.path + '/tags.json').writeAsString(
+  File(appDocDirectory + '/songs.json')
+      .writeAsString(json.substring(0, json.length - 1) + "}");
+  // remove last comma, close json
+}
+
+void SaveTags(context) async {
+  ShowSth("Saving Tags", context);
+  String appDocDirectory = await ExternalPath.getExternalStoragePublicDirectory(
+      ExternalPath.DIRECTORY_DOCUMENTS);
+
+  String json = "{";
+  Tags.forEach((k, v) {
+    json += '"' + k.toString() + '":' + jsonEncode(v.toJson(v)) + ",";
+  });
+
+  File(appDocDirectory + '/tags.json').writeAsString(
       json.substring(0, json.length - 1) +
           "}"); // remove last comma, close json
 }
@@ -140,10 +177,9 @@ void CreateSong(path) {
   newsong.title = title;
   newsong.interpret = interpret;
   UnsortedSongs[path] = newsong;
-  SaveSongs();
 }
 
-void CreateTag(name) {
+void CreateTag(name, context) {
   if (Tags.containsKey(name)) {
     print("Trying to create existing Tag!");
     return;
@@ -152,5 +188,5 @@ void CreateTag(name) {
   Tag newtag = Tag(name);
   newtag.id = Tags.length + 1;
   Tags[newtag.id] = newtag;
-  SaveTags();
+  SaveTags(context);
 }
