@@ -5,8 +5,9 @@ import 'dart:io';
 
 Future<void> SearchPaths(context) async {
   CFG.ShowSth("Loading Paths...", context);
-  var path = await ExternalPath.getExternalStorageDirectories();
-  CFG.ShowSth(path.toString(), context);
+  var path = await ExternalPath.getExternalStoragePublicDirectory(
+      ExternalPath.DIRECTORY_MUSIC);
+  CFG.ShowSth(path, context);
   if (path.length < 2) {
     CFG.ShowSth("Nothing Found weird...", context);
     return;
