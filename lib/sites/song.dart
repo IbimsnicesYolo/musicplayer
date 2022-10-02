@@ -78,6 +78,11 @@ class TagTile extends ListTile {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton(
+      onSelected: (result) {
+        if (result == 0) {
+          CFG.DeleteTag(context, t);
+        }
+      },
       child: ListTile(
         title: Text(t.name),
       ),
@@ -89,7 +94,7 @@ class TagTile extends ListTile {
           ),
         ),
         const PopupMenuDivider(),
-        const PopupMenuItem(child: Text('Item A')),
+        const PopupMenuItem(child: Text('Delete Tag'), value: 0),
         const PopupMenuItem(child: Text('Item B')),
       ],
     );

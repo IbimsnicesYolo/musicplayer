@@ -4,8 +4,10 @@ import "../settings.dart" as CFG;
 import 'dart:io';
 
 Future<void> SearchPaths(context) async {
+  CFG.ShowSth("Loading Paths...", context);
   var path = await ExternalPath.getExternalStorageDirectories();
-  if (path.length < 1) {
+  CFG.ShowSth(path.toString(), context);
+  if (path.length < 2) {
     CFG.ShowSth("Nothing Found weird...", context);
     return;
   }

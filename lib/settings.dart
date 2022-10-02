@@ -140,8 +140,7 @@ void SaveSongs(context) async {
   // remove last comma, close json
 }
 
-void SaveTags(context) async {
-  ShowSth("Saving Tags", context);
+void SaveTags() async {
   String appDocDirectory = await ExternalPath.getExternalStoragePublicDirectory(
       ExternalPath.DIRECTORY_DOCUMENTS);
 
@@ -153,6 +152,20 @@ void SaveTags(context) async {
   File(appDocDirectory + '/tags.json').writeAsString(
       json.substring(0, json.length - 1) +
           "}"); // remove last comma, close json
+}
+
+void DeleteTag(context, Tag t) {
+  ShowSth("Removing Tag: " + t.name, context);
+  Tags.remove(t.id);
+  Songs.forEach(
+    (k, v) {
+      if (v.tags.contains(t.id)) {
+        v.tags.remove(t.id);
+      }
+    },
+  );
+  SaveTags();
+  ShowSth("Deleted Tag successfully", context);
 }
 
 void CreateSong(path) {
@@ -172,21 +185,20 @@ void CreateSong(path) {
       .split(" _ ")
       .first;
 
-  print("Creating new Song: $path");
   Song newsong = Song(path);
   newsong.title = title;
   newsong.interpret = interpret;
   UnsortedSongs[path] = newsong;
 }
 
-void CreateTag(name, context) {
+void CreateTag(name) {
   if (Tags.containsKey(name)) {
     print("Trying to create existing Tag!");
     return;
   }
-  print("Creating new Tag: $name");
+
   Tag newtag = Tag(name);
   newtag.id = Tags.length + 1;
   Tags[newtag.id] = newtag;
-  SaveTags(context);
+  SaveTags();
 }

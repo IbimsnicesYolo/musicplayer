@@ -113,8 +113,7 @@ class _MainSite extends State<MainSite> {
                                   ),
                                   child: Text('Create'),
                                   onPressed: () {
-                                    CFG.CreateTag(
-                                        _textFieldController.text, context);
+                                    CFG.CreateTag(_textFieldController.text);
                                     _textFieldController.clear();
                                     Navigator.pop(context);
                                     setState(() {});
