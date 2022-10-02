@@ -4,18 +4,16 @@ import "../settings.dart" as CFG;
 import 'dart:io';
 
 Future<void> SearchPaths(context) async {
-  CFG.ShowSth("Loading Paths...", context);
-  List<String> path = await ExternalPath.getExternalStorageDirectories();
+  List<String> path = []; //await ExternalPath.getExternalStorageDirectories();
   path.add(await ExternalPath.getExternalStoragePublicDirectory(
-      ExternalPath.DIRECTORY_MUSIC));
-  path.add("/storage/emulated/0/Music/");
+      ExternalPath.DIRECTORY_DOCUMENTS));
+
   for (String a in path) {
     CFG.ShowSth(a, context);
   }
-  if (path.length < 2) {
-    CFG.ShowSth("Nothing Found weird...", context);
-    return;
-  }
+
+  CFG.ShowSth(path.length.toString(), context);
+
   for (var i = 0; i < path.length; i++) {
     Directory dir = Directory(path[i]);
     List<FileSystemEntity> _files;
@@ -23,6 +21,7 @@ Future<void> SearchPaths(context) async {
 
     for (FileSystemEntity entity in _files) {
       String path = entity.path;
+      CFG.ShowSth(path, context);
       if (path.endsWith('.mp3')) {
         CFG.CreateSong(path, context);
       }
@@ -55,7 +54,6 @@ class SongDrawer extends Drawer {
                     TextButton(
                         child: const Text("Search for new Songs"),
                         onPressed: () {
-                          CFG.ShowSth("Pressed Search", context);
                           SearchPaths(context);
                         }),
                     TextButton(
