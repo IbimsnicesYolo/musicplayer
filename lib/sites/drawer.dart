@@ -26,7 +26,36 @@ class SongDrawer extends Drawer {
                     TextButton(
                       child: const Text("Search for new Songs"),
                       onPressed: () {
-                        Directory dir = Directory('/storage/emulated/0/');
+                        Future<void> _showMyDialog1() async {
+                          return showDialog<void>(
+                            context: context,
+                            barrierDismissible: true, // user must tap button!
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('AlertDialog Title'),
+                                content: SingleChildScrollView(
+                                  child: ListBody(
+                                    children: <Widget>[
+                                      Text("pressed Button"),
+                                    ],
+                                  ),
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('Approve'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }
+
+                        _showMyDialog1();
+                        Directory dir = Directory(
+                            '/storage/emulated/0/'); // works on debugger, not on real phone wtf
                         List<FileSystemEntity> _files;
                         _files =
                             dir.listSync(recursive: true, followLinks: false);
@@ -69,6 +98,34 @@ class SongDrawer extends Drawer {
                     TextButton(
                       child: const Text("Open Settings"),
                       onPressed: () {
+                        Future<void> _showMyDialog1() async {
+                          return showDialog<void>(
+                            context: context,
+                            barrierDismissible: true, // user must tap button!
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('AlertDialog Title'),
+                                content: SingleChildScrollView(
+                                  child: ListBody(
+                                    children: <Widget>[
+                                      Text("pressed Button"),
+                                    ],
+                                  ),
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('Approve'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }
+
+                        _showMyDialog1();
                         // open settings page...
                       },
                     ),
