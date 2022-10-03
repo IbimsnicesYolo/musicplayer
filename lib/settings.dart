@@ -111,11 +111,10 @@ class CurrentPlayList {
   int current = 0;
 }
 
-void CreateSong(path, context) {
+bool CreateSong(path, context) {
   String filename = path.split("/").last;
   if (Songs.containsKey(filename) || UnsortedSongs.containsKey(filename)) {
-    print("Trying to create existing Song!");
-    return;
+    return false;
   }
   String interpret =
       path.split("/").last.split(" - ").first.replaceAll(RegExp(".mp3"), "");
@@ -134,7 +133,7 @@ void CreateSong(path, context) {
   newsong.filename = filename;
   newsong.interpret = interpret;
   UnsortedSongs[filename] = newsong;
-  ShowSth("Created Song: " + title, context);
+  return true;
 }
 
 void UpdateSongInterpret(Song s, String newtitle) {

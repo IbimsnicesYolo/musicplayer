@@ -4,15 +4,10 @@ import "../settings.dart" as CFG;
 import 'dart:io';
 
 Future<void> SearchPaths(context) async {
+  int count = 0;
   List<String> path = []; //await ExternalPath.getExternalStorageDirectories();
   path.add(await ExternalPath.getExternalStoragePublicDirectory(
       ExternalPath.DIRECTORY_DOCUMENTS));
-
-  for (String a in path) {
-    CFG.ShowSth(a, context);
-  }
-
-  CFG.ShowSth(path.length.toString(), context);
 
   for (var i = 0; i < path.length; i++) {
     Directory dir = Directory(path[i]);
@@ -21,13 +16,17 @@ Future<void> SearchPaths(context) async {
 
     for (FileSystemEntity entity in _files) {
       String path = entity.path;
-      CFG.ShowSth(path, context);
       if (path.endsWith('.mp3')) {
-        CFG.CreateSong(path, context);
+        if (CFG.CreateSong(path, context)) {
+          count += 1;
+        }
       }
     }
   }
-  CFG.SaveSongs();
+  if (count > 0) {
+    CFG.ShowSth("Created $count new Songs", context);
+    CFG.SaveSongs();
+  }
 }
 
 class SongDrawer extends Drawer {
