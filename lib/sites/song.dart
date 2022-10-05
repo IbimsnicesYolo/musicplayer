@@ -2,6 +2,24 @@ import 'package:flutter/material.dart';
 import "../settings.dart" as CFG;
 import "string_input.dart" as SInput;
 
+class SongPage extends ListView {
+  SongPage({
+    Key? key,
+    required this.songs,
+  });
+
+  final Map songs;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: [
+        for (CFG.Song song in songs.values) SongInfo(s: song),
+      ],
+    );
+  }
+}
+
 class SongInfo extends ListTile {
   const SongInfo({
     Key? key,
@@ -118,38 +136,42 @@ class TagTile extends ListTile {
 
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton(
-      onSelected: (result) {
-        if (result == 0) {
-          // Change Name
-          SInput.StringInput(
-            context,
-            "Rename Tag",
-            "Save",
-            "Cancel",
-            (String s) {
-              CFG.UpdateTagName(t.id, s);
-            },
-            (String s) {},
-            t.name,
-          );
-        }
-        if (result == 1) {
-          // Delete
-          CFG.DeleteTag(context, t);
-        }
-      },
-      child: ListTile(
-        title: Text(t.name),
-      ),
-      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-        PopupMenuItem(
-          child: Text(t.name),
+    return ListTile(
+      trailing: PopupMenuButton(
+        onSelected: (result) {
+          if (result == 0) {
+            // Change Name
+            SInput.StringInput(
+              context,
+              "Rename Tag",
+              "Save",
+              "Cancel",
+              (String s) {
+                CFG.UpdateTagName(t.id, s);
+              },
+              (String s) {},
+              t.name,
+            );
+          }
+          if (result == 1) {
+            // Delete
+            CFG.DeleteTag(context, t);
+          }
+        },
+        child: ListTile(
+          title: Text(t.name),
         ),
-        const PopupMenuDivider(),
-        const PopupMenuItem(child: Text('Edit Name'), value: 0),
-        const PopupMenuItem(child: Text('Delete Tag'), value: 1),
-      ],
+        itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+          PopupMenuItem(
+            child: Text(t.name),
+          ),
+          const PopupMenuDivider(),
+          const PopupMenuItem(child: Text('Edit Name'), value: 0),
+          const PopupMenuItem(child: Text('Delete Tag'), value: 1),
+        ],
+      ),
+      title: Text(t.name),
+      subtitle: Text(t.used.toString()),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'dart:ffi';
 import 'dart:io';
 import "dart:ui";
 import 'dart:convert';
@@ -67,6 +68,7 @@ void LoadData() async {
         jsonDecode(contents).forEach((key, value) {
           Tag currenttag = Tag.fromJson(value);
           Tags[currenttag.id] = currenttag;
+          GetSongsFromTag(currenttag);
         });
       }
     });
@@ -197,11 +199,13 @@ void ValidateSongs() async {
 class Tag {
   String name = "New Tag";
   int id = -1;
+  int used = 0;
   Tag(this.name);
   Tag.fromJson(Map<String, dynamic> json)
       : name = json['n'],
+        used = json['u'],
         id = json['i'];
-  Map<String, dynamic> toJson(Tag value) => {'n': value.name, 'i': value.id};
+  Map<String, dynamic> toJson(Tag value) => {'n': value.name, 'u': value.used, 'i': value.id};
 }
 
 void CreateTag(name) {
@@ -250,4 +254,19 @@ void DeleteTag(context, Tag t) {
   );
   SaveTags();
   ShowSth("Deleted Tag successfully", context);
+}
+
+Map GetSongsFromTag(Tag T) {
+  Map songs = {};
+  int songcount = 0;
+
+  for (String s in Songs.keys) {
+    Song so = Songs[s];
+    if (so.tags.contains(T.id))
+      songcount += 1;
+      songs[so.filename] = so;
+  };
+
+  Tags[T.id].used = songcount;
+  return songs;
 }
