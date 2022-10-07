@@ -89,6 +89,7 @@ class _MainSite extends State<MainSite> {
                           "Cancel",
                           (String s) {
                             CFG.CreateTag(s);
+                            setState(() {});
                           },
                           (String s) {},
                           "",
