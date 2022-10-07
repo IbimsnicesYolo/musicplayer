@@ -137,6 +137,8 @@ class TagTile extends ListTile {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      onLongPress: () => Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => SongPage(songs: CFG.UnsortedSongs))),
       trailing: Row(mainAxisSize: MainAxisSize.min, children: [
         PopupMenuButton(
           onSelected: (result) {
