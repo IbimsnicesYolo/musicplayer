@@ -67,7 +67,7 @@ class SongInfo extends ListTile {
             builder: (BuildContext context) {
               return Container(
                 height: 200,
-                color: Colors.black,
+                color: Colors.lightBlue,
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
