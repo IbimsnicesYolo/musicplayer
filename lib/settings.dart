@@ -251,6 +251,7 @@ void DeleteTag(Tag t) {
     },
   );
   SaveTags();
+  SaveSongs();
 }
 
 Map GetSongsFromTag(Tag T) {

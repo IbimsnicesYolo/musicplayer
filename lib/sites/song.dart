@@ -85,25 +85,35 @@ class SongInfo extends ListTile {
           );
         }
         if (result == 2) {
-          CFG.ShowSth("Not Programmed", context);
           showModalBottomSheet<void>(
             context: context,
             builder: (BuildContext context) {
               return Container(
-                height: 200,
-                color: Colors.lightBlue,
+                height: MediaQuery.of(context).size.height / 2,
+                color: Colors.lightGreenAccent,
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      const Text('Modal BottomSheet'),
-                      ElevatedButton(
-                        child: const Align(
-                            alignment: AlignmentDirectional.bottomCenter,
-                            child: Text('Close BottomSheet')),
-                        onPressed: () => Navigator.pop(context),
-                      ),
+                      for (CFG.Tag t in CFG.Tags.values)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Checkbox(
+                                value: s.tags.contains(t.id),
+                                onChanged: (bool? b) {
+                                  List Tags = s.tags;
+                                  if (b!) {
+                                    Tags.add(t.id);
+                                  } else {
+                                    Tags.remove(t.id);
+                                  }
+                                  CFG.UpdateSongTags(s, Tags);
+                                }),
+                            Text(t.name),
+                          ],
+                        ),
                     ],
                   ),
                 ),
