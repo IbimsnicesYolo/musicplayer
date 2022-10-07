@@ -62,8 +62,6 @@ class SongInfo extends ListTile {
         }
         if (result == 2) {
           CFG.ShowSth("Not Programmed", context);
-          // Change Tags
-          /*
           showModalBottomSheet<void>(
             context: context,
             builder: (BuildContext context) {
@@ -88,7 +86,6 @@ class SongInfo extends ListTile {
               );
             },
           );
-          */
         }
         if (result == 3) {
           CFG.DeleteSong(s);
