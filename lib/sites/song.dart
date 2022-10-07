@@ -97,23 +97,15 @@ class SongInfo extends ListTile {
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       for (CFG.Tag t in CFG.Tags.values)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Checkbox(
-                                value: s.tags.contains(t.id),
-                                onChanged: (bool? b) {
-                                  List Tags = s.tags;
-                                  if (b!) {
-                                    Tags.add(t.id);
-                                  } else {
-                                    Tags.remove(t.id);
-                                  }
-                                  CFG.UpdateSongTags(s, Tags);
-                                }),
-                            Text(t.name),
-                          ],
-                        ),
+                        CoolerCheckBox(s.tags.contains(t.id), (bool? b) {
+                          List Tags = s.tags;
+                          if (b!) {
+                            Tags.add(t.id);
+                          } else {
+                            Tags.remove(t.id);
+                          }
+                          CFG.UpdateSongTags(s, Tags);
+                        }, t.name),
                     ],
                   ),
                 ),
@@ -209,6 +201,64 @@ class TagTile extends ListTile {
       ]),
       title: Text(t.name),
       subtitle: Text(t.used.toString()),
+    );
+  }
+}
+
+class CoolerCheckBox extends StatefulWidget {
+  CoolerCheckBox(
+    this.b,
+    this.c,
+    this.Info, {
+    Key? key,
+  }) : super(key: key);
+
+  bool b;
+  String Info;
+  void Function(bool?) c;
+
+  @override
+  State<CoolerCheckBox> createState() =>
+      _CoolerCheckBox(text: Info, c: c, isChecked: b);
+}
+
+class _CoolerCheckBox extends State<CoolerCheckBox> {
+  _CoolerCheckBox(
+      {required this.text, required this.c, required this.isChecked});
+  bool isChecked;
+
+  final void Function(bool?) c;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    Color getColor(Set<MaterialState> states) {
+      const Set<MaterialState> interactiveStates = <MaterialState>{
+        MaterialState.pressed,
+        MaterialState.hovered,
+        MaterialState.focused,
+      };
+      if (states.any(interactiveStates.contains)) {
+        return Colors.blue;
+      }
+      return Colors.red;
+    }
+
+    return Row(
+      children: [
+        Checkbox(
+          checkColor: Colors.white,
+          fillColor: MaterialStateProperty.resolveWith(getColor),
+          value: isChecked,
+          onChanged: (bool? value) {
+            setState(() {
+              isChecked = value!;
+            });
+            c(value);
+          },
+        ),
+        Text(text),
+      ],
     );
   }
 }
