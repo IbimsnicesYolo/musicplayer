@@ -40,6 +40,10 @@ class _MainSite extends State<MainSite> {
     super.dispose();
   }
 
+  void update() {
+    setState(() {});
+  }
+
   int side = 0;
   CFG.CurrentPlayList? Playlist;
 
@@ -53,7 +57,7 @@ class _MainSite extends State<MainSite> {
               // Navigate to the Search Screen
               IconButton(
                   onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => SearchPage.SearchPage())),
+                      builder: (_) => SearchPage.SearchPage(CFG.Songs))),
                   icon: const Icon(Icons.search))
             ],
             backgroundColor: CFG.HomeColor,
@@ -63,7 +67,8 @@ class _MainSite extends State<MainSite> {
               children: [
                 if (side == 0)
                   if (this.Playlist != null) ...[
-                    for (var i in this.Playlist!.songs) Song.SongInfo(s: i),
+                    for (var i in this.Playlist!.songs)
+                      Song.SongInfo(s: i, c: update),
                   ] else ...[
                     const Align(
                       alignment: Alignment.center,
@@ -77,7 +82,8 @@ class _MainSite extends State<MainSite> {
                 else if (side == 1) ...[
                   // Current Playlist Songs, also sortable via drag and drop
                   // at the top is always the current song
-                  for (var i in CFG.Tags.keys) Song.TagTile(t: CFG.Tags[i]),
+                  for (var i in CFG.Tags.keys)
+                    Song.TagTile(t: CFG.Tags[i], c: update),
                   Align(
                     alignment: AlignmentDirectional.bottomCenter,
                     child: ElevatedButton(
@@ -89,7 +95,7 @@ class _MainSite extends State<MainSite> {
                           "Cancel",
                           (String s) {
                             CFG.CreateTag(s);
-                            setState(() {});
+                            update();
                           },
                           (String s) {},
                           "",
@@ -102,6 +108,7 @@ class _MainSite extends State<MainSite> {
                   for (String i in CFG.UnsortedSongs.keys)
                     Song.SongInfo(
                       s: CFG.UnsortedSongs[i],
+                      c: update,
                     ),
                 ]
               ],

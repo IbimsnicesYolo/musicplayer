@@ -1,6 +1,5 @@
 import 'dart:core';
 import 'dart:io';
-import "dart:ui";
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:external_path/external_path.dart';
@@ -111,7 +110,7 @@ class CurrentPlayList {
   int current = 0;
 }
 
-bool CreateSong(path, context) {
+bool CreateSong(path) {
   String filename = path.split("/").last;
   if (Songs.containsKey(filename) || UnsortedSongs.containsKey(filename)) {
     return false;
@@ -137,17 +136,17 @@ bool CreateSong(path, context) {
 }
 
 void UpdateSongInterpret(Song s, String newtitle) {
-  Songs[s.filename].interpret = newtitle;
+  s.interpret = newtitle;
   SaveSongs();
 }
 
 void UpdateSongTitle(Song s, String newtitle) {
-  Songs[s.filename].title = newtitle;
+  s.title = newtitle;
   SaveSongs();
 }
 
 void UpdateSongTags(Song s, List newtags) {
-  Songs[s.filename].tags = newtags;
+  s.tags = newtags;
   SaveSongs();
 }
 
@@ -204,7 +203,8 @@ class Tag {
       : name = json['n'],
         used = json['u'],
         id = json['i'];
-  Map<String, dynamic> toJson(Tag value) => {'n': value.name, 'u': value.used, 'i': value.id};
+  Map<String, dynamic> toJson(Tag value) =>
+      {'n': value.name, 'u': value.used, 'i': value.id};
 }
 
 void CreateTag(name) {
@@ -241,8 +241,7 @@ void SaveTags() async {
   LoadData();
 }
 
-void DeleteTag(context, Tag t) {
-  ShowSth("Removing Tag: " + t.name, context);
+void DeleteTag(Tag t) {
   Tags.remove(t.id);
   Songs.forEach(
     (k, v) {
@@ -252,7 +251,6 @@ void DeleteTag(context, Tag t) {
     },
   );
   SaveTags();
-  ShowSth("Deleted Tag successfully", context);
 }
 
 Map GetSongsFromTag(Tag T) {
@@ -261,10 +259,10 @@ Map GetSongsFromTag(Tag T) {
 
   for (String s in Songs.keys) {
     Song so = Songs[s];
-    if (so.tags.contains(T.id))
-      songcount += 1;
-      songs[so.filename] = so;
-  };
+    if (so.tags.contains(T.id)) songcount += 1;
+    songs[so.filename] = so;
+  }
+  ;
 
   Tags[T.id].used = songcount;
   return songs;

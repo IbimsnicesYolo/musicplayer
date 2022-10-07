@@ -1,21 +1,42 @@
 import 'package:flutter/material.dart';
 import "../settings.dart" as CFG;
+import "search.dart" as SearchPage;
 import "string_input.dart" as SInput;
 
-class SongPage extends ListView {
+class SongPage extends StatelessWidget {
   SongPage({
     Key? key,
+    required this.c,
     required this.songs,
   });
 
   final Map songs;
+  final void Function() c;
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        for (CFG.Song song in songs.values) SongInfo(s: song),
-      ],
+    return MaterialApp(
+      home: SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            actions: [
+              // Navigate to the Search Screen
+              IconButton(
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => SearchPage.SearchPage(songs))),
+                  icon: const Icon(Icons.search))
+            ],
+            backgroundColor: CFG.HomeColor,
+          ),
+          body: Container(
+            child: ListView(
+              children: [
+                for (CFG.Song song in songs.values) SongInfo(s: song, c: c),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -23,11 +44,12 @@ class SongPage extends ListView {
 class SongInfo extends ListTile {
   const SongInfo({
     Key? key,
+    required this.c,
     required this.s,
   }) : super(key: key);
 
   final CFG.Song s;
-
+  final void Function() c;
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton(
@@ -41,6 +63,7 @@ class SongInfo extends ListTile {
             "Cancel",
             (String si) {
               CFG.UpdateSongTitle(s, si);
+              c();
             },
             (String si) {},
             s.title,
@@ -55,6 +78,7 @@ class SongInfo extends ListTile {
             "Cancel",
             (String si) {
               CFG.UpdateSongInterpret(s, si);
+              c();
             },
             (String si) {},
             s.interpret,
@@ -89,6 +113,7 @@ class SongInfo extends ListTile {
         }
         if (result == 3) {
           CFG.DeleteSong(s);
+          c();
         }
         if (result == 4) {
           CFG.ShowSth("Not Programmed", context);
@@ -126,16 +151,18 @@ class SongInfo extends ListTile {
 class TagTile extends ListTile {
   const TagTile({
     Key? key,
+    required this.c,
     required this.t,
   }) : super(key: key);
 
   final CFG.Tag t;
+  final void Function() c;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       onLongPress: () => Navigator.of(context).push(MaterialPageRoute(
-          builder: (_) => SongPage(songs: CFG.UnsortedSongs))),
+          builder: (_) => SongPage(songs: CFG.GetSongsFromTag(t), c: c))),
       trailing: Row(mainAxisSize: MainAxisSize.min, children: [
         PopupMenuButton(
           onSelected: (result) {
@@ -148,6 +175,7 @@ class TagTile extends ListTile {
                 "Cancel",
                 (String s) {
                   CFG.UpdateTagName(t.id, s);
+                  c();
                 },
                 (String s) {},
                 t.name,
@@ -155,7 +183,8 @@ class TagTile extends ListTile {
             }
             if (result == 1) {
               // Delete
-              CFG.DeleteTag(context, t);
+              CFG.DeleteTag(t);
+              c();
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuEntry>[

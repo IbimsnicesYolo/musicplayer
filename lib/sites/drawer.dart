@@ -17,7 +17,7 @@ Future<void> SearchPaths(context) async {
     for (FileSystemEntity entity in _files) {
       String path = entity.path;
       if (path.endsWith('.mp3')) {
-        if (CFG.CreateSong(path, context)) {
+        if (CFG.CreateSong(path)) {
           count += 1;
         }
       }

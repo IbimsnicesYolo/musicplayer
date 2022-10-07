@@ -4,12 +4,18 @@ import "song.dart" as Song;
 
 // Search Page
 class SearchPage extends StatefulWidget {
+  SearchPage(this.songs, {Key? key}) : super(key: key);
+
+  Map<dynamic, dynamic> songs;
+
   @override
-  State<SearchPage> createState() => _SearchPageState();
+  State<SearchPage> createState() => _SearchPageState(list: songs);
 }
 
 class _SearchPageState extends State<SearchPage> {
+  _SearchPageState({required this.list});
   final myController = TextEditingController();
+  final list;
 
   String searchtext = "";
 
@@ -58,14 +64,26 @@ class _SearchPageState extends State<SearchPage> {
         body: Container(
           child: ListView(
             children: [
-              for (var i in CFG.Songs.keys)
-                if (CFG.Songs[i].title
-                        .toLowerCase()
-                        .contains(this.searchtext.toLowerCase()) ||
-                    CFG.Songs[i].interpret
-                        .toLowerCase()
-                        .contains(this.searchtext.toLowerCase()))
-                  Song.SongInfo(s: CFG.Songs[i])
+              if (list.length != 0)
+                for (var i in list.keys)
+                  if (list[i]
+                          .title
+                          .toLowerCase()
+                          .contains(this.searchtext.toLowerCase()) ||
+                      list[i]
+                          .interpret
+                          .toLowerCase()
+                          .contains(this.searchtext.toLowerCase()))
+                    Song.SongInfo(s: list[i], c: () => setState(() {}))
+                  else
+                    for (var i in CFG.Songs.keys)
+                      if (CFG.Songs[i].title
+                              .toLowerCase()
+                              .contains(this.searchtext.toLowerCase()) ||
+                          CFG.Songs[i].interpret
+                              .toLowerCase()
+                              .contains(this.searchtext.toLowerCase()))
+                        Song.SongInfo(s: CFG.Songs[i], c: () => setState(() {}))
               // TO:Do Make Tags Searchable and show Songs sorted after Tags
             ],
           ),
