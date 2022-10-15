@@ -167,6 +167,7 @@ void UpdateSongTitle(Song s, String newtitle) {
 void UpdateSongTags(Song s, List newtags) {
   s.tags = newtags;
   SaveSongs();
+  UpdateAllTags();
 }
 
 void DeleteSong(Song s) {
@@ -271,6 +272,17 @@ void DeleteTag(Tag t) {
   );
   SaveTags();
   SaveSongs();
+}
+
+void UpdateAllTags() {
+  Tags.forEach((k, v) {
+    v.used = 0;
+  });
+  Songs.forEach((k, v) {
+    v.tags.forEach((element) {
+      Tags[element].used += 1;
+    });
+  });
 }
 
 Map GetSongsFromTag(Tag T) {
