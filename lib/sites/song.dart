@@ -119,10 +119,15 @@ class SongInfo extends ListTile {
         }
         if (result == 4) {
           CFG.CurrList.PlayNext(s);
+          // Play Song as Next Song
         }
         if (result == 5) {
           CFG.CurrList.AddToPlaylist(s);
           // Add Song to End of Playlist
+        }
+        if (result == 6) {
+          CFG.CurrList.PlayAfterLastAdded(s);
+          // Add Song to End of Added Songs
         }
       },
       child: ListTile(
@@ -144,6 +149,7 @@ class SongInfo extends ListTile {
         const PopupMenuDivider(),
         const PopupMenuItem(child: Text('Play Next'), value: 4),
         const PopupMenuItem(child: Text('Add to Playlist'), value: 5),
+        const PopupMenuItem(child: Text('Add to Play Next Stack'), value: 6),
       ],
     );
   }

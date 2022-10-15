@@ -107,14 +107,14 @@ class Song {
 
 class CurrentPlayList {
   List<Song> songs = [];
-  int last_added_pos = 1;
+  int last_added_pos = 0;
   void AddToPlaylist(Song song) {
     songs.add(song);
   }
 
   void PlayNext(Song song) {
-    last_added_pos = 1;
-    songs.insert(1, song);
+    last_added_pos = 0;
+    songs.insert(0, song);
   }
 
   void PlayAfterLastAdded(Song song) {

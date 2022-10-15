@@ -67,8 +67,8 @@ class _MainSite extends State<MainSite> {
             child: ListView(
               children: [
                 if (side == 0)
-                  if (this.Playlist != null) ...[
-                    for (var i in this.Playlist!.songs)
+                  if (!this.Playlist.songs.isEmpty) ...[
+                    for (var i in this.Playlist.songs)
                       Song.SongInfo(s: i, c: update),
                   ] else ...[
                     const Align(
