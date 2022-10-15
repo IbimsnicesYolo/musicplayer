@@ -66,7 +66,7 @@ void LoadData() async {
         jsonDecode(contents).forEach((key, value) {
           Tag currenttag = Tag.fromJson(value);
           Tags[currenttag.id] = currenttag;
-          GetSongsFromTag(currenttag);
+          Map songs = GetSongsFromTag(currenttag);
         });
       }
     });
@@ -107,7 +107,6 @@ class Song {
 
 class CurrentPlayList {
   List<Song> songs = [];
-  int current = 0;
 }
 
 bool CreateSong(path) {
@@ -260,10 +259,11 @@ Map GetSongsFromTag(Tag T) {
 
   for (String s in Songs.keys) {
     Song so = Songs[s];
-    if (so.tags.contains(T.id)) songcount += 1;
-    songs[so.filename] = so;
+    if (so.tags.contains(T.id)) {
+      songcount += 1;
+      songs[so.filename] = so;
+    }
   }
-  ;
 
   Tags[T.id].used = songcount;
   return songs;

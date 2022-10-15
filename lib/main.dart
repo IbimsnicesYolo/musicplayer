@@ -6,7 +6,7 @@ import "sites/search.dart" as SearchPage;
 import "sites/song.dart" as Song;
 import "sites/string_input.dart" as SInput;
 
-void checkperms() async {
+void checkpermissions() async {
   PermissionStatus status = await Permission.storage.status;
   if (!status.isGranted) {
     await Permission.storage.request();
@@ -19,7 +19,7 @@ void checkperms() async {
 
 void main() {
   runApp(MaterialApp(home: MainSite()));
-  checkperms();
+  checkpermissions();
 }
 
 class MainSite extends StatefulWidget {

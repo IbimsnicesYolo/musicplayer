@@ -5,23 +5,28 @@ import 'dart:io';
 
 Future<void> SearchPaths(context) async {
   int count = 0;
-  List<String> path = []; //await ExternalPath.getExternalStorageDirectories();
+  List<String> path = await ExternalPath.getExternalStorageDirectories();
   path.add(await ExternalPath.getExternalStoragePublicDirectory(
       ExternalPath.DIRECTORY_DOCUMENTS));
 
   for (var i = 0; i < path.length; i++) {
-    Directory dir = Directory(path[i]);
-    List<FileSystemEntity> _files;
-    _files = dir.listSync(recursive: true, followLinks: true);
+    try {
+      Directory dir = Directory(path[i]);
+      List<FileSystemEntity> _files;
+      _files = dir.listSync(recursive: true, followLinks: true);
 
-    for (FileSystemEntity entity in _files) {
-      String path = entity.path;
-      if (path.endsWith('.mp3')) {
-        if (CFG.CreateSong(path)) {
-          count += 1;
+      for (FileSystemEntity entity in _files) {
+        String path = entity.path;
+        if (path.endsWith('.mp3')) {
+          if (CFG.CreateSong(path)) {
+            count += 1;
+          }
         }
       }
+    } catch (e) {
+      CFG.ShowSth("There was an error searching: " + path[i], context);
     }
+    ;
   }
   if (count > 0) {
     CFG.ShowSth("Created $count new Songs", context);
