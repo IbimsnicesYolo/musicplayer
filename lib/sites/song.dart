@@ -118,11 +118,10 @@ class SongInfo extends ListTile {
           c();
         }
         if (result == 4) {
-          CFG.ShowSth("Not Programmed", context);
-          // Play as next Song
+          CFG.CurrList.PlayNext(s);
         }
         if (result == 5) {
-          CFG.ShowSth("Not Programmed", context);
+          CFG.CurrList.AddToPlaylist(s);
           // Add Song to End of Playlist
         }
       },
@@ -184,6 +183,11 @@ class TagTile extends ListTile {
               );
             }
             if (result == 1) {
+              CFG.GetSongsFromTag(t).forEach((key, value) {
+                CFG.CurrList.AddToPlaylist(value);
+              });
+            }
+            if (result == 2) {
               // Delete
               CFG.DeleteTag(t);
               c();
@@ -195,7 +199,8 @@ class TagTile extends ListTile {
             ),
             const PopupMenuDivider(),
             const PopupMenuItem(child: Text('Edit Name'), value: 0),
-            const PopupMenuItem(child: Text('Delete Tag'), value: 1),
+            const PopupMenuItem(child: Text('Add Songs to Playlist'), value: 1),
+            const PopupMenuItem(child: Text('Delete Tag'), value: 2),
           ],
         ),
       ]),

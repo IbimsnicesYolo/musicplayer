@@ -45,7 +45,8 @@ class _MainSite extends State<MainSite> {
   }
 
   int side = 0;
-  CFG.CurrentPlayList? Playlist;
+
+  CFG.CurrentPlayList Playlist = CFG.CurrList;
 
   @override
   Widget build(BuildContext context) {
