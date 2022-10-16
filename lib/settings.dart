@@ -66,11 +66,11 @@ void LoadData() async {
         jsonDecode(contents).forEach((key, value) {
           Tag currenttag = Tag.fromJson(value);
           Tags[currenttag.id] = currenttag;
-          Map songs = GetSongsFromTag(currenttag);
         });
       }
     });
   });
+  UpdateAllTags();
 }
 
 /* Songs */
@@ -104,30 +104,6 @@ class Song {
         'ta': value.tags
       };
 }
-
-class CurrentPlayList {
-  List<Song> songs = [];
-  int last_added_pos = 0;
-  void AddToPlaylist(Song song) {
-    songs.add(song);
-  }
-
-  void PlayNext(Song song) {
-    last_added_pos = 0;
-    songs.insert(0, song);
-  }
-
-  void PlayAfterLastAdded(Song song) {
-    songs.insert(last_added_pos, song);
-    last_added_pos += 1;
-  }
-
-  void Shuffle() {
-    songs.shuffle();
-  }
-}
-
-CurrentPlayList CurrList = CurrentPlayList();
 
 bool CreateSong(path) {
   String filename = path.split("/").last;
@@ -300,3 +276,28 @@ Map GetSongsFromTag(Tag T) {
   Tags[T.id].used = songcount;
   return songs;
 }
+
+/* Playlist */
+class CurrentPlayList {
+  List<Song> songs = [];
+  int last_added_pos = 0;
+  void AddToPlaylist(Song song) {
+    songs.add(song);
+  }
+
+  void PlayNext(Song song) {
+    last_added_pos = 0;
+    songs.insert(0, song);
+  }
+
+  void PlayAfterLastAdded(Song song) {
+    songs.insert(last_added_pos, song);
+    last_added_pos += 1;
+  }
+
+  void Shuffle() {
+    songs.shuffle();
+  }
+}
+
+CurrentPlayList CurrList = CurrentPlayList();
