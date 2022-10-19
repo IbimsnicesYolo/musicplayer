@@ -9,7 +9,7 @@ const Color ContrastColor = Color.fromRGBO(0, 0, 0, 255);
 Map Songs = {};
 Map Tags = {};
 
-Future<void> ShowSth(String info, context) async {
+Future<void> ShowSth(String info, context) {
   return showDialog<void>(
     context: context,
     barrierDismissible: true, // user must tap button!
@@ -158,7 +158,7 @@ void DeleteSong(Song s) {
   SaveSongs();
 }
 
-void SaveSongs() async {
+void SaveSongs() {
   String appDocDirectory = "storage/emulated/0/Music";
   String json = "{";
   Songs.forEach((k, v) {
@@ -171,7 +171,7 @@ void SaveSongs() async {
 }
 
 // Check if file in Song path still exists
-void ValidateSongs() async {
+void ValidateSongs() {
   Songs.forEach((k, v) {
     if (!File(v.path).existsSync()) {
       print("Song " + v.path + " does not exist anymore!");
@@ -219,7 +219,7 @@ void UpdateTagName(tag, name) {
   }
 }
 
-void SaveTags() async {
+void SaveTags() {
   String appDocDirectory = "storage/emulated/0/Music";
 
   String json = "{";
