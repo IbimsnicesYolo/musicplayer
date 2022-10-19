@@ -3,16 +3,11 @@ import 'package:external_path/external_path.dart';
 import "../settings.dart" as CFG;
 import 'dart:io';
 
-Future<void> SearchPaths(context) async {
+void SearchPaths(context) {
   int count = 0;
-  List<String> path = await ExternalPath.getExternalStorageDirectories();
-  path.add(await ExternalPath.getExternalStoragePublicDirectory(
-      ExternalPath.DIRECTORY_DOCUMENTS));
-  path.add("storage/emulated/0");
+  List<String> path = [];
   path.add("storage/emulated/0/Music");
-  path.add("Music/sup");
   path.add("storage/emulated/0/Download");
-  path.add("Music/");
 
   for (var i = 0; i < path.length; i++) {
     try {
