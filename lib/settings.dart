@@ -3,8 +3,8 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 
-final Color HomeColor = Color.fromRGBO(100, 255, 0, 255);
-final Color ContrastColor = Color.fromRGBO(0, 0, 0, 0);
+const Color HomeColor = Color.fromRGBO(100, 255, 0, 255);
+const Color ContrastColor = Color.fromRGBO(0, 0, 0, 255);
 
 Map Songs = {};
 Map Tags = {};
@@ -200,9 +200,14 @@ void CreateTag(name) {
     print("Trying to create existing Tag!");
     return;
   }
-
+  int newid = 0;
+  for (var i = 0; i < Tags.length; i++) {
+    if (Tags[i].id > newid) {
+      newid = i + 1;
+    }
+  }
   Tag newtag = Tag(name);
-  newtag.id = Tags.length + 1;
+  newtag.id = newid;
   Tags[newtag.id] = newtag;
   SaveTags();
 }
