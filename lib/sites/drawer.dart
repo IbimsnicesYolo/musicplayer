@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:external_path/external_path.dart';
 import "../settings.dart" as CFG;
 import 'dart:io';
 

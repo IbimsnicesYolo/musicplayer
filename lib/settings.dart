@@ -2,7 +2,6 @@ import 'dart:core';
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:external_path/external_path.dart';
 
 final Color HomeColor = Color.fromRGBO(100, 255, 0, 255);
 final Color ContrastColor = Color.fromRGBO(0, 0, 0, 100);
@@ -35,10 +34,8 @@ Future<void> ShowSth(String info, context) async {
   );
 }
 
-void LoadData() async {
-  print("Loading Data");
-  String appDocDirectory = await ExternalPath.getExternalStoragePublicDirectory(
-      ExternalPath.DIRECTORY_DOCUMENTS);
+void LoadData() {
+  String appDocDirectory = "storage/emulated/0/Music";
   File(appDocDirectory + '/songs.json')
       .create(recursive: true)
       .then((File file) {
