@@ -50,6 +50,7 @@ class _MainSite extends State<MainSite> {
 
   @override
   Widget build(BuildContext context) {
+    CFG.UpdateAllTags();
     return MaterialApp(
       home: SafeArea(
         child: Scaffold(
@@ -106,11 +107,9 @@ class _MainSite extends State<MainSite> {
                     ),
                   )
                 ] else if (side == 2) ...[
-                  for (String i in CFG.UnsortedSongs.keys)
-                    Song.SongInfo(
-                      s: CFG.UnsortedSongs[i],
-                      c: update,
-                    ),
+                  for (String i in CFG.Songs.keys)
+                    if (!CFG.Songs[i].hastags)
+                      Song.SongInfo(s: CFG.Songs[i], c: update),
                 ]
               ],
             ),

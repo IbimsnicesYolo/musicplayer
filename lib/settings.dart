@@ -8,7 +8,6 @@ final Color HomeColor = Color.fromRGBO(100, 255, 0, 255);
 final Color ContrastColor = Color.fromRGBO(0, 0, 0, 100);
 
 Map Songs = {};
-Map UnsortedSongs = {};
 Map Tags = {};
 
 Future<void> ShowSth(String info, context) async {
@@ -47,11 +46,8 @@ void LoadData() async {
       if (contents.isNotEmpty) {
         jsonDecode(contents).forEach((key, value) {
           Song currentsong = Song.fromJson(value); // TODO: Check if file exists
-          if (currentsong.tags.isEmpty) {
-            UnsortedSongs[key] = currentsong;
-          } else {
-            Songs[key] = currentsong;
-          }
+
+          Songs[key] = currentsong;
         });
       }
     });
@@ -79,6 +75,7 @@ class Song {
   String filename = "";
   String title = "Song Title";
   String interpret = "Song Interpret";
+  bool hastags = false;
   List tags = [];
   Song(this.path);
   Info() {
@@ -95,19 +92,21 @@ class Song {
         filename = json['f'],
         title = json['t'],
         interpret = json['i'],
+        hastags = json['h'],
         tags = json['ta'];
   Map<String, dynamic> toJson(Song value) => {
         'p': value.path,
         'f': value.filename,
         't': value.title,
         'i': value.interpret,
+        'h': value.hastags,
         'ta': value.tags
       };
 }
 
 bool CreateSong(path) {
   String filename = path.split("/").last;
-  if (Songs.containsKey(filename) || UnsortedSongs.containsKey(filename)) {
+  if (Songs.containsKey(filename)) {
     return false;
   }
   String interpret =
@@ -126,33 +125,37 @@ bool CreateSong(path) {
   newsong.title = title;
   newsong.filename = filename;
   newsong.interpret = interpret;
-  UnsortedSongs[filename] = newsong;
+  Songs[filename] = newsong;
   return true;
 }
 
-void UpdateSongInterpret(Song s, String newtitle) {
-  s.interpret = newtitle;
+void UpdateSongInterpret(String key, String newtitle) {
+  Songs[key].interpret = newtitle;
   SaveSongs();
 }
 
-void UpdateSongTitle(Song s, String newtitle) {
-  s.title = newtitle;
+void UpdateSongTitle(String key, String newtitle) {
+  Songs[key].title = newtitle;
   SaveSongs();
 }
 
-void UpdateSongTags(Song s, List newtags) {
-  s.tags = newtags;
-  SaveSongs();
+void UpdateSongTags(String key, List newtags, List oldtags) {
+  Songs[key].tags = newtags;
+
+  if (oldtags.isEmpty || newtags.isEmpty) {
+    Songs[key].hastags = false;
+  } else {
+    Songs[key].hastags = true;
+  }
   UpdateAllTags();
+  SaveSongs();
 }
 
 void DeleteSong(Song s) {
   if (Songs.containsKey(s.filename)) {
     Songs.remove(s.filename);
   }
-  if (UnsortedSongs.containsKey(s.filename)) {
-    UnsortedSongs.remove(s.filename);
-  }
+  UpdateAllTags();
   SaveSongs();
 }
 
@@ -161,9 +164,6 @@ void SaveSongs() async {
       ExternalPath.DIRECTORY_DOCUMENTS);
   String json = "{";
   Songs.forEach((k, v) {
-    json += '"' + k + '":' + jsonEncode(v.toJson(v)) + ",";
-  });
-  UnsortedSongs.forEach((k, v) {
     json += '"' + k + '":' + jsonEncode(v.toJson(v)) + ",";
   });
   File(appDocDirectory + '/songs.json')
@@ -175,12 +175,6 @@ void SaveSongs() async {
 // Check if file in Song path still exists
 void ValidateSongs() async {
   Songs.forEach((k, v) {
-    if (!File(v.path).existsSync()) {
-      print("Song " + v.path + " does not exist anymore!");
-      DeleteSong(v);
-    }
-  });
-  UnsortedSongs.forEach((k, v) {
     if (!File(v.path).existsSync()) {
       print("Song " + v.path + " does not exist anymore!");
       DeleteSong(v);
@@ -237,6 +231,7 @@ void SaveTags() async {
   LoadData();
 }
 
+// TODO rework this using the Song Function for Tag Editing
 void DeleteTag(Tag t) {
   Tags.remove(t.id);
   Songs.forEach(
@@ -263,17 +258,14 @@ void UpdateAllTags() {
 
 Map GetSongsFromTag(Tag T) {
   Map songs = {};
-  int songcount = 0;
 
   for (String s in Songs.keys) {
     Song so = Songs[s];
-    if (so.tags.contains(T.id)) {
-      songcount += 1;
+    List t = so.tags;
+    if (t.indexOf(T.id, 0) != -1) {
       songs[so.filename] = so;
     }
   }
-
-  Tags[T.id].used = songcount;
   return songs;
 }
 
@@ -282,17 +274,29 @@ class CurrentPlayList {
   List<Song> songs = [];
   int last_added_pos = 0;
   void AddToPlaylist(Song song) {
-    songs.add(song);
+    if (!songs.contains(song)) {
+      songs.add(song);
+    }
   }
 
   void PlayNext(Song song) {
     last_added_pos = 0;
-    songs.insert(0, song);
+    if (!songs.contains(song)) {
+      songs.insert(0, song);
+    } else {
+      songs.remove(song);
+      songs.insert(0, song);
+    }
   }
 
   void PlayAfterLastAdded(Song song) {
-    songs.insert(last_added_pos, song);
     last_added_pos += 1;
+    if (!songs.contains(song)) {
+      songs.insert(last_added_pos, song);
+    } else {
+      songs.remove(song);
+      songs.insert(last_added_pos, song);
+    }
   }
 
   void Shuffle() {

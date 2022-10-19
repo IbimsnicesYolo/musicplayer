@@ -62,7 +62,7 @@ class SongInfo extends ListTile {
             "Save",
             "Cancel",
             (String si) {
-              CFG.UpdateSongTitle(s, si);
+              CFG.UpdateSongTitle(s.filename, si);
               c();
             },
             (String si) {},
@@ -77,7 +77,7 @@ class SongInfo extends ListTile {
             "Save",
             "Cancel",
             (String si) {
-              CFG.UpdateSongInterpret(s, si);
+              CFG.UpdateSongInterpret(s.filename, si);
               c();
             },
             (String si) {},
@@ -104,7 +104,8 @@ class SongInfo extends ListTile {
                           } else {
                             Tags.remove(t.id);
                           }
-                          CFG.UpdateSongTags(s, Tags);
+                          if (Tags == s.tags) print("No Change");
+                          CFG.UpdateSongTags(s.filename, Tags, s.tags);
                         }, t.name),
                     ],
                   ),
