@@ -8,6 +8,11 @@ Future<void> SearchPaths(context) async {
   List<String> path = await ExternalPath.getExternalStorageDirectories();
   path.add(await ExternalPath.getExternalStoragePublicDirectory(
       ExternalPath.DIRECTORY_DOCUMENTS));
+  path.add("storage/emulated/0");
+  path.add("storage/emulated/0/Music");
+  path.add("Music/sup");
+  path.add("storage/emulated/0/Download");
+  path.add("Music/");
 
   for (var i = 0; i < path.length; i++) {
     try {
