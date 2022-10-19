@@ -34,13 +34,16 @@ class _SearchPageState extends State<SearchPage> {
             backgroundColor: CFG.HomeColor,
             // The search area here
             title: Container(
-              width: double.infinity,
               height: 40,
               decoration: BoxDecoration(
                   color: CFG.ContrastColor,
                   borderRadius: BorderRadius.circular(5)),
               child: Center(
                 child: TextField(
+                  onEditingComplete: () {
+                    this.searchtext = myController.text;
+                    setState(() {});
+                  },
                   controller: myController,
                   decoration: InputDecoration(
                       prefixIcon: IconButton(
@@ -52,8 +55,8 @@ class _SearchPageState extends State<SearchPage> {
                       suffixIcon: IconButton(
                         icon: const Icon(Icons.search),
                         onPressed: () {
-                          setState(() {});
                           this.searchtext = myController.text;
+                          setState(() {});
                         },
                       ),
                       hintText: 'Search...',
@@ -64,7 +67,7 @@ class _SearchPageState extends State<SearchPage> {
         body: Container(
           child: ListView(
             children: [
-              if (list.length != 0)
+              if (list.length != 0) ...[
                 for (var i in list.keys)
                   if (list[i]
                           .title
@@ -75,15 +78,16 @@ class _SearchPageState extends State<SearchPage> {
                           .toLowerCase()
                           .contains(this.searchtext.toLowerCase()))
                     Song.SongInfo(s: list[i], c: () => setState(() {}))
-                  else
-                    for (var i in CFG.Songs.keys)
-                      if (CFG.Songs[i].title
-                              .toLowerCase()
-                              .contains(this.searchtext.toLowerCase()) ||
-                          CFG.Songs[i].interpret
-                              .toLowerCase()
-                              .contains(this.searchtext.toLowerCase()))
-                        Song.SongInfo(s: CFG.Songs[i], c: () => setState(() {}))
+              ] else ...[
+                for (var i in CFG.Songs.keys)
+                  if (CFG.Songs[i].title
+                          .toLowerCase()
+                          .contains(this.searchtext.toLowerCase()) ||
+                      CFG.Songs[i].interpret
+                          .toLowerCase()
+                          .contains(this.searchtext.toLowerCase()))
+                    Song.SongInfo(s: CFG.Songs[i], c: () => setState(() {}))
+              ]
               // TO:Do Make Tags Searchable and show Songs sorted after Tags
             ],
           ),

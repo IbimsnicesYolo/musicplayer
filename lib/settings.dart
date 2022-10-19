@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 final Color HomeColor = Color.fromRGBO(100, 255, 0, 255);
-final Color ContrastColor = Color.fromRGBO(0, 0, 0, 100);
+final Color ContrastColor = Color.fromRGBO(0, 0, 0, 0);
 
 Map Songs = {};
 Map Tags = {};
@@ -102,7 +102,9 @@ class Song {
 }
 
 bool CreateSong(path) {
-  String filename = path.split("/").last;
+  String filename = path
+      .split("/")
+      .last; // INFO: already filters for multiple file of the same song
   if (Songs.containsKey(filename)) {
     return false;
   }
