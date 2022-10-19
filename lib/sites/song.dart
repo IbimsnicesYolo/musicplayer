@@ -201,11 +201,7 @@ class TagTile extends ListTile {
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-            PopupMenuItem(
-              child: Text(t.name),
-            ),
-            const PopupMenuDivider(),
-            const PopupMenuItem(child: Text('Edit Name'), value: 0),
+            PopupMenuItem(child: Text(t.name), value: 0),
             const PopupMenuItem(child: Text('Add Songs to Playlist'), value: 1),
             const PopupMenuItem(child: Text('Delete Tag'), value: 2),
           ],
