@@ -157,8 +157,7 @@ void DeleteSong(Song s) {
 }
 
 void SaveSongs() async {
-  String appDocDirectory = await ExternalPath.getExternalStoragePublicDirectory(
-      ExternalPath.DIRECTORY_DOCUMENTS);
+  String appDocDirectory = "storage/emulated/0/Music";
   String json = "{";
   Songs.forEach((k, v) {
     json += '"' + k + '":' + jsonEncode(v.toJson(v)) + ",";
@@ -214,8 +213,7 @@ void UpdateTagName(tag, name) {
 }
 
 void SaveTags() async {
-  String appDocDirectory = await ExternalPath.getExternalStoragePublicDirectory(
-      ExternalPath.DIRECTORY_DOCUMENTS);
+  String appDocDirectory = "storage/emulated/0/Music";
 
   String json = "{";
   Tags.forEach((k, v) {
