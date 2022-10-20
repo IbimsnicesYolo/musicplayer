@@ -66,6 +66,7 @@ class SongInfo extends ListTile {
               c();
             },
             (String si) {},
+            true,
             s.title,
           );
         }
@@ -81,6 +82,7 @@ class SongInfo extends ListTile {
               c();
             },
             (String si) {},
+            true,
             s.interpret,
           );
         }
@@ -183,6 +185,7 @@ class TagTile extends ListTile {
                   c();
                 },
                 (String s) {},
+                false,
                 t.name,
               );
             }

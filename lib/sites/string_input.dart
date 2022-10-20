@@ -10,6 +10,7 @@ void StringInput(
     String Button2,
     void Function(String) OnPressed1,
     void Function(String) OnPressed2,
+    bool clearbutton,
     String value) {
   TextEditingController _textFieldController = TextEditingController();
   _textFieldController.text = value;
@@ -24,6 +25,19 @@ void StringInput(
           decoration: InputDecoration(hintText: "Tag Name"),
         ),
         actions: <Widget>[
+          if (clearbutton)
+            TextButton(
+              style: TextButton.styleFrom(
+                primary: Colors.white,
+                backgroundColor: Colors.lightGreenAccent,
+              ),
+              child: const Text("Strip ()"),
+              // replace all () with ""
+              onPressed: () {
+                _textFieldController.text =
+                    _textFieldController.text.replaceAll(RegExp(r"\(.*\)"), "");
+              },
+            ),
           TextButton(
             style: TextButton.styleFrom(
               primary: Colors.white,

@@ -100,6 +100,7 @@ class _MainSite extends State<MainSite> {
                             update();
                           },
                           (String s) {},
+                          false,
                           "",
                         );
                       },
@@ -142,7 +143,7 @@ class _MainSite extends State<MainSite> {
               ),
             ],
           ),
-          drawer: Side.SongDrawer(),
+          drawer: Side.SongDrawer(c: update),
         ),
       ),
     );

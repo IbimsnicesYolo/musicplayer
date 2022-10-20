@@ -36,8 +36,10 @@ void SearchPaths(context) {
 class SongDrawer extends Drawer {
   const SongDrawer({
     Key? key,
+    required this.c,
   }) : super(key: key);
 
+  final void Function() c;
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -58,12 +60,14 @@ class SongDrawer extends Drawer {
                         child: const Text("Search for new Songs"),
                         onPressed: () {
                           SearchPaths(context);
+                          c();
                         }),
                     TextButton(
                       child: const Text("Open Settings"),
                       onPressed: () {
                         CFG.ShowSth("Pressed Settings", context);
                         // open settings page...
+                        c();
                       },
                     ),
                   ],
