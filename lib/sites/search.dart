@@ -96,3 +96,82 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 }
+
+class SearchPageT extends StatefulWidget {
+  SearchPageT(this.songs, {Key? key}) : super(key: key);
+
+  Map<dynamic, dynamic> songs;
+
+  @override
+  State<SearchPageT> createState() => _SearchPageStateT(list: songs);
+}
+
+class _SearchPageStateT extends State<SearchPageT> {
+  _SearchPageStateT({required this.list});
+  final myController = TextEditingController();
+  final list;
+
+  String searchtext = "";
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    super.dispose();
+    myController.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+            backgroundColor: CFG.HomeColor,
+            // The search area here
+            title: Container(
+              height: 40,
+              decoration: BoxDecoration(
+                  color: CFG.ContrastColor,
+                  borderRadius: BorderRadius.circular(5)),
+              child: Center(
+                child: TextField(
+                  onEditingComplete: () {
+                    this.searchtext = myController.text;
+                    setState(() {});
+                  },
+                  controller: myController,
+                  decoration: InputDecoration(
+                      prefixIcon: IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          myController.clear();
+                        },
+                      ),
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.search),
+                        onPressed: () {
+                          this.searchtext = myController.text;
+                          setState(() {});
+                        },
+                      ),
+                      hintText: 'Search...',
+                      border: InputBorder.none),
+                ),
+              ),
+            )),
+        body: Container(
+          child: ListView(
+            children: [
+              if (list.length != 0)
+                for (var i in list.keys)
+                  if (list[i]
+                      .name
+                      .toLowerCase()
+                      .contains(this.searchtext.toLowerCase()))
+                    Song.TagTile(t: CFG.Tags[i], c: () => setState(() {})),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

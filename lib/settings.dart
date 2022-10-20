@@ -311,6 +311,10 @@ class CurrentPlayList {
     }
   }
 
+  void RemoveSong(Song song) {
+    songs.remove(song);
+  }
+
   void Shuffle() {
     songs.shuffle();
   }
