@@ -3,8 +3,8 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 
-const Color HomeColor = Color.fromRGBO(100, 255, 0, 255);
-const Color ContrastColor = Color.fromRGBO(0, 0, 0, 255);
+const Color HomeColor = Color.fromRGBO(61, 61, 61, 255);
+const Color ContrastColor = Color.fromRGBO(0, 255, 75, 255);
 
 Map Songs = {};
 Map Tags = {};
@@ -161,12 +161,19 @@ void DeleteSong(Song s) {
 void SaveSongs() {
   String appDocDirectory = "storage/emulated/0/Music";
   String json = "{";
+  bool nosongsfound = true;
   Songs.forEach((k, v) {
+    nosongsfound = false;
     json += '"' + k + '":' + jsonEncode(v.toJson(v)) + ",";
   });
-  File(appDocDirectory + '/songs.json')
-      .writeAsString(json.substring(0, json.length - 1) + "}");
-  // remove last comma, close json
+
+  if (nosongsfound) {
+    json = "{}";
+  } else {
+    json = json.substring(0, json.length - 1) + "}";
+    // remove last comma, close json
+  }
+  File(appDocDirectory + '/songs.json').writeAsString(json);
   LoadData();
 }
 
@@ -196,13 +203,9 @@ class Tag {
 }
 
 void CreateTag(name) {
-  if (Tags.containsKey(name)) {
-    print("Trying to create existing Tag!");
-    return;
-  }
   int newid = 0;
   for (var i = 0; i < Tags.length; i++) {
-    if (Tags[i].id > newid) {
+    if (Tags.containsKey(i) && Tags[i].id == newid) {
       newid = i + 1;
     }
   }
@@ -223,13 +226,20 @@ void SaveTags() {
   String appDocDirectory = "storage/emulated/0/Music";
 
   String json = "{";
+  bool notagsexisting = true;
+
   Tags.forEach((k, v) {
+    notagsexisting = false;
     json += '"' + k.toString() + '":' + jsonEncode(v.toJson(v)) + ",";
   });
 
-  File(appDocDirectory + '/tags.json').writeAsString(
-      json.substring(0, json.length - 1) +
-          "}"); // remove last comma, close json
+  if (notagsexisting) {
+    json = "{}";
+  } else {
+    json = json.substring(0, json.length - 1) + "}";
+    // remove last comma, close json
+  }
+  File(appDocDirectory + '/tags.json').writeAsString(json);
   LoadData();
 }
 

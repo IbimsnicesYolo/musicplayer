@@ -52,6 +52,7 @@ class _MainSite extends State<MainSite> {
   Widget build(BuildContext context) {
     CFG.UpdateAllTags();
     return MaterialApp(
+      theme: ThemeData.dark(),
       home: SafeArea(
         child: Scaffold(
           appBar: AppBar(
@@ -62,7 +63,6 @@ class _MainSite extends State<MainSite> {
                       builder: (_) => SearchPage.SearchPage(CFG.Songs))),
                   icon: const Icon(Icons.search))
             ],
-            backgroundColor: CFG.HomeColor,
           ),
           body: Container(
             child: ListView(

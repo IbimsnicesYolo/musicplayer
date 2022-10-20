@@ -90,11 +90,9 @@ class SongInfo extends ListTile {
             builder: (BuildContext context) {
               return Container(
                 height: MediaQuery.of(context).size.height / 2,
-                color: Colors.lightGreenAccent,
+                color: CFG.HomeColor,
                 child: Center(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       for (CFG.Tag t in CFG.Tags.values)
                         CoolerCheckBox(s.tags.contains(t.id), (bool? b) {
@@ -104,7 +102,6 @@ class SongInfo extends ListTile {
                           } else {
                             Tags.remove(t.id);
                           }
-                          if (Tags == s.tags) print("No Change");
                           CFG.UpdateSongTags(s.filename, Tags, s.tags);
                         }, t.name),
                     ],
@@ -253,8 +250,10 @@ class _CoolerCheckBox extends State<CoolerCheckBox> {
     }
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Checkbox(
+          splashRadius: 200,
           checkColor: Colors.white,
           fillColor: MaterialStateProperty.resolveWith(getColor),
           value: isChecked,
