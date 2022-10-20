@@ -43,6 +43,7 @@ class SongDrawer extends Drawer {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      backgroundColor: CFG.HomeColor,
       // column holds all the widgets in the drawer
       child: Column(
         children: <Widget>[

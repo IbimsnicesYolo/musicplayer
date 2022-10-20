@@ -49,7 +49,9 @@ class _SearchPageState extends State<SearchPage> {
                       prefixIcon: IconButton(
                         icon: const Icon(Icons.clear),
                         onPressed: () {
-                          myController.clear();
+                          if (myController.text != "") {
+                            myController.clear();
+                          }
                         },
                       ),
                       suffixIcon: IconButton(

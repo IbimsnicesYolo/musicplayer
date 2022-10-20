@@ -16,6 +16,7 @@ class SongPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData.dark(),
       home: SafeArea(
         child: Scaffold(
           appBar: AppBar(

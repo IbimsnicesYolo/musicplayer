@@ -73,7 +73,9 @@ class _MainSite extends State<MainSite> {
 // Navigate to the Search Screen
             IconButton(
                 onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => SearchPage.SearchPage(CFG.Songs))),
+                    builder: (_) => MaterialApp(
+                        theme: ThemeData.dark(),
+                        home: SearchPage.SearchPage(CFG.Songs)))),
                 icon: const Icon(Icons.search))
           ],
         ),
@@ -138,7 +140,9 @@ class _MainSite extends State<MainSite> {
 // Navigate to the Search Screen
             IconButton(
                 onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => SearchPage.SearchPageT(CFG.Tags))),
+                    builder: (_) => MaterialApp(
+                        theme: ThemeData.dark(),
+                        home: SearchPage.SearchPageT(CFG.Tags)))),
                 icon: const Icon(Icons.search))
           ],
         ),
@@ -212,7 +216,9 @@ class _MainSite extends State<MainSite> {
             // Navigate to the Search Screen
             IconButton(
                 onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => SearchPage.SearchPage(CFG.Songs))),
+                    builder: (_) => MaterialApp(
+                        theme: ThemeData.dark(),
+                        home: SearchPage.SearchPage(CFG.Songs)))),
                 icon: const Icon(Icons.search))
           ],
         ),
