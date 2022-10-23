@@ -40,8 +40,8 @@ class _SearchPageState extends State<SearchPage> {
                   borderRadius: BorderRadius.circular(5)),
               child: Center(
                 child: TextField(
-                  onEditingComplete: () {
-                    this.searchtext = myController.text;
+                  onChanged: (searchtext) {
+                    this.searchtext = searchtext;
                     setState(() {});
                   },
                   controller: myController,
@@ -136,8 +136,8 @@ class _SearchPageStateT extends State<SearchPageT> {
                   borderRadius: BorderRadius.circular(5)),
               child: Center(
                 child: TextField(
-                  onEditingComplete: () {
-                    this.searchtext = myController.text;
+                  onChanged: (searchtext) {
+                    this.searchtext = searchtext;
                     setState(() {});
                   },
                   controller: myController,
