@@ -8,6 +8,14 @@ const Color ContrastColor = Color.fromRGBO(0, 255, 75, 255);
 
 Map Songs = {};
 Map Tags = {};
+Map Config = {
+  "HomeColor": HomeColor.value,
+  "ContrastColor": ContrastColor.value,
+  "SearchPaths": ["storage/emulated/0/Music", "storage/emulated/0/Download"],
+  "Playlist": [],
+  "SwipeAction1": "Add to Playlist Stack", // or Play Next, Delete
+  "SwipeAction2": "Remove from Playlist", // or Add to Playlist Stack, Play Next
+};
 
 Future<void> ShowSth(String info, context) {
   return showDialog<void>(
@@ -36,6 +44,23 @@ Future<void> ShowSth(String info, context) {
 
 void LoadData() {
   String appDocDirectory = "storage/emulated/0/Music";
+
+  print(Config);
+  // Load Config
+  File(appDocDirectory + '/config.json')
+      .create(recursive: true)
+      .then((File file) {
+    file.readAsString().then((String contents) {
+      if (contents.isNotEmpty) {
+        jsonDecode(contents).forEach((key, value) {
+          Config[key] = value;
+        });
+      }
+    });
+  });
+  print(Config);
+
+  // Load Songs
   File(appDocDirectory + '/songs.json')
       .create(recursive: true)
       .then((File file) {
@@ -51,6 +76,7 @@ void LoadData() {
   });
   ValidateSongs();
 
+  // Load Tags
   File(appDocDirectory + '/tags.json')
       .create(recursive: true)
       .then((File file) {
@@ -64,6 +90,17 @@ void LoadData() {
     });
   });
   UpdateAllTags();
+}
+
+/* Config */
+void SaveConfig() {
+  Config["Playlist"] = CurrList.Save();
+  String appDocDirectory = "storage/emulated/0/Music";
+  File(appDocDirectory + '/config.json')
+      .create(recursive: true)
+      .then((File file) {
+    file.writeAsString(jsonEncode(Config));
+  });
 }
 
 /* Songs */
@@ -285,10 +322,15 @@ Map GetSongsFromTag(Tag T) {
 class CurrentPlayList {
   List<Song> songs = [];
   int last_added_pos = 0;
+
   void AddToPlaylist(Song song) {
-    if (!songs.contains(song)) {
-      songs.add(song);
+    for (int i = 0; i < songs.length; i++) {
+      if (songs[i].filename == song.filename) {
+        return;
+      }
     }
+    songs.add(song);
+    Config["Playlist"] = this.Save();
   }
 
   void PlayNext(Song song) {
@@ -299,6 +341,7 @@ class CurrentPlayList {
       songs.remove(song);
       songs.insert(0, song);
     }
+    Config["Playlist"] = this.Save();
   }
 
   void PlayAfterLastAdded(Song song) {
@@ -309,14 +352,36 @@ class CurrentPlayList {
       songs.remove(song);
       songs.insert(last_added_pos, song);
     }
+    Config["Playlist"] = this.Save();
   }
 
   void RemoveSong(Song song) {
     songs.remove(song);
+    Config["Playlist"] = this.Save();
   }
 
   void Shuffle() {
     songs.shuffle();
+    Config["Playlist"] = this.Save();
+  }
+
+  List<String> Save() {
+    List<String> names = [];
+    this.songs.forEach((element) {
+      names.add(element.filename);
+    });
+    return names;
+  }
+
+  void LoadPlaylist() {
+    List savedsongs = Config["Playlist"];
+    if (savedsongs.isNotEmpty) {
+      savedsongs.forEach((element) {
+        if (Songs.containsKey(element)) {
+          this.AddToPlaylist(Songs[element]);
+        }
+      });
+    }
   }
 }
 

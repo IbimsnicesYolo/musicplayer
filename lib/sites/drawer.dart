@@ -33,6 +33,31 @@ void SearchPaths(context) {
   }
 }
 
+void ShowConfig(context, void Function() update) {
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (_) => AlertDialog(
+        title: Text("Config"),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              for (var key in CFG.Config.keys)
+                Text("$key: " + CFG.Config["$key"].toString()),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    update();
+                    CFG.SaveConfig();
+                  },
+                  child: Text("Close"))
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
 class SongDrawer extends Drawer {
   const SongDrawer({
     Key? key,
@@ -66,9 +91,7 @@ class SongDrawer extends Drawer {
                     TextButton(
                       child: const Text("Open Settings"),
                       onPressed: () {
-                        CFG.ShowSth("Pressed Settings", context);
-                        // open settings page...
-                        c();
+                        ShowConfig(context, c);
                       },
                     ),
                   ],

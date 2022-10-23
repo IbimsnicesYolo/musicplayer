@@ -33,10 +33,12 @@ class _MainSite extends State<MainSite> {
   void initState() {
     super.initState();
     CFG.LoadData();
+    Playlist.LoadPlaylist();
   }
 
   @override
   void dispose() {
+    CFG.SaveConfig();
     super.dispose();
   }
 
@@ -66,6 +68,7 @@ class _MainSite extends State<MainSite> {
   }
 
   SafeArea buildPlaylist(BuildContext context) {
+    Playlist.LoadPlaylist();
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
