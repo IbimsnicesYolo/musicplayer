@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import "../settings.dart" as CFG;
+import '../../settings.dart' as CFG;
 import 'dart:io';
 
 void SearchPaths(context) {

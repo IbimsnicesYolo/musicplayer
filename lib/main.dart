@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import "package:permission_handler/permission_handler.dart";
 import "settings.dart" as CFG;
-import "sites/drawer.dart" as Side;
-import "sites/search.dart" as SearchPage;
+import 'sites/components/drawer.dart' as Side;
+import 'sites/components/search.dart' as SearchPage;
 import "sites/song.dart" as Song;
-import "sites/string_input.dart" as SInput;
+import 'sites/components/string_input.dart' as SInput;
 
 void checkpermissions() async {
   PermissionStatus status = await Permission.storage.status;
@@ -149,7 +149,7 @@ class _MainSite extends State<MainSite> {
                 onPressed: () => Navigator.of(context).push(MaterialPageRoute(
                     builder: (_) => MaterialApp(
                         theme: ThemeData.dark(),
-                        home: SearchPage.SearchPageT(CFG.Tags)))),
+                        home: SearchPage.SearchPage(CFG.Tags)))),
                 icon: const Icon(Icons.search))
           ],
         ),
@@ -186,6 +186,7 @@ class _MainSite extends State<MainSite> {
           child: Icon(Icons.downloading),
           onPressed: () {
             CFG.UpdateAllTags();
+
             setState(() {});
           },
         ),

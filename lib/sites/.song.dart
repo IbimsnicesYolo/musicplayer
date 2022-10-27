@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import "../settings.dart" as CFG;
-import "search.dart" as SearchPage;
-import "string_input.dart" as SInput;
+import 'components/search.dart' as SearchPage;
+import 'components/string_input.dart' as SInput;
 
 class SongPage extends StatelessWidget {
   SongPage({
