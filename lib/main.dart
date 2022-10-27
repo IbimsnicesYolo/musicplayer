@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import "package:permission_handler/permission_handler.dart";
+import "sites/components/drawer.dart" as Side;
 import "settings.dart" as CFG;
-import 'sites/components/drawer.dart' as Side;
-import 'sites/components/search.dart' as SearchPage;
-import "sites/song.dart" as Song;
-import 'sites/components/string_input.dart' as SInput;
+import "sites/playlist.dart" as PlaylistSide;
+import "sites/tagsite.dart" as TagSite;
+import "sites/unsortedsongs.dart" as USongs;
 
 void checkpermissions() async {
   PermissionStatus status = await Permission.storage.status;
@@ -34,8 +34,7 @@ class _MainSite extends State<MainSite> {
 
   @override
   void initState() {
-    CFG.LoadData();
-    Playlist.LoadPlaylist();
+    CFG.LoadData(update);
     super.initState();
   }
 
@@ -51,6 +50,8 @@ class _MainSite extends State<MainSite> {
 
   @override
   Widget build(BuildContext context) {
+    CFG.LoadData(update);
+    Playlist.LoadPlaylist(update);
     return MaterialApp(
       theme: ThemeData.dark(),
       home: buildSafeArea(context, side),
@@ -58,188 +59,20 @@ class _MainSite extends State<MainSite> {
   }
 
   SafeArea buildSafeArea(BuildContext context, side) {
-    CFG.LoadData();
-    Playlist.LoadPlaylist();
-    if (side == 1) {
-      return buildTaglist(context);
-    } else if (side == 2) {
-      return buildSongList(context);
-    }
-
-    return buildPlaylist(context);
-  }
-
-  SafeArea buildPlaylist(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           actions: [
-            // Navigate to the Search Screen
-            IconButton(
-                onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => MaterialApp(
-                          theme: ThemeData.dark(),
-                          home: SearchPage.SearchPage(CFG.Songs),
-                        ),
-                      ),
-                    ),
-                icon: const Icon(Icons.search))
+            if (side == 0) PlaylistSide.buildActions(context, Playlist),
+            if (side == 1) TagSite.buildActions(context),
+            if (side == 2) USongs.buildActions(context),
           ],
         ),
-        body: Container(
-          child: ListView(
-            children: [
-              if (!this.Playlist.songs.isEmpty) ...[
-                for (var i in this.Playlist.songs)
-                  Song.SongInfo(s: i, c: update),
-              ] else ...[
-                const Align(
-                  alignment: Alignment.center,
-                  heightFactor: 10,
-                  child: Text(
-                    'No Current Playlist',
-                    style: TextStyle(color: Colors.black, fontSize: 30),
-                  ),
-                ),
-              ]
-            ],
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.downloading),
-          onPressed: () {
-            setState(() {});
-          },
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: this.side,
-          onTap: (int index) {
-            setState(() {
-              this.side = index;
-            });
-          },
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.play_arrow),
-              label: "Current Playlist",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.tag),
-              label: "All Tags",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.fiber_new_outlined),
-              label: "Unsorted Songs",
-            ),
-          ],
-        ),
-        drawer: Side.SongDrawer(c: update),
-      ),
-    );
-  }
-
-  SafeArea buildTaglist(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          actions: [
-// Navigate to the Search Screen
-            IconButton(
-                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => MaterialApp(
-                        theme: ThemeData.dark(),
-                        home: SearchPage.SearchPage(CFG.Tags)))),
-                icon: const Icon(Icons.search))
-          ],
-        ),
-        body: Container(
-          child: ListView(
-            children: [
-              for (var i in CFG.Tags.keys)
-                Song.TagTile(t: CFG.Tags[i], c: update),
-              Align(
-                alignment: AlignmentDirectional.bottomCenter,
-                child: ElevatedButton(
-                  onPressed: () {
-                    SInput.StringInput(
-                      context,
-                      "Create new Tag",
-                      "Create",
-                      "Cancel",
-                      (String s) {
-                        CFG.CreateTag(s);
-                        update();
-                      },
-                      (String s) {},
-                      false,
-                      "",
-                    );
-                  },
-                  child: const Text('Add Tag'),
-                ),
-              )
-            ],
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.downloading),
-          onPressed: () {
-            CFG.UpdateAllTags();
-
-            setState(() {});
-          },
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: this.side,
-          onTap: (int index) {
-            setState(() {
-              this.side = index;
-            });
-          },
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.play_arrow),
-              label: "Current Playlist",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.tag),
-              label: "All Tags",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.fiber_new_outlined),
-              label: "Unsorted Songs",
-            ),
-          ],
-        ),
-        drawer: Side.SongDrawer(c: update),
-      ),
-    );
-  }
-
-  SafeArea buildSongList(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          actions: [
-            // Navigate to the Search Screen
-            IconButton(
-                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => MaterialApp(
-                        theme: ThemeData.dark(),
-                        home: SearchPage.SearchPage(CFG.Songs)))),
-                icon: const Icon(Icons.search))
-          ],
-        ),
-        body: Container(
-          child: ListView(
-            children: [
-              for (String i in CFG.Songs.keys)
-                if (!CFG.Songs[i].hastags)
-                  Song.SongInfo(s: CFG.Songs[i], c: update),
-            ],
-          ),
-        ),
+        body: (side == 0
+            ? PlaylistSide.buildContent(update, context, Playlist)
+            : (side == 1
+                ? TagSite.buildContent(update, context)
+                : USongs.buildContent(update, context))),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.downloading),
           onPressed: () {

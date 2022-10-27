@@ -51,7 +51,7 @@ Future<void> ShowSth(String info, context) {
   );
 }
 
-void LoadData() {
+void LoadData(void Function() reload) {
   String appDocDirectory = "storage/emulated/0/Music";
 
   // Load Config
@@ -64,9 +64,9 @@ void LoadData() {
           Config[key] = value;
         });
       }
+      reload();
     });
   });
-
   if (Songs.isEmpty) {
     // Load Songs
     File(appDocDirectory + '/songs.json')
@@ -76,10 +76,10 @@ void LoadData() {
         if (contents.isNotEmpty) {
           jsonDecode(contents).forEach((key, value) {
             Song currentsong = Song.fromJson(value);
-
             Songs[key] = currentsong;
           });
         }
+        reload();
       });
     });
     ValidateSongs();
@@ -97,6 +97,7 @@ void LoadData() {
             Tags[currenttag.id] = currenttag;
           });
         }
+        reload();
       });
     });
     UpdateAllTags();
@@ -346,7 +347,7 @@ class CurrentPlayList {
       }
     }
     songs.add(song);
-    Config["Playlist"] = this.Save();
+    Config["Playlist"] = Save();
   }
 
   void PlayNext(Song song) {
@@ -357,7 +358,7 @@ class CurrentPlayList {
       songs.remove(song);
       songs.insert(0, song);
     }
-    Config["Playlist"] = this.Save();
+    Config["Playlist"] = Save();
   }
 
   void PlayAfterLastAdded(Song song) {
@@ -368,36 +369,37 @@ class CurrentPlayList {
       songs.remove(song);
       songs.insert(last_added_pos, song);
     }
-    Config["Playlist"] = this.Save();
+    Config["Playlist"] = Save();
   }
 
   void RemoveSong(Song song) {
     songs.remove(song);
-    Config["Playlist"] = this.Save();
+    Config["Playlist"] = Save();
   }
 
   void Shuffle() {
     songs.shuffle();
-    Config["Playlist"] = this.Save();
+    Config["Playlist"] = Save();
   }
 
   List<String> Save() {
     List<String> names = [];
-    this.songs.forEach((element) {
+    songs.forEach((element) {
       names.add(element.filename);
     });
     return names;
   }
 
-  void LoadPlaylist() {
+  void LoadPlaylist(void Function() reload) {
     List savedsongs = Config["Playlist"];
     if (savedsongs.isNotEmpty) {
       savedsongs.forEach((element) {
         if (Songs.containsKey(element)) {
-          this.AddToPlaylist(Songs[element]);
+          AddToPlaylist(Songs[element]);
         }
       });
     }
+    reload();
   }
 }
 
