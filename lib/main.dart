@@ -76,10 +76,14 @@ class _MainSite extends State<MainSite> {
           actions: [
             // Navigate to the Search Screen
             IconButton(
-                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => MaterialApp(
-                        theme: ThemeData.dark(),
-                        home: SearchPage.SearchPage(CFG.Songs)))),
+                onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => MaterialApp(
+                          theme: ThemeData.dark(),
+                          home: SearchPage.SearchPage(CFG.Songs),
+                        ),
+                      ),
+                    ),
                 icon: const Icon(Icons.search))
           ],
         ),
@@ -181,6 +185,7 @@ class _MainSite extends State<MainSite> {
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.downloading),
           onPressed: () {
+            CFG.UpdateAllTags();
             setState(() {});
           },
         ),

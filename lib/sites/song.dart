@@ -99,13 +99,7 @@ class SongInfo extends ListTile {
                     children: <Widget>[
                       for (CFG.Tag t in CFG.Tags.values)
                         CoolerCheckBox(s.tags.contains(t.id), (bool? b) {
-                          List Tags = s.tags;
-                          if (b!) {
-                            Tags.add(t.id);
-                          } else {
-                            Tags.remove(t.id);
-                          }
-                          CFG.UpdateSongTags(s.filename, Tags, s.tags);
+                          CFG.UpdateSongTags(s.filename, t.id, b);
                         }, t.name),
                     ],
                   ),
@@ -169,8 +163,14 @@ class TagTile extends ListTile {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      onLongPress: () => Navigator.of(context).push(MaterialPageRoute(
-          builder: (_) => SongPage(songs: CFG.GetSongsFromTag(t), c: c))),
+      onLongPress: () => {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => SongPage(songs: CFG.GetSongsFromTag(t), c: c),
+          ),
+        ),
+        c(),
+      },
       trailing: Row(mainAxisSize: MainAxisSize.min, children: [
         PopupMenuButton(
           onSelected: (result) {

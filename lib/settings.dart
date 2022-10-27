@@ -105,8 +105,6 @@ void LoadData() {
 
 /* Config */
 void SaveConfig() {
-  SaveSongs();
-  SaveTags();
   Config["Playlist"] = CurrList.Save();
   String appDocDirectory = "storage/emulated/0/Music";
   File(appDocDirectory + '/config.json')
@@ -189,26 +187,16 @@ void UpdateSongTitle(String key, String newtitle) {
   SaveSongs();
 }
 
-void UpdateSongTags(String key, List newtags, List oldtags) {
-  if (oldtags.isEmpty || newtags.isEmpty) {
-    Songs[key].hastags = false;
+void UpdateSongTags(String key, int Tagid, bool? add) {
+  if (add != null && add) {
+    Songs[key].tags.add(Tagid);
+    Tags[Tagid].used += 1;
   } else {
-    Songs[key].hastags = true;
+    Songs[key].tags.remove(Tagid);
+    Tags[Tagid].used -= 1;
   }
 
-  oldtags.forEach((element) {
-    Tags[element].used -= 1;
-  });
-
-  newtags.forEach((element) {
-    Tags[element].used += 1;
-    print("TagID: " +
-        element.toString() +
-        " used: " +
-        Tags[element].used.toString());
-  });
-
-  Songs[key].tags = newtags;
+  Songs[key].hastags = Songs[key].tags.isNotEmpty;
   SaveSongs();
 }
 
@@ -323,10 +311,13 @@ void UpdateAllTags() {
   });
   Songs.forEach((k, v) {
     v.tags.forEach((element) {
-      Tags[element].used += 1;
+      try {
+        Tags[element].used += 1;
+      } catch (e) {
+        print("Big chungus error, tag doesnt exist:" + element.toString());
+      }
     });
   });
-  SaveTags();
 }
 
 Map GetSongsFromTag(Tag T) {
@@ -339,6 +330,7 @@ Map GetSongsFromTag(Tag T) {
       songs[so.filename] = so;
     }
   }
+  T.used = songs.length;
   return songs;
 }
 
