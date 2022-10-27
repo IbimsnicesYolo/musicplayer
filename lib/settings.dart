@@ -3,32 +3,41 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 
-const Color HomeColor = Color.fromRGBO(61, 61, 61, 255);
-const Color ContrastColor = Color.fromRGBO(0, 255, 75, 255);
+Color HomeColor = Color.fromRGBO(61, 61, 61, 255);
+Color ContrastColor = Color.fromRGBO(0, 255, 75, 255);
+
+const List<String> Actions = [
+  "Remove From Playlist",
+  "Add To Playlist",
+  "Play Next",
+  "Add to Stack",
+];
 
 Map Songs = {};
 Map Tags = {};
 Map Config = {
   "HomeColor": HomeColor.value,
   "ContrastColor": ContrastColor.value,
-  "SearchPaths": ["storage/emulated/0/Music", "storage/emulated/0/Download"],
+  "SearchPaths": [
+    "storage/emulated/0/Music",
+    "storage/emulated/0/Download",
+    "C:",
+    "D:",
+    "Library"
+  ],
   "Playlist": [],
-  "SwipeAction1": "Add to Playlist Stack", // or Play Next, Delete
-  "SwipeAction2": "Remove from Playlist", // or Add to Playlist Stack, Play Next
+  "SwipeAction1": 1,
+  "SwipeAction2": 0,
 };
 
 Future<void> ShowSth(String info, context) {
   return showDialog<void>(
     context: context,
-    barrierDismissible: true, // user must tap button!
+    barrierDismissible: true,
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text(info),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[],
-          ),
-        ),
+        content: const Text(""),
         actions: <Widget>[
           TextButton(
             child: const Text('Ok'),
@@ -45,7 +54,6 @@ Future<void> ShowSth(String info, context) {
 void LoadData() {
   String appDocDirectory = "storage/emulated/0/Music";
 
-  print(Config);
   // Load Config
   File(appDocDirectory + '/config.json')
       .create(recursive: true)
@@ -58,42 +66,47 @@ void LoadData() {
       }
     });
   });
-  print(Config);
 
-  // Load Songs
-  File(appDocDirectory + '/songs.json')
-      .create(recursive: true)
-      .then((File file) {
-    file.readAsString().then((String contents) {
-      if (contents.isNotEmpty) {
-        jsonDecode(contents).forEach((key, value) {
-          Song currentsong = Song.fromJson(value); // TODO: Check if file exists
+  if (Songs.isEmpty) {
+    // Load Songs
+    File(appDocDirectory + '/songs.json')
+        .create(recursive: true)
+        .then((File file) {
+      file.readAsString().then((String contents) {
+        if (contents.isNotEmpty) {
+          jsonDecode(contents).forEach((key, value) {
+            Song currentsong = Song.fromJson(value);
 
-          Songs[key] = currentsong;
-        });
-      }
+            Songs[key] = currentsong;
+          });
+        }
+      });
     });
-  });
-  ValidateSongs();
+    ValidateSongs();
+  }
 
-  // Load Tags
-  File(appDocDirectory + '/tags.json')
-      .create(recursive: true)
-      .then((File file) {
-    file.readAsString().then((String contents) {
-      if (contents.isNotEmpty) {
-        jsonDecode(contents).forEach((key, value) {
-          Tag currenttag = Tag.fromJson(value);
-          Tags[currenttag.id] = currenttag;
-        });
-      }
+  if (Tags.isEmpty) {
+    // Load Tags
+    File(appDocDirectory + '/tags.json')
+        .create(recursive: true)
+        .then((File file) {
+      file.readAsString().then((String contents) {
+        if (contents.isNotEmpty) {
+          jsonDecode(contents).forEach((key, value) {
+            Tag currenttag = Tag.fromJson(value);
+            Tags[currenttag.id] = currenttag;
+          });
+        }
+      });
     });
-  });
-  UpdateAllTags();
+    UpdateAllTags();
+  }
 }
 
 /* Config */
 void SaveConfig() {
+  SaveSongs();
+  SaveTags();
   Config["Playlist"] = CurrList.Save();
   String appDocDirectory = "storage/emulated/0/Music";
   File(appDocDirectory + '/config.json')
@@ -139,9 +152,9 @@ class Song {
 }
 
 bool CreateSong(path) {
-  String filename = path
-      .split("/")
-      .last; // INFO: already filters for multiple file of the same song
+  String filename = path.split("/").last;
+  // INFO: already filters for multiple file of the same song
+
   if (Songs.containsKey(filename)) {
     return false;
   }
@@ -162,6 +175,7 @@ bool CreateSong(path) {
   newsong.filename = filename;
   newsong.interpret = interpret;
   Songs[filename] = newsong;
+  SaveSongs();
   return true;
 }
 
@@ -176,26 +190,39 @@ void UpdateSongTitle(String key, String newtitle) {
 }
 
 void UpdateSongTags(String key, List newtags, List oldtags) {
-  Songs[key].tags = newtags;
-
   if (oldtags.isEmpty || newtags.isEmpty) {
     Songs[key].hastags = false;
   } else {
     Songs[key].hastags = true;
   }
-  UpdateAllTags();
+
+  oldtags.forEach((element) {
+    Tags[element].used -= 1;
+  });
+
+  newtags.forEach((element) {
+    Tags[element].used += 1;
+    print("TagID: " +
+        element.toString() +
+        " used: " +
+        Tags[element].used.toString());
+  });
+
+  Songs[key].tags = newtags;
   SaveSongs();
 }
 
 void DeleteSong(Song s) {
   if (Songs.containsKey(s.filename)) {
+    for (int tagid in s.tags) {
+      Tags[tagid].used = Tags[tagid].used - 1;
+    }
     Songs.remove(s.filename);
+    SaveSongs();
   }
-  UpdateAllTags();
-  SaveSongs();
 }
 
-void SaveSongs() {
+void SaveSongs() async {
   String appDocDirectory = "storage/emulated/0/Music";
   String json = "{";
   bool nosongsfound = true;
@@ -211,7 +238,6 @@ void SaveSongs() {
     // remove last comma, close json
   }
   File(appDocDirectory + '/songs.json').writeAsString(json);
-  LoadData();
 }
 
 // Check if file in Song path still exists
@@ -259,7 +285,7 @@ void UpdateTagName(tag, name) {
   }
 }
 
-void SaveTags() {
+void SaveTags() async {
   String appDocDirectory = "storage/emulated/0/Music";
 
   String json = "{";
@@ -277,10 +303,8 @@ void SaveTags() {
     // remove last comma, close json
   }
   File(appDocDirectory + '/tags.json').writeAsString(json);
-  LoadData();
 }
 
-// TODO rework this using the Song Function for Tag Editing
 void DeleteTag(Tag t) {
   Tags.remove(t.id);
   Songs.forEach(
@@ -291,7 +315,6 @@ void DeleteTag(Tag t) {
     },
   );
   SaveTags();
-  SaveSongs();
 }
 
 void UpdateAllTags() {
@@ -303,6 +326,7 @@ void UpdateAllTags() {
       Tags[element].used += 1;
     });
   });
+  SaveTags();
 }
 
 Map GetSongsFromTag(Tag T) {

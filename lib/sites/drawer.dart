@@ -5,8 +5,9 @@ import 'dart:io';
 void SearchPaths(context) {
   int count = 0;
   List<String> path = [];
-  path.add("storage/emulated/0/Music");
-  path.add("storage/emulated/0/Download");
+  for (String p in CFG.Config["SearchPaths"]) {
+    path.add(p);
+  }
 
   for (var i = 0; i < path.length; i++) {
     try {
@@ -27,8 +28,8 @@ void SearchPaths(context) {
     }
     ;
   }
+  CFG.ShowSth("Created $count new Songs", context);
   if (count > 0) {
-    CFG.ShowSth("Created $count new Songs", context);
     CFG.SaveSongs();
   }
 }

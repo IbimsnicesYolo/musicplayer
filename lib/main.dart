@@ -29,11 +29,14 @@ class MainSite extends StatefulWidget {
 }
 
 class _MainSite extends State<MainSite> {
+  int side = 0;
+  CFG.CurrentPlayList Playlist = CFG.CurrList;
+
   @override
   void initState() {
-    super.initState();
     CFG.LoadData();
     Playlist.LoadPlaylist();
+    super.initState();
   }
 
   @override
@@ -46,13 +49,8 @@ class _MainSite extends State<MainSite> {
     setState(() {});
   }
 
-  int side = 0;
-
-  CFG.CurrentPlayList Playlist = CFG.CurrList;
-
   @override
   Widget build(BuildContext context) {
-    CFG.UpdateAllTags();
     return MaterialApp(
       theme: ThemeData.dark(),
       home: buildSafeArea(context, side),
@@ -60,20 +58,23 @@ class _MainSite extends State<MainSite> {
   }
 
   SafeArea buildSafeArea(BuildContext context, side) {
-    if (side == 1)
+    CFG.LoadData();
+    Playlist.LoadPlaylist();
+    if (side == 1) {
       return buildTaglist(context);
-    else if (side == 2) return buildSongList(context);
+    } else if (side == 2) {
+      return buildSongList(context);
+    }
 
     return buildPlaylist(context);
   }
 
   SafeArea buildPlaylist(BuildContext context) {
-    Playlist.LoadPlaylist();
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           actions: [
-// Navigate to the Search Screen
+            // Navigate to the Search Screen
             IconButton(
                 onPressed: () => Navigator.of(context).push(MaterialPageRoute(
                     builder: (_) => MaterialApp(
@@ -85,20 +86,19 @@ class _MainSite extends State<MainSite> {
         body: Container(
           child: ListView(
             children: [
-              if (side == 0)
-                if (!this.Playlist.songs.isEmpty) ...[
-                  for (var i in this.Playlist.songs)
-                    Song.SongInfo(s: i, c: update),
-                ] else ...[
-                  const Align(
-                    alignment: Alignment.center,
-                    heightFactor: 10,
-                    child: Text(
-                      'No Current Playlist',
-                      style: TextStyle(color: Colors.black, fontSize: 30),
-                    ),
+              if (!this.Playlist.songs.isEmpty) ...[
+                for (var i in this.Playlist.songs)
+                  Song.SongInfo(s: i, c: update),
+              ] else ...[
+                const Align(
+                  alignment: Alignment.center,
+                  heightFactor: 10,
+                  child: Text(
+                    'No Current Playlist',
+                    style: TextStyle(color: Colors.black, fontSize: 30),
                   ),
-                ]
+                ),
+              ]
             ],
           ),
         ),
