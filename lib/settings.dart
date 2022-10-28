@@ -120,6 +120,7 @@ class Song {
   String filename = "";
   String title = "Song Title";
   String interpret = "Song Interpret";
+  String hash = "";
   bool hastags = false;
   List tags = [];
   Song(this.path);

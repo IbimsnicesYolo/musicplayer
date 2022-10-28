@@ -68,7 +68,7 @@ class _MainSite extends State<MainSite> {
         appBar: AppBar(
           actions: [
             if (side == 0) PlaylistSide.buildActions(context, Playlist),
-            if (side == 1) TagSite.buildActions(context),
+            if (side == 1) TagSite.buildActions(context, Playlist, update),
             if (side == 2) USongs.buildActions(context),
           ],
         ),
