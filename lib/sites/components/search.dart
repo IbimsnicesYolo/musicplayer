@@ -3,19 +3,17 @@ import '../../settings.dart' as CFG;
 
 // Search Page
 class SearchPage extends StatefulWidget {
-  SearchPage(this.content, {Key? key}) : super(key: key);
+  SearchPage(this.content {Key? key}) : super(key: key);
 
   final content;
 
   @override
-  State<SearchPage> createState() => _SearchPageState(content: content);
+  State<SearchPage> createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {
-  _SearchPageState({required this.content});
 
   final myController = TextEditingController();
-  final content;
 
   String searchtext = "";
 
@@ -68,7 +66,7 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ),
             )),
-        body: content(searchtext),
+        body: widget.content(searchtext),
       ),
     );
   }

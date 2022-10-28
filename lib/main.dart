@@ -75,7 +75,7 @@ class _MainSite extends State<MainSite> {
         body: (side == 0
             ? PlaylistSide.buildContent(update, context, Playlist)
             : (side == 1
-                ? TagSite.buildContent(update, context)
+                ? TagSite.buildContent(update, context, Playlist)
                 : USongs.buildContent(context, update, Playlist))),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.downloading),

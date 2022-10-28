@@ -1,10 +1,14 @@
+import 'package:tagmusicplayer/main.dart';
 import "../settings.dart" as CFG;
 import 'package:flutter/material.dart';
 import 'components/search.dart' as SearchPage;
 import 'components/string_input.dart' as SInput;
 import 'components/checkbox.dart' as C;
 
-// TODO Implement SearchPage the right way
+// TODO Fix Button Color
+// TODO Implement SearchPage the right way at all 3 Positions
+// ( Search Tags, Search Songs in Tag, Search all songs)
+
 IconButton buildActions(BuildContext context) {
   return IconButton(
     onPressed: () => Navigator.of(context).push(
@@ -19,15 +23,77 @@ IconButton buildActions(BuildContext context) {
   );
 }
 
-// TODO Implement the Tag Tile with all functions for searching
-Container buildContent(void Function(void Function()) c, BuildContext context) {
+Container buildContent(void Function(void Function()) c, BuildContext context,
+    CurrentPlayList Playlist) {
+  CFG.UpdateAllTags();
   return Container(
     child: ListView(
       children: [
-        for (var i in CFG.Tags.keys) Text(CFG.Tags[i].name), // <-- TODO
+        for (int key in CFG.Tags.keys)
+          ListTile(
+            onLongPress: () => {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => MaterialApp(
+                    theme: ThemeData.dark(),
+                    home: SearchPage.SearchPage(
+                      CFG.GetSongsFromTag(CFG.Tags[key]),
+                    ),
+                  ),
+                ),
+              ),
+              c(() {}),
+            },
+            trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+              PopupMenuButton(
+                onSelected: (result) {
+                  if (result == 0) {
+                    // Change Name
+                    SInput.StringInput(
+                      context,
+                      "Rename Tag",
+                      "Save",
+                      "Cancel",
+                      (String s) {
+                        CFG.UpdateTagName(CFG.Tags[key].id, s);
+                        c(() {});
+                      },
+                      (String s) {},
+                      false,
+                      CFG.Tags[key].name,
+                    );
+                  }
+                  if (result == 1) {
+                    CFG.GetSongsFromTag(CFG.Tags[key]).forEach((key, value) {
+                      Playlist.AddToPlaylist(value);
+                    });
+                  }
+                  if (result == 2) {
+                    // Delete
+                    CFG.DeleteTag(CFG.Tags[key]);
+                    c(() {});
+                  }
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                  PopupMenuItem(child: Text(CFG.Tags[key].name), value: 0),
+                  const PopupMenuItem(
+                      child: Text('Add Songs to Playlist'), value: 1),
+                  const PopupMenuItem(child: Text('Delete Tag'), value: 2),
+                ],
+              ),
+            ]),
+            title: Text(CFG.Tags[key].name),
+            subtitle: Text(CFG.Tags[key].used.toString()),
+          ),
         Align(
           alignment: AlignmentDirectional.bottomCenter,
           child: ElevatedButton(
+            style: ButtonStyle(
+              enableFeedback: true,
+              backgroundColor: MaterialStateProperty.resolveWith((states) {
+                return Color(CFG.Config["ContrastColor"]);
+              }),
+            ),
             onPressed: () {
               SInput.StringInput(
                 context,
@@ -43,7 +109,7 @@ Container buildContent(void Function(void Function()) c, BuildContext context) {
                 "",
               );
             },
-            child: const Text('Add Tag'),
+            child: const Text("Create new Tag"),
           ),
         )
       ],
@@ -52,6 +118,51 @@ Container buildContent(void Function(void Function()) c, BuildContext context) {
 }
 
 /*
+class SongPage extends StatefulWidget {
+  SongPage({
+    Key? key,
+    required this.songs,
+  });
+
+  final Map songs;
+
+  @override
+  State<SongPage> createState() => _SongPageState();
+}
+
+class _SongPageState extends State<SongPage> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData.dark(),
+      home: SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            actions: [
+              // Navigate to the Search Screen
+              IconButton(
+                  onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => SearchPage.SearchPage(widget.songs),
+                        ),
+                      ),
+                  icon: const Icon(Icons.search)),
+            ],
+            backgroundColor: CFG.HomeColor,
+          ),
+          body: Container(
+            child: ListView(
+              children: [
+                for (CFG.Song song in widget.songs.values) Text(song.title),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 ListView buildContent(BuildContext context, void Function(void Function()) c,
     CurrentPlayList Playlist) {
   final songs = CFG.Songs.values.toList();
@@ -82,4 +193,4 @@ ListView buildContent(BuildContext context, void Function(void Function()) c,
     },
   );
 }
- */
+*/

@@ -20,7 +20,6 @@ IconButton buildActions(BuildContext context) {
   );
 }
 
-// TODO Implemment the Song Tile right
 ListView buildContent(BuildContext context, void Function(void Function()) c,
     CurrentPlayList Playlist) {
   final songs = CFG.Songs.values.toList();
