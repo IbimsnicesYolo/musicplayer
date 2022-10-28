@@ -6,8 +6,6 @@ import 'components/string_input.dart' as SInput;
 import 'components/checkbox.dart' as C;
 
 // TODO Fix Create Tag Button Color
-// TODO Implement SearchPage the right way at all 3 Positions
-// ( Search Songs in Tag, Search all songs)
 
 IconButton buildActions(BuildContext context, CurrentPlayList Playlist,
     void Function(void Function()) c) {

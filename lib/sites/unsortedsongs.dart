@@ -22,15 +22,11 @@ IconButton buildActions(BuildContext context) {
 
 ListView buildContent(BuildContext context, void Function(void Function()) c,
     CurrentPlayList Playlist) {
-  final songs = CFG.Songs.values.toList();
-  for (var i = 0; i < songs.length; i++) {
-    if (songs[i].hastags) songs.removeAt(i);
-  }
-  return ListView.builder(
-    itemCount: songs.length,
-    itemBuilder: (context, index) {
-      return SongTile(context, songs[index], c, Playlist);
-    },
+  return ListView(
+    children: [
+      for (String key in CFG.Songs.keys)
+        SongTile(context, CFG.Songs[key], c, Playlist),
+    ],
   );
 }
 
