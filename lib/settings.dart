@@ -51,7 +51,7 @@ Future<void> ShowSth(String info, context) {
   );
 }
 
-void LoadData(void Function() reload) {
+void LoadData(void Function(void Function()) reload) {
   String appDocDirectory = "storage/emulated/0/Music";
 
   // Load Config
@@ -64,7 +64,7 @@ void LoadData(void Function() reload) {
           Config[key] = value;
         });
       }
-      reload();
+      reload(() {});
     });
   });
   if (Songs.isEmpty) {
@@ -79,7 +79,7 @@ void LoadData(void Function() reload) {
             Songs[key] = currentsong;
           });
         }
-        reload();
+        reload(() {});
       });
     });
     ValidateSongs();
@@ -97,7 +97,7 @@ void LoadData(void Function() reload) {
             Tags[currenttag.id] = currenttag;
           });
         }
-        reload();
+        reload(() {});
       });
     });
     UpdateAllTags();
@@ -106,7 +106,6 @@ void LoadData(void Function() reload) {
 
 /* Config */
 void SaveConfig() {
-  Config["Playlist"] = CurrList.Save();
   String appDocDirectory = "storage/emulated/0/Music";
   File(appDocDirectory + '/config.json')
       .create(recursive: true)
@@ -334,73 +333,3 @@ Map GetSongsFromTag(Tag T) {
   T.used = songs.length;
   return songs;
 }
-
-/* Playlist */
-class CurrentPlayList {
-  List<Song> songs = [];
-  int last_added_pos = 0;
-
-  void AddToPlaylist(Song song) {
-    for (int i = 0; i < songs.length; i++) {
-      if (songs[i].filename == song.filename) {
-        return;
-      }
-    }
-    songs.add(song);
-    Config["Playlist"] = Save();
-  }
-
-  void PlayNext(Song song) {
-    last_added_pos = 0;
-    if (!songs.contains(song)) {
-      songs.insert(0, song);
-    } else {
-      songs.remove(song);
-      songs.insert(0, song);
-    }
-    Config["Playlist"] = Save();
-  }
-
-  void PlayAfterLastAdded(Song song) {
-    last_added_pos += 1;
-    if (!songs.contains(song)) {
-      songs.insert(last_added_pos, song);
-    } else {
-      songs.remove(song);
-      songs.insert(last_added_pos, song);
-    }
-    Config["Playlist"] = Save();
-  }
-
-  void RemoveSong(Song song) {
-    songs.remove(song);
-    Config["Playlist"] = Save();
-  }
-
-  void Shuffle() {
-    songs.shuffle();
-    Config["Playlist"] = Save();
-  }
-
-  List<String> Save() {
-    List<String> names = [];
-    songs.forEach((element) {
-      names.add(element.filename);
-    });
-    return names;
-  }
-
-  void LoadPlaylist(void Function() reload) {
-    List savedsongs = Config["Playlist"];
-    if (savedsongs.isNotEmpty) {
-      savedsongs.forEach((element) {
-        if (Songs.containsKey(element)) {
-          AddToPlaylist(Songs[element]);
-        }
-      });
-    }
-    reload();
-  }
-}
-
-CurrentPlayList CurrList = CurrentPlayList();

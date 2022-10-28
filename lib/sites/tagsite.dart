@@ -20,7 +20,7 @@ IconButton buildActions(BuildContext context) {
 }
 
 // TODO Implement the Tag Tile with all functions for searching
-Container buildContent(void Function() c, BuildContext context) {
+Container buildContent(void Function(void Function()) c, BuildContext context) {
   return Container(
     child: ListView(
       children: [
@@ -36,7 +36,7 @@ Container buildContent(void Function() c, BuildContext context) {
                 "Cancel",
                 (String s) {
                   CFG.CreateTag(s);
-                  c();
+                  c(() {});
                 },
                 (String s) {},
                 false,
@@ -50,3 +50,36 @@ Container buildContent(void Function() c, BuildContext context) {
     ),
   );
 }
+
+/*
+ListView buildContent(BuildContext context, void Function(void Function()) c,
+    CurrentPlayList Playlist) {
+  final songs = CFG.Songs.values.toList();
+  for (var i = 0; i < songs.length; i++) {
+    if (songs[i].hastags) songs.removeAt(i);
+  }
+  return ListView.builder(
+    itemCount: songs.length,
+    itemBuilder: (context, index) {
+      final item = songs[index];
+      return Dismissible(
+        key: Key(item.filename),
+        onDismissed: (direction) {
+          c(() {
+            CFG.Songs[item.filename].hastags = true;
+            songs.removeAt(index);
+          });
+
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('$item dismissed')));
+        },
+        // Show a red background as the item is swiped away.
+        background: Container(color: Colors.red),
+        child: ListTile(
+          title: Text(item.title),
+        ),
+      );
+    },
+  );
+}
+ */

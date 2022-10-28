@@ -30,7 +30,7 @@ class MainSite extends StatefulWidget {
 
 class _MainSite extends State<MainSite> {
   int side = 0;
-  CFG.CurrentPlayList Playlist = CFG.CurrList;
+  CurrentPlayList Playlist = CurrentPlayList();
 
   @override
   void initState() {
@@ -44,8 +44,12 @@ class _MainSite extends State<MainSite> {
     super.dispose();
   }
 
-  void update() {
-    setState(() {});
+  void update(void Function() c) {
+    setState(
+      () {
+        c();
+      },
+    );
   }
 
   @override
@@ -72,7 +76,7 @@ class _MainSite extends State<MainSite> {
             ? PlaylistSide.buildContent(update, context, Playlist)
             : (side == 1
                 ? TagSite.buildContent(update, context)
-                : USongs.buildContent(update, context))),
+                : USongs.buildContent(context, update, Playlist))),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.downloading),
           onPressed: () {
@@ -104,5 +108,77 @@ class _MainSite extends State<MainSite> {
         drawer: Side.SongDrawer(c: update),
       ),
     );
+  }
+}
+
+/* Playlist */
+class CurrentPlayList {
+  List<CFG.Song> songs = [];
+  int last_added_pos = 0;
+
+  void AddToPlaylist(CFG.Song song) {
+    for (int i = 0; i < songs.length; i++) {
+      if (songs[i].filename == song.filename) {
+        return;
+      }
+    }
+    songs.add(song);
+    CFG.Config["Playlist"] = Save();
+  }
+
+  void AddSong(CFG.Song song) {
+    AddToPlaylist(song);
+  }
+
+  void PlayNext(CFG.Song song) {
+    last_added_pos = 0;
+    if (!songs.contains(song)) {
+      songs.insert(0, song);
+    } else {
+      songs.remove(song);
+      songs.insert(0, song);
+    }
+    CFG.Config["Playlist"] = Save();
+  }
+
+  void PlayAfterLastAdded(CFG.Song song) {
+    last_added_pos += 1;
+    if (!songs.contains(song)) {
+      songs.insert(last_added_pos, song);
+    } else {
+      songs.remove(song);
+      songs.insert(last_added_pos, song);
+    }
+    CFG.Config["Playlist"] = Save();
+  }
+
+  void RemoveSong(CFG.Song song) {
+    songs.remove(song);
+    CFG.Config["Playlist"] = Save();
+  }
+
+  void Shuffle() {
+    songs.shuffle();
+    CFG.Config["Playlist"] = Save();
+  }
+
+  List<String> Save() {
+    List<String> names = [];
+    songs.forEach((element) {
+      names.add(element.filename);
+    });
+    return names;
+  }
+
+  void LoadPlaylist(void Function(void Function()) reload) {
+    List savedsongs = CFG.Config["Playlist"];
+    if (savedsongs.isNotEmpty) {
+      savedsongs.forEach((element) {
+        if (CFG.Songs.containsKey(element)) {
+          AddToPlaylist(CFG.Songs[element]);
+        }
+      });
+    }
+    reload(() {});
   }
 }

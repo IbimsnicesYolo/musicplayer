@@ -34,7 +34,7 @@ void SearchPaths(context) {
   }
 }
 
-void ShowConfig(context, void Function() update) {
+void ShowConfig(context, void Function(void Function()) update) {
   Navigator.of(context).push(
     MaterialPageRoute(
       builder: (_) => AlertDialog(
@@ -47,7 +47,7 @@ void ShowConfig(context, void Function() update) {
               TextButton(
                   onPressed: () {
                     Navigator.pop(context);
-                    update();
+                    update(() {});
                     CFG.SaveConfig();
                   },
                   child: Text("Close"))
@@ -65,7 +65,7 @@ class SongDrawer extends Drawer {
     required this.c,
   }) : super(key: key);
 
-  final void Function() c;
+  final void Function(void Function()) c;
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -87,7 +87,7 @@ class SongDrawer extends Drawer {
                         child: const Text("Search for new Songs"),
                         onPressed: () {
                           SearchPaths(context);
-                          c();
+                          c(() {});
                         }),
                     TextButton(
                       child: const Text("Open Settings"),

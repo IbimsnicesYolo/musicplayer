@@ -1,3 +1,4 @@
+import 'package:tagmusicplayer/main.dart';
 import "../settings.dart" as CFG;
 import 'package:flutter/material.dart';
 import 'components/search.dart' as SearchPage;
@@ -5,7 +6,7 @@ import 'components/string_input.dart' as SInput;
 import 'components/checkbox.dart' as C;
 
 // TODO Implement SearchPage the right way
-IconButton buildActions(BuildContext context, CFG.CurrentPlayList Playlist) {
+IconButton buildActions(BuildContext context, CurrentPlayList Playlist) {
   return IconButton(
     onPressed: () => Navigator.of(context).push(
       MaterialPageRoute(
@@ -20,8 +21,8 @@ IconButton buildActions(BuildContext context, CFG.CurrentPlayList Playlist) {
 }
 
 // TODO Implemment the Song Tile right
-Container buildContent(
-    void Function() c, BuildContext context, CFG.CurrentPlayList Playlist) {
+Container buildContent(void Function(void Function()) c, BuildContext context,
+    CurrentPlayList Playlist) {
   return Container(
     child: ListView(
       children: [
