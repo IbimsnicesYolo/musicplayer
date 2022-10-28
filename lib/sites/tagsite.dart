@@ -203,6 +203,7 @@ IconButton buildActions(BuildContext context, CurrentPlayList Playlist,
                                                                   songkey]);
                                                       // Add Song to End of Added Songs
                                                     }
+                                                    CFG.SaveConfig();
                                                   },
                                                   child: ListTile(
                                                     title: Text(CFG
@@ -407,6 +408,7 @@ IconButton buildActions(BuildContext context, CurrentPlayList Playlist,
                                                                         songkey]);
                                                             // Add Song to End of Added Songs
                                                           }
+                                                          CFG.SaveConfig();
                                                         },
                                                         child: ListTile(
                                                           title: Text(CFG
@@ -607,6 +609,7 @@ Container buildContent(void Function(void Function()) c, BuildContext context,
                                             CFG.Songs[songkey]);
                                         // Add Song to End of Added Songs
                                       }
+                                      CFG.SaveConfig();
                                     },
                                     child: ListTile(
                                       title: Text(CFG.Songs[songkey].title),
@@ -780,6 +783,7 @@ Container buildContent(void Function(void Function()) c, BuildContext context,
                                                   CFG.Songs[songkey]);
                                               // Add Song to End of Added Songs
                                             }
+                                            CFG.SaveConfig();
                                           },
                                           child: ListTile(
                                             title:
@@ -867,81 +871,3 @@ Container buildContent(void Function(void Function()) c, BuildContext context,
     ),
   );
 }
-
-/*
-class SongPage extends StatefulWidget {
-  SongPage({
-    Key? key,
-    required this.songs,
-  });
-
-  final Map songs;
-
-  @override
-  State<SongPage> createState() => _SongPageState();
-}
-
-class _SongPageState extends State<SongPage> {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData.dark(),
-      home: SafeArea(
-        child: Scaffold(
-          appBar: AppBar(
-            actions: [
-              // Navigate to the Search Screen
-              IconButton(
-                  onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => SearchPage.SearchPage(widget.songs),
-                        ),
-                      ),
-                  icon: const Icon(Icons.search)),
-            ],
-            backgroundColor: CFG.HomeColor,
-          ),
-          body: Container(
-            child: ListView(
-              children: [
-                for (CFG.Song song in widget.songs.values) Text(song.title),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-ListView buildContent(BuildContext context, void Function(void Function()) c,
-    CurrentPlayList Playlist) {
-  final songs = CFG.Songs.values.toList();
-  for (var i = 0; i < songs.length; i++) {
-    if (songs[i].hastags) songs.removeAt(i);
-  }
-  return ListView.builder(
-    itemCount: songs.length,
-    itemBuilder: (context, index) {
-      final item = songs[index];
-      return Dismissible(
-        key: Key(item.filename),
-        onDismissed: (direction) {
-          c(() {
-            CFG.Songs[item.filename].hastags = true;
-            songs.removeAt(index);
-          });
-
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('$item dismissed')));
-        },
-        // Show a red background as the item is swiped away.
-        background: Container(color: Colors.red),
-        child: ListTile(
-          title: Text(item.title),
-        ),
-      );
-    },
-  );
-}
-*/
