@@ -15,7 +15,57 @@ IconButton buildActions(BuildContext context) {
       MaterialPageRoute(
         builder: (_) => MaterialApp(
           theme: ThemeData.dark(),
-          home: SearchPage.SearchPage(CFG.Tags),
+          home: SearchPage.SearchPage(
+            (search, update) => Container(
+              child: ListView(
+                children: [
+                  for (int key in CFG.Tags.keys)
+                    if (CFG.Tags[key].name
+                        .toLowerCase()
+                        .contains(search.toLowerCase()))
+                      Dismissible(
+                        key: Key(key.toString()),
+                        onDismissed: (direction) {
+                          update(() {
+                            CFG.DeleteTag(CFG.Tags[key]);
+                          });
+                        },
+                        background: Container(
+                          color: Colors.red,
+                          child: Padding(
+                            padding: const EdgeInsets.all(15),
+                            child: Row(
+                              children: [
+                                Icon(Icons.delete, color: Colors.white),
+                                Text('Move to trash',
+                                    style: TextStyle(color: Colors.white)),
+                              ],
+                            ),
+                          ),
+                        ),
+                        secondaryBackground: Container(
+                          color: Colors.red,
+                          child: Padding(
+                            padding: const EdgeInsets.all(15),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Icon(Icons.delete, color: Colors.white),
+                                Text('Move to trash',
+                                    style: TextStyle(color: Colors.white)),
+                              ],
+                            ),
+                          ),
+                        ),
+                        child: ListTile(
+                          title: Text(CFG.Tags[key].name),
+                          subtitle: Text(CFG.Tags[key].used.toString()),
+                        ),
+                      ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     ),
