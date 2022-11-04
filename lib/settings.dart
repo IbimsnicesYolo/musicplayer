@@ -79,10 +79,10 @@ void LoadData(void Function(void Function()) reload) {
             Songs[key] = currentsong;
           });
         }
+        ValidateSongs();
         reload(() {});
       });
     });
-    ValidateSongs();
   }
 
   if (Tags.isEmpty) {
@@ -106,8 +106,6 @@ void LoadData(void Function(void Function()) reload) {
 
 /* Config */
 void SaveConfig() {
-  print("Saving Config");
-  print(Config["Playlist"]);
   String appDocDirectory = "storage/emulated/0/Music";
   File(appDocDirectory + '/config.json')
       .create(recursive: true)
@@ -234,6 +232,7 @@ void SaveSongs() async {
 // Check if file in Song path still exists
 void ValidateSongs() {
   Songs.forEach((k, v) {
+    v.hastags = v.tags.isNotEmpty;
     if (!File(v.path).existsSync()) {
       print("Song " + v.path + " does not exist anymore!");
       DeleteSong(v);

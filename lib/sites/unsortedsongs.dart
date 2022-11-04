@@ -5,14 +5,48 @@ import 'components/search.dart' as SearchPage;
 import 'components/string_input.dart' as SInput;
 import 'components/checkbox.dart' as C;
 
-// TODO Implement SearchPage the right way
-IconButton buildActions(BuildContext context) {
+bool ShouldShowSong(String key, String search) {
+  if (search == "") return true;
+
+  if (CFG.Songs[key].title.toLowerCase().contains(search.toLowerCase()))
+    return true;
+
+  if (CFG.Songs[key].interpret.toLowerCase().contains(search.toLowerCase()))
+    return true;
+
+  List<String> name = CFG.Songs[key].title.toLowerCase().split(" ");
+  name += CFG.Songs[key].interpret.toLowerCase().split(" ");
+  name += CFG.Songs[key].filename.toLowerCase().split(" ");
+
+  List<String> searchname = search.toLowerCase().split(" ");
+
+  for (String s in name) {
+    for (String s2 in searchname) {
+      if (s.contains(s2)) return true;
+    }
+  }
+
+  return false;
+}
+
+IconButton buildActions(BuildContext context, void Function(void Function()) c,
+    CurrentPlayList Playlist) {
   return IconButton(
     onPressed: () => Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => MaterialApp(
           theme: ThemeData.dark(),
-          home: SearchPage.SearchPage(CFG.Songs),
+          home: SearchPage.SearchPage(
+            (search, update) => Container(
+              child: ListView(
+                children: [
+                  for (String key in CFG.Songs.keys)
+                    if (ShouldShowSong(key, search))
+                      SongTile(context, CFG.Songs[key], c, Playlist),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     ),

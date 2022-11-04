@@ -7,6 +7,24 @@ import 'components/checkbox.dart' as C;
 
 // TODO Fix Create Tag Button Color
 
+bool ShouldShowTag(int key, String search) {
+  if (search == "") return true;
+
+  if (CFG.Tags[key].name.toLowerCase().contains(search.toLowerCase()))
+    return true;
+
+  List<String> name = CFG.Tags[key].name.toLowerCase().split(" ");
+  List<String> searchname = search.toLowerCase().split(" ");
+
+  for (String s in name) {
+    for (String s2 in searchname) {
+      if (s.contains(s2)) return true;
+    }
+  }
+
+  return false;
+}
+
 IconButton buildActions(BuildContext context, CurrentPlayList Playlist,
     void Function(void Function()) c) {
   return IconButton(
@@ -19,9 +37,7 @@ IconButton buildActions(BuildContext context, CurrentPlayList Playlist,
               child: ListView(
                 children: [
                   for (int key in CFG.Tags.keys)
-                    if (CFG.Tags[key].name
-                        .toLowerCase()
-                        .contains(search.toLowerCase()))
+                    if (ShouldShowTag(key, search))
                       Dismissible(
                         key: Key(key.toString()),
                         onDismissed: (direction) {
