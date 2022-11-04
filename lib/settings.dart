@@ -106,6 +106,8 @@ void LoadData(void Function(void Function()) reload) {
 
 /* Config */
 void SaveConfig() {
+  print("Saving Config");
+  print(Config["Playlist"]);
   String appDocDirectory = "storage/emulated/0/Music";
   File(appDocDirectory + '/config.json')
       .create(recursive: true)

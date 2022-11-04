@@ -123,7 +123,7 @@ class CurrentPlayList {
       }
     }
     songs.add(song);
-    CFG.Config["Playlist"] = Save();
+    Save();
   }
 
   void AddSong(CFG.Song song) {
@@ -138,7 +138,7 @@ class CurrentPlayList {
       songs.remove(song);
       songs.insert(0, song);
     }
-    CFG.Config["Playlist"] = Save();
+    Save();
   }
 
   void PlayAfterLastAdded(CFG.Song song) {
@@ -149,25 +149,25 @@ class CurrentPlayList {
       songs.remove(song);
       songs.insert(last_added_pos, song);
     }
-    CFG.Config["Playlist"] = Save();
+    Save();
   }
 
   void RemoveSong(CFG.Song song) {
     songs.remove(song);
-    CFG.Config["Playlist"] = Save();
+    Save();
   }
 
   void Shuffle() {
     songs.shuffle();
-    CFG.Config["Playlist"] = Save();
   }
 
-  List<String> Save() {
+  void Save() {
     List<String> names = [];
     songs.forEach((element) {
       names.add(element.filename);
     });
-    return names;
+    CFG.Config["Playlist"] = names;
+    CFG.SaveConfig();
   }
 
   void LoadPlaylist(void Function(void Function()) reload) {

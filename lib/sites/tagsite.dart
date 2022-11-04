@@ -212,7 +212,6 @@ ListTile Tag(void Function(void Function()) c, BuildContext context,
                                 Playlist.PlayAfterLastAdded(CFG.Songs[songkey]);
                                 // Add Song to End of Added Songs
                               }
-                              CFG.SaveConfig();
                             },
                             child: ListTile(
                               title: Text(CFG.Songs[songkey].title),
@@ -367,7 +366,6 @@ ListTile Tag(void Function(void Function()) c, BuildContext context,
                                           CFG.Songs[songkey]);
                                       // Add Song to End of Added Songs
                                     }
-                                    CFG.SaveConfig();
                                   },
                                   child: ListTile(
                                     title: Text(CFG.Songs[songkey].title),

@@ -25,7 +25,8 @@ ListView buildContent(BuildContext context, void Function(void Function()) c,
   return ListView(
     children: [
       for (String key in CFG.Songs.keys)
-        SongTile(context, CFG.Songs[key], c, Playlist),
+        if (!CFG.Songs[key].hastags)
+          SongTile(context, CFG.Songs[key], c, Playlist),
     ],
   );
 }
