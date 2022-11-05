@@ -189,32 +189,33 @@ ListTile Tag(void Function(void Function()) c, BuildContext context,
                           child: PopupMenuButton(
                             onSelected: (result) {
                               if (result == 0) {
-                                showModalBottomSheet<void>(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return Container(
-                                      height:
-                                          MediaQuery.of(context).size.height /
-                                              2,
-                                      color: CFG.HomeColor,
-                                      child: Center(
-                                        child: Column(
-                                          children: <Widget>[
-                                            for (CFG.Tag t in CFG.Tags.values)
-                                              C.CoolerCheckBox(
-                                                  CFG.Songs[songkey].tags
-                                                      .contains(t.id),
-                                                  (bool? b) {
-                                                CFG.UpdateSongTags(
-                                                    CFG.Songs[songkey].filename,
-                                                    t.id,
-                                                    b);
-                                              }, t.name),
-                                          ],
-                                        ),
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => MaterialApp(
+                                      theme: ThemeData.dark(),
+                                      home: AlertDialog(
+                                        actions: <Widget>[
+                                          for (CFG.Tag t in CFG.Tags.values)
+                                            C.CoolerCheckBox(
+                                                CFG.Songs[songkey].tags
+                                                    .contains(t.id), (bool? b) {
+                                              CFG.UpdateSongTags(
+                                                  CFG.Songs[songkey].filename,
+                                                  t.id,
+                                                  b);
+                                            }, t.name),
+                                          Center(
+                                            child: TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                  CFG.SaveSongs();
+                                                },
+                                                child: Text("Close")),
+                                          ),
+                                        ],
                                       ),
-                                    );
-                                  },
+                                    ),
+                                  ),
                                 );
                               }
                               if (result == 1) {
@@ -340,35 +341,36 @@ ListTile Tag(void Function(void Function()) c, BuildContext context,
                                 child: PopupMenuButton(
                                   onSelected: (result) {
                                     if (result == 0) {
-                                      showModalBottomSheet<void>(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return Container(
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height /
-                                                2,
-                                            color: CFG.HomeColor,
-                                            child: Center(
-                                              child: Column(
-                                                children: <Widget>[
-                                                  for (CFG.Tag t
-                                                      in CFG.Tags.values)
-                                                    C.CoolerCheckBox(
-                                                        CFG.Songs[songkey].tags
-                                                            .contains(t.id),
-                                                        (bool? b) {
-                                                      CFG.UpdateSongTags(
-                                                          CFG.Songs[songkey]
-                                                              .filename,
-                                                          t.id,
-                                                          b);
-                                                    }, t.name),
-                                                ],
-                                              ),
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (_) => MaterialApp(
+                                            theme: ThemeData.dark(),
+                                            home: AlertDialog(
+                                              actions: <Widget>[
+                                                for (CFG.Tag t
+                                                    in CFG.Tags.values)
+                                                  C.CoolerCheckBox(
+                                                      CFG.Songs[songkey].tags
+                                                          .contains(t.id),
+                                                      (bool? b) {
+                                                    CFG.UpdateSongTags(
+                                                        CFG.Songs[songkey]
+                                                            .filename,
+                                                        t.id,
+                                                        b);
+                                                  }, t.name),
+                                                Center(
+                                                  child: TextButton(
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                        CFG.SaveSongs();
+                                                      },
+                                                      child: Text("Close")),
+                                                ),
+                                              ],
                                             ),
-                                          );
-                                        },
+                                          ),
+                                        ),
                                       );
                                     }
                                     if (result == 1) {

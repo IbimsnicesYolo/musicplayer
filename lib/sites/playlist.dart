@@ -114,29 +114,29 @@ PopupMenuButton SongTile(BuildContext context, CFG.Song s,
         );
       }
       if (result == 2) {
-        Navigator.of(context)
-            .push(
-              MaterialPageRoute(
-                builder: (_) => MaterialApp(
-                  theme: ThemeData.dark(),
-                  home: Container(
-                    height: MediaQuery.of(context).size.height / 2,
-                    color: CFG.HomeColor,
-                    child: Center(
-                      child: Column(
-                        children: <Widget>[
-                          for (CFG.Tag t in CFG.Tags.values)
-                            C.CoolerCheckBox(s.tags.contains(t.id), (bool? b) {
-                              CFG.UpdateSongTags(s.filename, t.id, b);
-                            }, t.name),
-                        ],
-                      ),
-                    ),
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => MaterialApp(
+              theme: ThemeData.dark(),
+              home: AlertDialog(
+                actions: <Widget>[
+                  for (CFG.Tag t in CFG.Tags.values)
+                    C.CoolerCheckBox(s.tags.contains(t.id), (bool? b) {
+                      CFG.UpdateSongTags(s.filename, t.id, b);
+                    }, t.name),
+                  Center(
+                    child: TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          CFG.SaveSongs();
+                        },
+                        child: Text("Close")),
                   ),
-                ),
+                ],
               ),
-            )
-            .then((value) => CFG.SaveSongs());
+            ),
+          ),
+        );
       }
       if (result == 3) {
         CFG.DeleteSong(s);
