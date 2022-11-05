@@ -13,6 +13,9 @@ const List<String> Actions = [
   "Add to Stack",
 ];
 
+bool ShouldSaveTags = false;
+bool ShouldSaveSongs = false;
+
 Map Songs = {};
 Map Tags = {};
 Map Config = {
@@ -174,6 +177,7 @@ bool CreateSong(path) {
   newsong.filename = filename;
   newsong.interpret = interpret;
   Songs[filename] = newsong;
+  ShouldSaveSongs = true;
   return true;
 }
 
@@ -181,10 +185,12 @@ bool CreateSong(path) {
 
 void UpdateSongInterpret(String key, String newtitle) {
   Songs[key].interpret = newtitle;
+  ShouldSaveSongs = true;
 }
 
 void UpdateSongTitle(String key, String newtitle) {
   Songs[key].title = newtitle;
+  ShouldSaveSongs = true;
 }
 
 void UpdateSongTags(String key, int Tagid, bool? add) {
@@ -197,6 +203,7 @@ void UpdateSongTags(String key, int Tagid, bool? add) {
   }
 
   Songs[key].hastags = Songs[key].tags.isNotEmpty;
+  ShouldSaveSongs = true;
 }
 
 void DeleteSong(Song s) {
@@ -205,10 +212,16 @@ void DeleteSong(Song s) {
       Tags[tagid].used = Tags[tagid].used - 1;
     }
     Songs.remove(s.filename);
+    ShouldSaveSongs = true;
   }
 }
 
 void SaveSongs() async {
+  if (!ShouldSaveSongs) {
+    return;
+  }
+  ShouldSaveSongs = false;
+
   String appDocDirectory = "storage/emulated/0/Music";
   String json = "{";
   bool nosongsfound = true;
@@ -262,15 +275,22 @@ void CreateTag(name) {
   Tag newtag = Tag(name);
   newtag.id = newid;
   Tags[newtag.id] = newtag;
+  ShouldSaveTags = true;
 }
 
 void UpdateTagName(tag, name) {
   if (Tags.containsKey(tag)) {
     Tags[tag].name = name;
+    ShouldSaveTags = true;
   }
 }
 
 void SaveTags() async {
+  if (!ShouldSaveTags) {
+    return;
+  }
+  ShouldSaveTags = false;
+
   String appDocDirectory = "storage/emulated/0/Music";
 
   String json = "{";
@@ -299,6 +319,7 @@ void DeleteTag(Tag t) {
       }
     },
   );
+  ShouldSaveTags = true;
 }
 
 void UpdateAllTags() {
