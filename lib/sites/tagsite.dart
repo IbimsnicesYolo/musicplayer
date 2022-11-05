@@ -25,8 +25,8 @@ bool ShouldShowTag(int key, String search) {
   return false;
 }
 
-IconButton buildActions(BuildContext context, CurrentPlayList Playlist,
-    void Function(void Function()) c) {
+IconButton buildActions(BuildContext context, void Function(void Function()) c,
+    CurrentPlayList Playlist) {
   return IconButton(
     onPressed: () => Navigator.of(context).push(
       MaterialPageRoute(
@@ -85,7 +85,7 @@ IconButton buildActions(BuildContext context, CurrentPlayList Playlist,
   );
 }
 
-Container buildContent(void Function(void Function()) c, BuildContext context,
+Container buildContent(BuildContext context, void Function(void Function()) c,
     CurrentPlayList Playlist) {
   CFG.UpdateAllTags();
   return Container(

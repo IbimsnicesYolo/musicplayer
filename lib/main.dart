@@ -67,15 +67,15 @@ class _MainSite extends State<MainSite> {
       child: Scaffold(
         appBar: AppBar(
           actions: [
-            if (side == 0) PlaylistSide.buildActions(context, Playlist),
-            if (side == 1) TagSite.buildActions(context, Playlist, update),
-            if (side == 2) USongs.buildActions(context),
+            if (side == 0) PlaylistSide.buildActions(context, update, Playlist),
+            if (side == 1) TagSite.buildActions(context, update, Playlist),
+            if (side == 2) USongs.buildActions(context, update, Playlist),
           ],
         ),
         body: (side == 0
-            ? PlaylistSide.buildContent(update, context, Playlist)
+            ? PlaylistSide.buildContent(context, update, Playlist)
             : (side == 1
-                ? TagSite.buildContent(update, context, Playlist)
+                ? TagSite.buildContent(context, update, Playlist)
                 : USongs.buildContent(context, update, Playlist))),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.downloading),
