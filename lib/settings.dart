@@ -199,7 +199,6 @@ void UpdateSongTags(String key, int Tagid, bool? add) {
   }
 
   Songs[key].hastags = Songs[key].tags.isNotEmpty;
-  SaveSongs();
 }
 
 void DeleteSong(Song s) {
