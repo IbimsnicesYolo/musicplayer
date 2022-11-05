@@ -61,8 +61,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
     child: ListView(
       children: [
         if (!Playlist.songs.isEmpty) ...[
-          for (var i in Playlist.songs)
-            SongTile(context, CFG.Songs[i], c, Playlist),
+          for (CFG.Song s in Playlist.songs) SongTile(context, s, c, Playlist),
         ] else ...[
           const Align(
             alignment: Alignment.center,
