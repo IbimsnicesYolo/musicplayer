@@ -3,6 +3,13 @@
 Mobile Music Player
 (Android/IOS/Windows)
 
-W.I.P ~60% Done
+W.I.P
+UI: Done
+Backend: Done
+Performance Improvements: In Work
+Actually able to Play Audio: Next big goal
 
-Supposed work with Tags to make playlists easier.
+
+Works with giving Tags to the Songs.
+The current Playlist can be build by songs directly or adding all Songs with specified Tag.
+Sorting via Drag'n'Drop und swiping.
