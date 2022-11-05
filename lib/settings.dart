@@ -181,12 +181,10 @@ bool CreateSong(path) {
 
 void UpdateSongInterpret(String key, String newtitle) {
   Songs[key].interpret = newtitle;
-  SaveSongs();
 }
 
 void UpdateSongTitle(String key, String newtitle) {
   Songs[key].title = newtitle;
-  SaveSongs();
 }
 
 void UpdateSongTags(String key, int Tagid, bool? add) {
@@ -207,7 +205,6 @@ void DeleteSong(Song s) {
       Tags[tagid].used = Tags[tagid].used - 1;
     }
     Songs.remove(s.filename);
-    SaveSongs();
   }
 }
 
@@ -265,13 +262,11 @@ void CreateTag(name) {
   Tag newtag = Tag(name);
   newtag.id = newid;
   Tags[newtag.id] = newtag;
-  SaveTags();
 }
 
 void UpdateTagName(tag, name) {
   if (Tags.containsKey(tag)) {
     Tags[tag].name = name;
-    SaveTags();
   }
 }
 
@@ -304,7 +299,6 @@ void DeleteTag(Tag t) {
       }
     },
   );
-  SaveTags();
 }
 
 void UpdateAllTags() {

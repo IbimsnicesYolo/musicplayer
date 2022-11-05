@@ -87,6 +87,8 @@ class _MainSite extends State<MainSite> {
           currentIndex: this.side,
           onTap: (int index) {
             setState(() {
+              CFG.SaveSongs();
+              CFG.SaveTags();
               this.side = index;
             });
           },
