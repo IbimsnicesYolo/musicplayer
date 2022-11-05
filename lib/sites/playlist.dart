@@ -150,6 +150,7 @@ PopupMenuButton SongTile(BuildContext context, CFG.Song s,
         Playlist.PlayAfterLastAdded(s);
         // Add Song to End of Added Songs
       }
+      Playlist.Save();
     },
     child: ListTile(
       title: Text(s.title),

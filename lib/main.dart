@@ -123,11 +123,6 @@ class CurrentPlayList {
       }
     }
     songs.add(song);
-    Save();
-  }
-
-  void AddSong(CFG.Song song) {
-    AddToPlaylist(song);
   }
 
   void PlayNext(CFG.Song song) {
@@ -138,7 +133,6 @@ class CurrentPlayList {
       songs.remove(song);
       songs.insert(0, song);
     }
-    Save();
   }
 
   void PlayAfterLastAdded(CFG.Song song) {
@@ -149,12 +143,10 @@ class CurrentPlayList {
       songs.remove(song);
       songs.insert(last_added_pos, song);
     }
-    Save();
   }
 
   void RemoveSong(CFG.Song song) {
     songs.remove(song);
-    Save();
   }
 
   void Shuffle() {

@@ -152,6 +152,7 @@ ListTile Tag(void Function(void Function()) c, BuildContext context,
                                 // Left
                                 CFG.Songs[songkey].hash += "1";
                                 Playlist.AddToPlaylist(CFG.Songs[songkey]);
+                                Playlist.Save();
                               } else {
                                 // Right
                                 CFG.UpdateSongTags(songkey, key, false);
@@ -228,6 +229,7 @@ ListTile Tag(void Function(void Function()) c, BuildContext context,
                                 Playlist.PlayAfterLastAdded(CFG.Songs[songkey]);
                                 // Add Song to End of Added Songs
                               }
+                              Playlist.Save();
                             },
                             child: ListTile(
                               title: Text(CFG.Songs[songkey].title),
@@ -280,6 +282,7 @@ ListTile Tag(void Function(void Function()) c, BuildContext context,
             CFG.GetSongsFromTag(CFG.Tags[key]).forEach((key, value) {
               Playlist.AddToPlaylist(value);
             });
+            Playlist.Save();
           }
           if (result == 2) {
             Navigator.of(context).push(
@@ -382,6 +385,7 @@ ListTile Tag(void Function(void Function()) c, BuildContext context,
                                           CFG.Songs[songkey]);
                                       // Add Song to End of Added Songs
                                     }
+                                    Playlist.Save();
                                   },
                                   child: ListTile(
                                     title: Text(CFG.Songs[songkey].title),
