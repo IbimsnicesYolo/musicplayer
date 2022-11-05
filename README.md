@@ -5,13 +5,10 @@ Mobile Music Player
 
 W.I.P
 
-UI: Done
-
-Backend: Done
-
-Performance Improvements: In Work
-
-Actually able to Play Audio: Next big goal
+ - UI: Done
+- Backend: Done
+- Performance Improvements: In Work
+- Actually able to Play Audio: Next big goal
 
 
 
