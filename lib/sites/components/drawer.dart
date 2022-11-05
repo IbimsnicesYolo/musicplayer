@@ -2,7 +2,26 @@ import 'package:flutter/material.dart';
 import '../../settings.dart' as CFG;
 import 'dart:io';
 
-void SearchPaths(context) {
+void SearchPaths(context) async {
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (_) => AlertDialog(
+        title: Text("Searching for Songs"),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("Close"))
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+
   int count = 0;
   List<String> path = [];
   for (String p in CFG.Config["SearchPaths"]) {
@@ -16,6 +35,7 @@ void SearchPaths(context) {
       _files = dir.listSync(recursive: true, followLinks: true);
 
       for (FileSystemEntity entity in _files) {
+        await Future.delayed(Duration(milliseconds: 50));
         String path = entity.path;
         if (path.endsWith('.mp3')) {
           if (CFG.CreateSong(path)) {

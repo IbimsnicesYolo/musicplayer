@@ -174,7 +174,6 @@ bool CreateSong(path) {
   newsong.filename = filename;
   newsong.interpret = interpret;
   Songs[filename] = newsong;
-  SaveSongs();
   return true;
 }
 
