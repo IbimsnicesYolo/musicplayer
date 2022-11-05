@@ -35,7 +35,7 @@ void SearchPaths(context) async {
       _files = dir.listSync(recursive: true, followLinks: true);
 
       for (FileSystemEntity entity in _files) {
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future.delayed(Duration(milliseconds: 1));
         String path = entity.path;
         if (path.endsWith('.mp3')) {
           if (CFG.CreateSong(path)) {
