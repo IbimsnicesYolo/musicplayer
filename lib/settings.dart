@@ -177,6 +177,8 @@ bool CreateSong(path) {
   return true;
 }
 
+// TODO remove all these SaveSongs and save in the next setstate of the mainsite
+
 void UpdateSongInterpret(String key, String newtitle) {
   Songs[key].interpret = newtitle;
   SaveSongs();
