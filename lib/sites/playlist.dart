@@ -1,22 +1,24 @@
-import 'package:tagmusicplayer/main.dart';
-import "../settings.dart" as CFG;
+import "../classes/playlist.dart";
+import "../classes/tag.dart";
+import "../classes/song.dart";
+import "../settings.dart";
 import 'package:flutter/material.dart';
-import 'components/search.dart' as SearchPage;
-import 'components/string_input.dart' as SInput;
-import 'components/checkbox.dart' as C;
+import 'components/search.dart';
+import 'components/string_input.dart';
+import 'components/checkbox.dart';
 
 bool ShouldShowSong(String key, String search) {
   if (search == "") return true;
 
-  if (CFG.Songs[key].title.toLowerCase().contains(search.toLowerCase()))
+  if (Songs[key].title.toLowerCase().contains(search.toLowerCase()))
     return true;
 
-  if (CFG.Songs[key].interpret.toLowerCase().contains(search.toLowerCase()))
+  if (Songs[key].interpret.toLowerCase().contains(search.toLowerCase()))
     return true;
 
-  List<String> name = CFG.Songs[key].title.toLowerCase().split(" ");
-  name += CFG.Songs[key].interpret.toLowerCase().split(" ");
-  name += CFG.Songs[key].filename.toLowerCase().split(" ");
+  List<String> name = Songs[key].title.toLowerCase().split(" ");
+  name += Songs[key].interpret.toLowerCase().split(" ");
+  name += Songs[key].filename.toLowerCase().split(" ");
 
   List<String> searchname = search.toLowerCase().split(" ");
 
@@ -36,13 +38,13 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
       MaterialPageRoute(
         builder: (_) => MaterialApp(
           theme: ThemeData.dark(),
-          home: SearchPage.SearchPage(
+          home: SearchPage(
             (search, update) => Container(
               child: ListView(
                 children: [
-                  for (String key in CFG.Config["Playlist"])
+                  for (String key in Config["Playlist"])
                     if (ShouldShowSong(key, search))
-                      SongTile(context, CFG.Songs[key], c, Playlist),
+                      SongTile(context, Songs[key], c, Playlist),
                 ],
               ),
             ),
@@ -61,7 +63,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
     child: ListView(
       children: [
         if (!Playlist.songs.isEmpty) ...[
-          for (CFG.Song s in Playlist.songs) SongTile(context, s, c, Playlist),
+          for (Song s in Playlist.songs) SongTile(context, s, c, Playlist),
         ] else ...[
           const Align(
             alignment: Alignment.center,
@@ -77,19 +79,19 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
   );
 }
 
-PopupMenuButton SongTile(BuildContext context, CFG.Song s,
+PopupMenuButton SongTile(BuildContext context, Song s,
     void Function(void Function()) c, CurrentPlayList Playlist) {
   return PopupMenuButton(
     onSelected: (result) {
       if (result == 0) {
         // Change Title
-        SInput.StringInput(
+        StringInput(
           context,
           "New Song Title",
           "Save",
           "Cancel",
           (String si) {
-            CFG.UpdateSongTitle(s.filename, si);
+            UpdateSongTitle(s.filename, si);
             c(() {});
           },
           (String si) {},
@@ -99,13 +101,13 @@ PopupMenuButton SongTile(BuildContext context, CFG.Song s,
       }
       if (result == 1) {
         // Change Interpret
-        SInput.StringInput(
+        StringInput(
           context,
           "New Song Interpret",
           "Save",
           "Cancel",
           (String si) {
-            CFG.UpdateSongInterpret(s.filename, si);
+            UpdateSongInterpret(s.filename, si);
             c(() {});
           },
           (String si) {},
@@ -120,15 +122,15 @@ PopupMenuButton SongTile(BuildContext context, CFG.Song s,
               theme: ThemeData.dark(),
               home: AlertDialog(
                 actions: <Widget>[
-                  for (CFG.Tag t in CFG.Tags.values)
-                    C.CoolerCheckBox(s.tags.contains(t.id), (bool? b) {
-                      CFG.UpdateSongTags(s.filename, t.id, b);
+                  for (Tag t in Tags.values)
+                    CoolerCheckBox(s.tags.contains(t.id), (bool? b) {
+                      UpdateSongTags(s.filename, t.id, b);
                     }, t.name),
                   Center(
                     child: TextButton(
                         onPressed: () {
                           Navigator.pop(context);
-                          CFG.SaveSongs();
+                          SaveSongs();
                         },
                         child: Text("Close")),
                   ),
@@ -139,7 +141,7 @@ PopupMenuButton SongTile(BuildContext context, CFG.Song s,
         );
       }
       if (result == 3) {
-        CFG.DeleteSong(s);
+        DeleteSong(s);
         c(() {});
       }
       if (result == 4) {

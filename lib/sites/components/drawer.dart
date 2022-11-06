@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../settings.dart' as CFG;
+import "../../classes/song.dart";
 import 'dart:io';
 
 void SearchPaths(context) async {
@@ -38,7 +39,7 @@ void SearchPaths(context) async {
         await Future.delayed(Duration(milliseconds: 1));
         String path = entity.path;
         if (path.endsWith('.mp3')) {
-          if (CFG.CreateSong(path)) {
+          if (CreateSong(path)) {
             count += 1;
           }
         }
@@ -50,7 +51,7 @@ void SearchPaths(context) async {
   }
   CFG.ShowSth("Created $count new Songs", context);
   if (count > 0) {
-    CFG.SaveSongs();
+    SaveSongs();
   }
 }
 

@@ -1,19 +1,20 @@
-import 'package:tagmusicplayer/main.dart';
-import "../settings.dart" as CFG;
+import "../classes/tag.dart";
+import "../classes/playlist.dart";
+import "../classes/song.dart";
+import "../settings.dart";
 import 'package:flutter/material.dart';
-import 'components/search.dart' as SearchPage;
-import 'components/string_input.dart' as SInput;
-import 'components/checkbox.dart' as C;
+import 'components/search.dart';
+import 'components/string_input.dart';
+import 'components/checkbox.dart';
 
 // TODO Fix Create Tag Button Color
 
 bool ShouldShowTag(int key, String search) {
   if (search == "") return true;
 
-  if (CFG.Tags[key].name.toLowerCase().contains(search.toLowerCase()))
-    return true;
+  if (Tags[key].name.toLowerCase().contains(search.toLowerCase())) return true;
 
-  List<String> name = CFG.Tags[key].name.toLowerCase().split(" ");
+  List<String> name = Tags[key].name.toLowerCase().split(" ");
   List<String> searchname = search.toLowerCase().split(" ");
 
   for (String s in name) {
@@ -32,17 +33,17 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
       MaterialPageRoute(
         builder: (_) => MaterialApp(
           theme: ThemeData.dark(),
-          home: SearchPage.SearchPage(
+          home: SearchPage(
             (search, update) => Container(
               child: ListView(
                 children: [
-                  for (int key in CFG.Tags.keys)
+                  for (int key in Tags.keys)
                     if (ShouldShowTag(key, search))
                       Dismissible(
                         key: Key(key.toString()),
                         onDismissed: (direction) {
                           update(() {
-                            CFG.DeleteTag(CFG.Tags[key]);
+                            DeleteTag(Tags[key]);
                           });
                         },
                         background: Container(
@@ -72,7 +73,7 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
                             ),
                           ),
                         ),
-                        child: Tag(c, context, Playlist, key),
+                        child: TagTile(c, context, Playlist, key),
                       ),
                 ],
               ),
@@ -87,28 +88,28 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
 
 Container buildContent(BuildContext context, void Function(void Function()) c,
     CurrentPlayList Playlist) {
-  CFG.UpdateAllTags();
+  UpdateAllTags();
   return Container(
     child: ListView(
       children: [
-        for (int key in CFG.Tags.keys) Tag(c, context, Playlist, key),
+        for (int key in Tags.keys) TagTile(c, context, Playlist, key),
         Align(
           alignment: AlignmentDirectional.bottomCenter,
           child: ElevatedButton(
             style: ButtonStyle(
               enableFeedback: true,
               backgroundColor: MaterialStateProperty.resolveWith((states) {
-                return Color(CFG.Config["ContrastColor"]);
+                return Color(Config["ContrastColor"]);
               }),
             ),
             onPressed: () {
-              SInput.StringInput(
+              StringInput(
                 context,
                 "Create new Tag",
                 "Create",
                 "Cancel",
                 (String s) {
-                  CFG.CreateTag(s);
+                  CreateTag(s);
                   c(() {});
                 },
                 (String s) {},
@@ -124,7 +125,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
   );
 }
 
-ListTile Tag(void Function(void Function()) c, BuildContext context,
+ListTile TagTile(void Function(void Function()) c, BuildContext context,
     CurrentPlayList Playlist, int key) {
   return ListTile(
     onLongPress: () => {
@@ -132,30 +133,31 @@ ListTile Tag(void Function(void Function()) c, BuildContext context,
         MaterialPageRoute(
           builder: (_) => MaterialApp(
             theme: ThemeData.dark(),
-            home: SearchPage.SearchPage(
+            home: SearchPage(
               (search, update) => Container(
                 child: ListView(
                   children: [
-                    for (String songkey
-                        in CFG.GetSongsFromTag(CFG.Tags[key]).keys)
-                      if (CFG.Songs[songkey].title
+                    for (String songkey in GetSongsFromTag(Tags[key]).keys)
+                      if (Songs[songkey]
+                              .title
                               .toLowerCase()
                               .contains(search.toLowerCase()) ||
-                          CFG.Songs[songkey].interpret
+                          Songs[songkey]
+                              .interpret
                               .toLowerCase()
                               .contains(search.toLowerCase()))
                         Dismissible(
-                          key: Key(songkey + CFG.Songs[songkey].hash),
+                          key: Key(songkey + Songs[songkey].hash),
                           onDismissed: (DismissDirection direction) {
                             update(() {
                               if (direction == DismissDirection.endToStart) {
                                 // Left
-                                CFG.Songs[songkey].hash += "1";
-                                Playlist.AddToPlaylist(CFG.Songs[songkey]);
+                                Songs[songkey].hash += "1";
+                                Playlist.AddToPlaylist(Songs[songkey]);
                                 Playlist.Save();
                               } else {
                                 // Right
-                                CFG.UpdateSongTags(songkey, key, false);
+                                UpdateSongTags(songkey, key, false);
                               }
                             });
                           },
@@ -195,12 +197,13 @@ ListTile Tag(void Function(void Function()) c, BuildContext context,
                                       theme: ThemeData.dark(),
                                       home: AlertDialog(
                                         actions: <Widget>[
-                                          for (CFG.Tag t in CFG.Tags.values)
-                                            C.CoolerCheckBox(
-                                                CFG.Songs[songkey].tags
+                                          for (Tag t in Tags.values)
+                                            CoolerCheckBox(
+                                                Songs[songkey]
+                                                    .tags
                                                     .contains(t.id), (bool? b) {
-                                              CFG.UpdateSongTags(
-                                                  CFG.Songs[songkey].filename,
+                                              UpdateSongTags(
+                                                  Songs[songkey].filename,
                                                   t.id,
                                                   b);
                                             }, t.name),
@@ -208,7 +211,7 @@ ListTile Tag(void Function(void Function()) c, BuildContext context,
                                             child: TextButton(
                                                 onPressed: () {
                                                   Navigator.pop(context);
-                                                  CFG.SaveSongs();
+                                                  SaveSongs();
                                                 },
                                                 child: Text("Close")),
                                           ),
@@ -219,22 +222,22 @@ ListTile Tag(void Function(void Function()) c, BuildContext context,
                                 );
                               }
                               if (result == 1) {
-                                Playlist.PlayNext(CFG.Songs[songkey]);
+                                Playlist.PlayNext(Songs[songkey]);
                                 // Play Song as Next Song
                               }
                               if (result == 2) {
-                                Playlist.AddToPlaylist(CFG.Songs[songkey]);
+                                Playlist.AddToPlaylist(Songs[songkey]);
                                 // Add Song to End of Playlist
                               }
                               if (result == 3) {
-                                Playlist.PlayAfterLastAdded(CFG.Songs[songkey]);
+                                Playlist.PlayAfterLastAdded(Songs[songkey]);
                                 // Add Song to End of Added Songs
                               }
                               Playlist.Save();
                             },
                             child: ListTile(
-                              title: Text(CFG.Songs[songkey].title),
-                              subtitle: Text(CFG.Songs[songkey].interpret),
+                              title: Text(Songs[songkey].title),
+                              subtitle: Text(Songs[songkey].interpret),
                             ),
                             itemBuilder: (BuildContext context) =>
                                 <PopupMenuEntry>[
@@ -265,22 +268,22 @@ ListTile Tag(void Function(void Function()) c, BuildContext context,
         onSelected: (result) {
           if (result == 0) {
             // Change Name
-            SInput.StringInput(
+            StringInput(
               context,
               "Rename Tag",
               "Save",
               "Cancel",
               (String s) {
-                CFG.UpdateTagName(CFG.Tags[key].id, s);
+                UpdateTagName(Tags[key].id, s);
                 c(() {});
               },
               (String s) {},
               false,
-              CFG.Tags[key].name,
+              Tags[key].name,
             );
           }
           if (result == 1) {
-            CFG.GetSongsFromTag(CFG.Tags[key]).forEach((key, value) {
+            GetSongsFromTag(Tags[key]).forEach((key, value) {
               Playlist.AddToPlaylist(value);
             });
             Playlist.Save();
@@ -290,23 +293,25 @@ ListTile Tag(void Function(void Function()) c, BuildContext context,
               MaterialPageRoute(
                 builder: (_) => MaterialApp(
                   theme: ThemeData.dark(),
-                  home: SearchPage.SearchPage(
+                  home: SearchPage(
                     (search, update) => Container(
                       child: ListView(
                         children: [
-                          for (String songkey in CFG.Songs.keys)
-                            if ((CFG.Songs[songkey].title
+                          for (String songkey in Songs.keys)
+                            if ((Songs[songkey]
+                                        .title
                                         .toLowerCase()
                                         .contains(search.toLowerCase()) ||
-                                    CFG.Songs[songkey].interpret
+                                    Songs[songkey]
+                                        .interpret
                                         .toLowerCase()
                                         .contains(search.toLowerCase())) &
-                                !CFG.Songs[songkey].tags.contains(key))
+                                !Songs[songkey].tags.contains(key))
                               Dismissible(
-                                key: Key(songkey + CFG.Songs[songkey].hash),
+                                key: Key(songkey + Songs[songkey].hash),
                                 onDismissed: (DismissDirection direction) {
                                   update(() {
-                                    CFG.UpdateSongTags(songkey, key, true);
+                                    UpdateSongTags(songkey, key, true);
                                   });
                                 },
                                 background: Container(
@@ -347,15 +352,14 @@ ListTile Tag(void Function(void Function()) c, BuildContext context,
                                             theme: ThemeData.dark(),
                                             home: AlertDialog(
                                               actions: <Widget>[
-                                                for (CFG.Tag t
-                                                    in CFG.Tags.values)
-                                                  C.CoolerCheckBox(
-                                                      CFG.Songs[songkey].tags
+                                                for (Tag t in Tags.values)
+                                                  CoolerCheckBox(
+                                                      Songs[songkey]
+                                                          .tags
                                                           .contains(t.id),
                                                       (bool? b) {
-                                                    CFG.UpdateSongTags(
-                                                        CFG.Songs[songkey]
-                                                            .filename,
+                                                    UpdateSongTags(
+                                                        Songs[songkey].filename,
                                                         t.id,
                                                         b);
                                                   }, t.name),
@@ -363,7 +367,7 @@ ListTile Tag(void Function(void Function()) c, BuildContext context,
                                                   child: TextButton(
                                                       onPressed: () {
                                                         Navigator.pop(context);
-                                                        CFG.SaveSongs();
+                                                        SaveSongs();
                                                       },
                                                       child: Text("Close")),
                                                 ),
@@ -374,25 +378,23 @@ ListTile Tag(void Function(void Function()) c, BuildContext context,
                                       );
                                     }
                                     if (result == 1) {
-                                      Playlist.PlayNext(CFG.Songs[songkey]);
+                                      Playlist.PlayNext(Songs[songkey]);
                                       // Play Song as Next Song
                                     }
                                     if (result == 2) {
-                                      Playlist.AddToPlaylist(
-                                          CFG.Songs[songkey]);
+                                      Playlist.AddToPlaylist(Songs[songkey]);
                                       // Add Song to End of Playlist
                                     }
                                     if (result == 3) {
                                       Playlist.PlayAfterLastAdded(
-                                          CFG.Songs[songkey]);
+                                          Songs[songkey]);
                                       // Add Song to End of Added Songs
                                     }
                                     Playlist.Save();
                                   },
                                   child: ListTile(
-                                    title: Text(CFG.Songs[songkey].title),
-                                    subtitle:
-                                        Text(CFG.Songs[songkey].interpret),
+                                    title: Text(Songs[songkey].title),
+                                    subtitle: Text(Songs[songkey].interpret),
                                   ),
                                   itemBuilder: (BuildContext context) =>
                                       <PopupMenuEntry>[
@@ -420,12 +422,12 @@ ListTile Tag(void Function(void Function()) c, BuildContext context,
           }
           if (result == 3) {
             // Delete
-            CFG.DeleteTag(CFG.Tags[key]);
+            DeleteTag(Tags[key]);
             c(() {});
           }
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-          PopupMenuItem(child: Text(CFG.Tags[key].name), value: 0),
+          PopupMenuItem(child: Text(Tags[key].name), value: 0),
           PopupMenuDivider(),
           const PopupMenuItem(child: Text('Add Songs to Playlist'), value: 1),
           PopupMenuDivider(),
@@ -435,7 +437,7 @@ ListTile Tag(void Function(void Function()) c, BuildContext context,
         ],
       ),
     ]),
-    title: Text(CFG.Tags[key].name),
-    subtitle: Text(CFG.Tags[key].used.toString()),
+    title: Text(Tags[key].name),
+    subtitle: Text(Tags[key].used.toString()),
   );
 }

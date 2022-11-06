@@ -5,6 +5,9 @@ import "settings.dart" as CFG;
 import "sites/playlist.dart" as PlaylistSide;
 import "sites/tagsite.dart" as TagSite;
 import "sites/unsortedsongs.dart" as USongs;
+import "classes/song.dart";
+import "classes/playlist.dart";
+import "classes/tag.dart";
 
 void checkpermissions() async {
   PermissionStatus status = await Permission.storage.status;
@@ -87,8 +90,6 @@ class _MainSite extends State<MainSite> {
           currentIndex: this.side,
           onTap: (int index) {
             setState(() {
-              CFG.SaveSongs();
-              CFG.SaveTags();
               this.side = index;
             });
           },
@@ -110,69 +111,5 @@ class _MainSite extends State<MainSite> {
         drawer: Side.SongDrawer(c: update),
       ),
     );
-  }
-}
-
-/* Playlist */
-class CurrentPlayList {
-  List<CFG.Song> songs = [];
-  int last_added_pos = 0;
-
-  void AddToPlaylist(CFG.Song song) {
-    for (int i = 0; i < songs.length; i++) {
-      if (songs[i].filename == song.filename) {
-        return;
-      }
-    }
-    songs.add(song);
-  }
-
-  void PlayNext(CFG.Song song) {
-    last_added_pos = 0;
-    if (!songs.contains(song)) {
-      songs.insert(0, song);
-    } else {
-      songs.remove(song);
-      songs.insert(0, song);
-    }
-  }
-
-  void PlayAfterLastAdded(CFG.Song song) {
-    last_added_pos += 1;
-    if (!songs.contains(song)) {
-      songs.insert(last_added_pos, song);
-    } else {
-      songs.remove(song);
-      songs.insert(last_added_pos, song);
-    }
-  }
-
-  void RemoveSong(CFG.Song song) {
-    songs.remove(song);
-  }
-
-  void Shuffle() {
-    songs.shuffle();
-  }
-
-  void Save() {
-    List<String> names = [];
-    songs.forEach((element) {
-      names.add(element.filename);
-    });
-    CFG.Config["Playlist"] = names;
-    CFG.SaveConfig();
-  }
-
-  void LoadPlaylist(void Function(void Function()) reload) {
-    List savedsongs = CFG.Config["Playlist"];
-    if (savedsongs.isNotEmpty) {
-      savedsongs.forEach((element) {
-        if (CFG.Songs.containsKey(element)) {
-          AddToPlaylist(CFG.Songs[element]);
-        }
-      });
-    }
-    reload(() {});
   }
 }
