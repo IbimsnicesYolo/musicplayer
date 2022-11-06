@@ -110,6 +110,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
                 "Cancel",
                 (String s) {
                   CreateTag(s);
+                  SaveTags();
                   c(() {});
                 },
                 (String s) {},
