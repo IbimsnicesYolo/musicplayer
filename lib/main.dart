@@ -83,7 +83,10 @@ class _MainSite extends State<MainSite> {
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.downloading),
           onPressed: () {
-            setState(() {});
+            setState(() {
+              if (side == 1)
+                UpdateAllTags();
+            });
           },
         ),
         bottomNavigationBar: BottomNavigationBar(
