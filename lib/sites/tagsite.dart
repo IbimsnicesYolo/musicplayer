@@ -189,71 +189,8 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
                               ),
                             ),
                           ),
-                          child: PopupMenuButton(
-                            onSelected: (result) {
-                              if (result == 0) {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => MaterialApp(
-                                      theme: ThemeData.dark(),
-                                      home: AlertDialog(
-                                        actions: <Widget>[
-                                          for (Tag t in Tags.values)
-                                            CoolerCheckBox(
-                                                Songs[songkey]
-                                                    .tags
-                                                    .contains(t.id), (bool? b) {
-                                              UpdateSongTags(
-                                                  Songs[songkey].filename,
-                                                  t.id,
-                                                  b);
-                                            }, t.name),
-                                          Center(
-                                            child: TextButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                  SaveSongs();
-                                                },
-                                                child: Text("Close")),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }
-                              if (result == 1) {
-                                Playlist.PlayNext(Songs[songkey]);
-                                // Play Song as Next Song
-                              }
-                              if (result == 2) {
-                                Playlist.AddToPlaylist(Songs[songkey]);
-                                // Add Song to End of Playlist
-                              }
-                              if (result == 3) {
-                                Playlist.PlayAfterLastAdded(Songs[songkey]);
-                                // Add Song to End of Added Songs
-                              }
-                              Playlist.Save();
-                            },
-                            child: ListTile(
-                              title: Text(Songs[songkey].title),
-                              subtitle: Text(Songs[songkey].interpret),
-                            ),
-                            itemBuilder: (BuildContext context) =>
-                                <PopupMenuEntry>[
-                              const PopupMenuItem(
-                                  child: Text('Edit Tags'), value: 0),
-                              const PopupMenuDivider(),
-                              const PopupMenuItem(
-                                  child: Text('Play Next'), value: 1),
-                              const PopupMenuItem(
-                                  child: Text('Add to Playlist'), value: 2),
-                              const PopupMenuItem(
-                                  child: Text('Add to Play Next Stack'),
-                                  value: 3),
-                            ],
-                          ),
+                          child: SongTile(context,
+                              Playlist, songkey, key),
                         ),
                   ],
                 ),
@@ -344,74 +281,8 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
                                     ),
                                   ),
                                 ),
-                                child: PopupMenuButton(
-                                  onSelected: (result) {
-                                    if (result == 0) {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (_) => MaterialApp(
-                                            theme: ThemeData.dark(),
-                                            home: AlertDialog(
-                                              actions: <Widget>[
-                                                for (Tag t in Tags.values)
-                                                  CoolerCheckBox(
-                                                      Songs[songkey]
-                                                          .tags
-                                                          .contains(t.id),
-                                                      (bool? b) {
-                                                    UpdateSongTags(
-                                                        Songs[songkey].filename,
-                                                        t.id,
-                                                        b);
-                                                  }, t.name),
-                                                Center(
-                                                  child: TextButton(
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                        SaveSongs();
-                                                      },
-                                                      child: Text("Close")),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                    if (result == 1) {
-                                      Playlist.PlayNext(Songs[songkey]);
-                                      // Play Song as Next Song
-                                    }
-                                    if (result == 2) {
-                                      Playlist.AddToPlaylist(Songs[songkey]);
-                                      // Add Song to End of Playlist
-                                    }
-                                    if (result == 3) {
-                                      Playlist.PlayAfterLastAdded(
-                                          Songs[songkey]);
-                                      // Add Song to End of Added Songs
-                                    }
-                                    Playlist.Save();
-                                  },
-                                  child: ListTile(
-                                    title: Text(Songs[songkey].title),
-                                    subtitle: Text(Songs[songkey].interpret),
-                                  ),
-                                  itemBuilder: (BuildContext context) =>
-                                      <PopupMenuEntry>[
-                                    const PopupMenuItem(
-                                        child: Text('Edit Tags'), value: 0),
-                                    const PopupMenuDivider(),
-                                    const PopupMenuItem(
-                                        child: Text('Play Next'), value: 1),
-                                    const PopupMenuItem(
-                                        child: Text('Add to Playlist'),
-                                        value: 2),
-                                    const PopupMenuItem(
-                                        child: Text('Add to Play Next Stack'),
-                                        value: 3),
-                                  ],
-                                ),
+                                child: SongTile(context,
+                                    Playlist, songkey, key),
                               ),
                         ],
                       ),
@@ -440,5 +311,80 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
     ]),
     title: Text(Tags[key].name),
     subtitle: Text(Tags[key].used.toString()),
+  );
+}
+
+PopupMenuButton SongTile(BuildContext context,
+    CurrentPlayList Playlist, String songkey, int key) {
+  return PopupMenuButton(
+    onSelected: (result) {
+      if (result == 0) {
+        Map<String, List> ToUpdate = {};
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) =>
+                MaterialApp(
+                  theme: ThemeData.dark(),
+                  home: AlertDialog(
+                    actions: <Widget>[
+                      for (Tag t in Tags.values)
+                        CoolerCheckBox(
+                            Songs[songkey]
+                                .tags
+                                .contains(t.id), (bool? b) {
+                          ToUpdate[Songs[songkey].filename] = [t.id, b];
+                        }, t.name),
+                      Center(
+                        child: TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              ToUpdate.forEach((key, value) {
+                                UpdateSongTags(
+                                    key,
+                                    value[0],
+                                    value[1]);
+                              });
+                            },
+                            child: Text("Close")),
+                      ),
+                    ],
+                  ),
+                ),
+          ),
+        );
+      }
+      if (result == 1) {
+        Playlist.PlayNext(Songs[songkey]);
+// Play Song as Next Song
+      }
+      if (result == 2) {
+        Playlist.AddToPlaylist(Songs[songkey]);
+// Add Song to End of Playlist
+      }
+      if (result == 3) {
+        Playlist.PlayAfterLastAdded(
+            Songs[songkey]);
+// Add Song to End of Added Songs
+      }
+      Playlist.Save();
+    },
+    child: ListTile(
+      title: Text(Songs[songkey].title),
+      subtitle: Text(Songs[songkey].interpret),
+    ),
+    itemBuilder: (BuildContext context) =>
+    <PopupMenuEntry>[
+      const PopupMenuItem(
+          child: Text('Edit Tags'), value: 0),
+      const PopupMenuDivider(),
+      const PopupMenuItem(
+          child: Text('Play Next'), value: 1),
+      const PopupMenuItem(
+          child: Text('Add to Playlist'),
+          value: 2),
+      const PopupMenuItem(
+          child: Text('Add to Play Next Stack'),
+          value: 3),
+    ],
   );
 }
