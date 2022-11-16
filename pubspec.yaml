@@ -36,7 +36,6 @@ dependencies:
   cupertino_icons: ^1.0.5
   audioplayers: ^1.0.1
   permission_handler: ^10.0.2
-  external_path: ^1.0.3
 
 
 dev_dependencies:

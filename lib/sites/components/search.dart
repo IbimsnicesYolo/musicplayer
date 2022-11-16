@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import "../settings.dart" as CFG;
-import "song.dart" as Song;
+import '../../settings.dart' as CFG;
 
 // Search Page
 class SearchPage extends StatefulWidget {
+  SearchPage(this.content, {Key? key}) : super(key: key);
+
+  final content;
+
   @override
   State<SearchPage> createState() => _SearchPageState();
 }
@@ -16,8 +19,16 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
-    super.dispose();
     myController.dispose();
+    super.dispose();
+  }
+
+  void update(void Function() c) {
+    setState(
+      () {
+        c();
+      },
+    );
   }
 
   @override
@@ -28,26 +39,30 @@ class _SearchPageState extends State<SearchPage> {
             backgroundColor: CFG.HomeColor,
             // The search area here
             title: Container(
-              width: double.infinity,
               height: 40,
               decoration: BoxDecoration(
                   color: CFG.ContrastColor,
                   borderRadius: BorderRadius.circular(5)),
               child: Center(
                 child: TextField(
+                  onChanged: (searchtext) {
+                    this.searchtext = searchtext;
+                    setState(() {});
+                  },
                   controller: myController,
                   decoration: InputDecoration(
                       prefixIcon: IconButton(
-                        icon: const Icon(Icons.clear),
+                        icon: const Icon(Icons.backspace_outlined),
                         onPressed: () {
-                          myController.clear();
+                          Navigator.maybePop(context);
                         },
                       ),
                       suffixIcon: IconButton(
-                        icon: const Icon(Icons.search),
+                        icon: const Icon(Icons.clear),
                         onPressed: () {
+                          myController.clear();
+                          this.searchtext = "";
                           setState(() {});
-                          this.searchtext = myController.text;
                         },
                       ),
                       hintText: 'Search...',
@@ -55,21 +70,7 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ),
             )),
-        body: Container(
-          child: ListView(
-            children: [
-              for (var i in CFG.Songs.keys)
-                if (CFG.Songs[i].title
-                        .toLowerCase()
-                        .contains(this.searchtext.toLowerCase()) ||
-                    CFG.Songs[i].interpret
-                        .toLowerCase()
-                        .contains(this.searchtext.toLowerCase()))
-                  Song.SongInfo(s: CFG.Songs[i])
-              // TO:Do Make Tags Searchable and show Songs sorted after Tags
-            ],
-          ),
-        ),
+        body: widget.content(searchtext, update),
       ),
     );
   }
