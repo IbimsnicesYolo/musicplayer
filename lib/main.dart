@@ -5,7 +5,6 @@ import "settings.dart" as CFG;
 import "sites/playlist.dart" as PlaylistSide;
 import "sites/tagsite.dart" as TagSite;
 import "sites/unsortedsongs.dart" as USongs;
-import "classes/song.dart";
 import "classes/playlist.dart";
 import "classes/tag.dart";
 
@@ -84,8 +83,7 @@ class _MainSite extends State<MainSite> {
           child: Icon(Icons.downloading),
           onPressed: () {
             setState(() {
-              if (side == 1)
-                UpdateAllTags();
+              if (side == 1) UpdateAllTags();
             });
           },
         ),
