@@ -100,7 +100,7 @@ class _MainSite extends State<MainSite> {
           },
           items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.play_arrow),
+              icon: Icon(Icons.music_note_sharp),
               backgroundColor: CFG.ContrastColor,
               label: "Current Song",
             ),

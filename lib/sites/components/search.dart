@@ -35,14 +35,24 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.blueGrey,
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: CFG.ContrastColor,
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Icon(Icons.arrow_back),
+        ),
         appBar: AppBar(
+            leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: const Icon(Icons.arrow_back),
+            ),
             backgroundColor: CFG.HomeColor,
             // The search area here
             title: Container(
               height: 40,
               decoration: BoxDecoration(
-                  color: CFG.ContrastColor,
-                  borderRadius: BorderRadius.circular(5)),
+                  color: Colors.grey, borderRadius: BorderRadius.circular(0)),
               child: Center(
                 child: TextField(
                   onChanged: (searchtext) {
@@ -51,12 +61,6 @@ class _SearchPageState extends State<SearchPage> {
                   },
                   controller: myController,
                   decoration: InputDecoration(
-                      prefixIcon: IconButton(
-                        icon: const Icon(Icons.backspace_outlined),
-                        onPressed: () {
-                          Navigator.maybePop(context);
-                        },
-                      ),
                       suffixIcon: IconButton(
                         icon: const Icon(Icons.clear),
                         onPressed: () {

@@ -31,52 +31,49 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
   return IconButton(
     onPressed: () => Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => MaterialApp(
-          theme: ThemeData.dark(),
-          home: SearchPage(
-            (search, update) => Container(
-              child: ListView(
-                children: [
-                  for (int key in Tags.keys)
-                    if (ShouldShowTag(key, search))
-                      Dismissible(
-                        key: Key(key.toString()),
-                        onDismissed: (direction) {
-                          update(() {
-                            DeleteTag(Tags[key]);
-                          });
-                        },
-                        background: Container(
-                          color: Colors.red,
-                          child: Padding(
-                            padding: const EdgeInsets.all(15),
-                            child: Row(
-                              children: [
-                                Icon(Icons.delete, color: Colors.white),
-                                Text('Move to trash',
-                                    style: TextStyle(color: Colors.white)),
-                              ],
-                            ),
+        builder: (_) => SearchPage(
+          (search, update) => Container(
+            child: ListView(
+              children: [
+                for (int key in Tags.keys)
+                  if (ShouldShowTag(key, search))
+                    Dismissible(
+                      key: Key(key.toString()),
+                      onDismissed: (direction) {
+                        update(() {
+                          DeleteTag(Tags[key]);
+                        });
+                      },
+                      background: Container(
+                        color: Colors.red,
+                        child: Padding(
+                          padding: const EdgeInsets.all(15),
+                          child: Row(
+                            children: [
+                              Icon(Icons.delete, color: Colors.white),
+                              Text('Move to trash',
+                                  style: TextStyle(color: Colors.white)),
+                            ],
                           ),
                         ),
-                        secondaryBackground: Container(
-                          color: Colors.red,
-                          child: Padding(
-                            padding: const EdgeInsets.all(15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Icon(Icons.delete, color: Colors.white),
-                                Text('Move to trash',
-                                    style: TextStyle(color: Colors.white)),
-                              ],
-                            ),
-                          ),
-                        ),
-                        child: TagTile(c, context, Playlist, key),
                       ),
-                ],
-              ),
+                      secondaryBackground: Container(
+                        color: Colors.red,
+                        child: Padding(
+                          padding: const EdgeInsets.all(15),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Icon(Icons.delete, color: Colors.white),
+                              Text('Move to trash',
+                                  style: TextStyle(color: Colors.white)),
+                            ],
+                          ),
+                        ),
+                      ),
+                      child: TagTile(c, context, Playlist, key),
+                    ),
+              ],
             ),
           ),
         ),
@@ -132,68 +129,64 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
     onLongPress: () => {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => MaterialApp(
-            theme: ThemeData.dark(),
-            home: SearchPage(
-              (search, update) => Container(
-                child: ListView(
-                  children: [
-                    for (String songkey in GetSongsFromTag(Tags[key]).keys)
-                      if (Songs[songkey]
-                              .title
-                              .toLowerCase()
-                              .contains(search.toLowerCase()) ||
-                          Songs[songkey]
-                              .interpret
-                              .toLowerCase()
-                              .contains(search.toLowerCase()))
-                        Dismissible(
-                          key: Key(songkey + Songs[songkey].hash),
-                          onDismissed: (DismissDirection direction) {
-                            update(() {
-                              if (direction == DismissDirection.endToStart) {
-                                // Left
-                                Songs[songkey].hash += "1";
-                                Playlist.AddToPlaylist(Songs[songkey]);
-                                Playlist.Save();
-                              } else {
-                                // Right
-                                UpdateSongTags(songkey, key, false);
-                              }
-                            });
-                          },
-                          background: Container(
-                            color: Colors.red,
-                            child: Padding(
-                              padding: const EdgeInsets.all(15),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.delete, color: Colors.white),
-                                  Text('Remove from Tag',
-                                      style: TextStyle(color: Colors.white)),
-                                ],
-                              ),
+          builder: (_) => SearchPage(
+            (search, update) => Container(
+              child: ListView(
+                children: [
+                  for (String songkey in GetSongsFromTag(Tags[key]).keys)
+                    if (Songs[songkey]
+                            .title
+                            .toLowerCase()
+                            .contains(search.toLowerCase()) ||
+                        Songs[songkey]
+                            .interpret
+                            .toLowerCase()
+                            .contains(search.toLowerCase()))
+                      Dismissible(
+                        key: Key(songkey + Songs[songkey].hash),
+                        onDismissed: (DismissDirection direction) {
+                          update(() {
+                            if (direction == DismissDirection.endToStart) {
+                              // Left
+                              Songs[songkey].hash += "1";
+                              Playlist.AddToPlaylist(Songs[songkey]);
+                              Playlist.Save();
+                            } else {
+                              // Right
+                              UpdateSongTags(songkey, key, false);
+                            }
+                          });
+                        },
+                        background: Container(
+                          color: Colors.red,
+                          child: Padding(
+                            padding: const EdgeInsets.all(15),
+                            child: Row(
+                              children: [
+                                Icon(Icons.delete, color: Colors.white),
+                                Text('Remove from Tag',
+                                    style: TextStyle(color: Colors.white)),
+                              ],
                             ),
                           ),
-                          secondaryBackground: Container(
-                            color: Colors.green,
-                            child: Padding(
-                              padding: const EdgeInsets.all(15),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Icon(Icons.add, color: Colors.white),
-                                  Text('Add To Stack',
-                                      style: TextStyle(color: Colors.white)),
-                                ],
-                              ),
-                            ),
-                          ),
-                          child: SongTile(context,
-                              Playlist, songkey, key),
                         ),
-                  ],
-                ),
+                        secondaryBackground: Container(
+                          color: Colors.green,
+                          child: Padding(
+                            padding: const EdgeInsets.all(15),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Icon(Icons.add, color: Colors.white),
+                                Text('Add To Stack',
+                                    style: TextStyle(color: Colors.white)),
+                              ],
+                            ),
+                          ),
+                        ),
+                        child: SongTile(context, Playlist, songkey, key),
+                      ),
+                ],
               ),
             ),
           ),
@@ -229,63 +222,59 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
           if (result == 2) {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (_) => MaterialApp(
-                  theme: ThemeData.dark(),
-                  home: SearchPage(
-                    (search, update) => Container(
-                      child: ListView(
-                        children: [
-                          for (String songkey in Songs.keys)
-                            if ((Songs[songkey]
-                                        .title
-                                        .toLowerCase()
-                                        .contains(search.toLowerCase()) ||
-                                    Songs[songkey]
-                                        .interpret
-                                        .toLowerCase()
-                                        .contains(search.toLowerCase())) &
-                                !Songs[songkey].tags.contains(key))
-                              Dismissible(
-                                key: Key(songkey + Songs[songkey].hash),
-                                onDismissed: (DismissDirection direction) {
-                                  update(() {
-                                    UpdateSongTags(songkey, key, true);
-                                  });
-                                },
-                                background: Container(
-                                  color: Colors.green,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(15),
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.add, color: Colors.white),
-                                        Text('Add To Tag',
-                                            style:
-                                                TextStyle(color: Colors.white)),
-                                      ],
-                                    ),
+                builder: (_) => SearchPage(
+                  (search, update) => Container(
+                    child: ListView(
+                      children: [
+                        for (String songkey in Songs.keys)
+                          if ((Songs[songkey]
+                                      .title
+                                      .toLowerCase()
+                                      .contains(search.toLowerCase()) ||
+                                  Songs[songkey]
+                                      .interpret
+                                      .toLowerCase()
+                                      .contains(search.toLowerCase())) &
+                              !Songs[songkey].tags.contains(key))
+                            Dismissible(
+                              key: Key(songkey + Songs[songkey].hash),
+                              onDismissed: (DismissDirection direction) {
+                                update(() {
+                                  UpdateSongTags(songkey, key, true);
+                                });
+                              },
+                              background: Container(
+                                color: Colors.green,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(15),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.add, color: Colors.white),
+                                      Text('Add To Tag',
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                    ],
                                   ),
                                 ),
-                                secondaryBackground: Container(
-                                  color: Colors.green,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(15),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Icon(Icons.add, color: Colors.white),
-                                        Text('Add To Tag',
-                                            style:
-                                                TextStyle(color: Colors.white)),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                child: SongTile(context,
-                                    Playlist, songkey, key),
                               ),
-                        ],
-                      ),
+                              secondaryBackground: Container(
+                                color: Colors.green,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(15),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Icon(Icons.add, color: Colors.white),
+                                      Text('Add To Tag',
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              child: SongTile(context, Playlist, songkey, key),
+                            ),
+                      ],
                     ),
                   ),
                 ),
@@ -314,42 +303,36 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
   );
 }
 
-PopupMenuButton SongTile(BuildContext context,
-    CurrentPlayList Playlist, String songkey, int key) {
+PopupMenuButton SongTile(
+    BuildContext context, CurrentPlayList Playlist, String songkey, int key) {
   return PopupMenuButton(
     onSelected: (result) {
       if (result == 0) {
         Map<String, List> ToUpdate = {};
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) =>
-                MaterialApp(
-                  theme: ThemeData.dark(),
-                  home: AlertDialog(
-                    actions: <Widget>[
-                      for (Tag t in Tags.values)
-                        CoolerCheckBox(
-                            Songs[songkey]
-                                .tags
-                                .contains(t.id), (bool? b) {
-                          ToUpdate[Songs[songkey].filename] = [t.id, b];
-                        }, t.name),
-                      Center(
-                        child: TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              ToUpdate.forEach((key, value) {
-                                UpdateSongTags(
-                                    key,
-                                    value[0],
-                                    value[1]);
-                              });
-                            },
-                            child: Text("Close")),
-                      ),
-                    ],
+            builder: (_) => MaterialApp(
+              theme: ThemeData.dark(),
+              home: AlertDialog(
+                actions: <Widget>[
+                  for (Tag t in Tags.values)
+                    CoolerCheckBox(Songs[songkey].tags.contains(t.id),
+                        (bool? b) {
+                      ToUpdate[Songs[songkey].filename] = [t.id, b];
+                    }, t.name),
+                  Center(
+                    child: TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          ToUpdate.forEach((key, value) {
+                            UpdateSongTags(key, value[0], value[1]);
+                          });
+                        },
+                        child: Text("Close")),
                   ),
-                ),
+                ],
+              ),
+            ),
           ),
         );
       }
@@ -362,8 +345,7 @@ PopupMenuButton SongTile(BuildContext context,
 // Add Song to End of Playlist
       }
       if (result == 3) {
-        Playlist.PlayAfterLastAdded(
-            Songs[songkey]);
+        Playlist.PlayAfterLastAdded(Songs[songkey]);
 // Add Song to End of Added Songs
       }
       Playlist.Save();
@@ -372,19 +354,12 @@ PopupMenuButton SongTile(BuildContext context,
       title: Text(Songs[songkey].title),
       subtitle: Text(Songs[songkey].interpret),
     ),
-    itemBuilder: (BuildContext context) =>
-    <PopupMenuEntry>[
-      const PopupMenuItem(
-          child: Text('Edit Tags'), value: 0),
+    itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+      const PopupMenuItem(child: Text('Edit Tags'), value: 0),
       const PopupMenuDivider(),
-      const PopupMenuItem(
-          child: Text('Play Next'), value: 1),
-      const PopupMenuItem(
-          child: Text('Add to Playlist'),
-          value: 2),
-      const PopupMenuItem(
-          child: Text('Add to Play Next Stack'),
-          value: 3),
+      const PopupMenuItem(child: Text('Play Next'), value: 1),
+      const PopupMenuItem(child: Text('Add to Playlist'), value: 2),
+      const PopupMenuItem(child: Text('Add to Play Next Stack'), value: 3),
     ],
   );
 }

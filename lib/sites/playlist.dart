@@ -36,17 +36,14 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
   return IconButton(
     onPressed: () => Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => MaterialApp(
-          theme: ThemeData.dark(),
-          home: SearchPage(
-            (search, update) => Container(
-              child: ListView(
-                children: [
-                  for (String key in Config["Playlist"])
-                    if (ShouldShowSong(key, search))
-                      SongTile(context, Songs[key], c, Playlist),
-                ],
-              ),
+        builder: (_) => SearchPage(
+          (search, update) => Container(
+            child: ListView(
+              children: [
+                for (String key in Config["Playlist"])
+                  if (ShouldShowSong(key, search))
+                    SongTile(context, Songs[key], c, Playlist),
+              ],
             ),
           ),
         ),
@@ -119,34 +116,28 @@ PopupMenuButton SongTile(BuildContext context, Song s,
         Map<String, List> ToUpdate = {};
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) =>
-                MaterialApp(
-                  theme: ThemeData.dark(),
-                  home: AlertDialog(
-                    actions: <Widget>[
-                      for (Tag t in Tags.values)
-                        CoolerCheckBox(
-                            Songs[s.filename]
-                                .tags
-                                .contains(t.id), (bool? b) {
-                          ToUpdate[s.filename] = [t.id, b];
-                        }, t.name),
-                      Center(
-                        child: TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              ToUpdate.forEach((key, value) {
-                                UpdateSongTags(
-                                    key,
-                                    value[0],
-                                    value[1]);
-                              });
-                            },
-                            child: Text("Close")),
-                      ),
-                    ],
+            builder: (_) => MaterialApp(
+              theme: ThemeData.dark(),
+              home: AlertDialog(
+                actions: <Widget>[
+                  for (Tag t in Tags.values)
+                    CoolerCheckBox(Songs[s.filename].tags.contains(t.id),
+                        (bool? b) {
+                      ToUpdate[s.filename] = [t.id, b];
+                    }, t.name),
+                  Center(
+                    child: TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          ToUpdate.forEach((key, value) {
+                            UpdateSongTags(key, value[0], value[1]);
+                          });
+                        },
+                        child: Text("Close")),
                   ),
-                ),
+                ],
+              ),
+            ),
           ),
         );
       }
