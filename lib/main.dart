@@ -5,6 +5,7 @@ import "settings.dart" as CFG;
 import "sites/playlist.dart" as PlaylistSide;
 import "sites/tagsite.dart" as TagSite;
 import "sites/unsortedsongs.dart" as USongs;
+import "sites/song.dart" as SongSite;
 import "classes/playlist.dart";
 import "classes/tag.dart";
 
@@ -69,21 +70,24 @@ class _MainSite extends State<MainSite> {
       child: Scaffold(
         appBar: AppBar(
           actions: [
-            if (side == 0) PlaylistSide.buildActions(context, update, Playlist),
-            if (side == 1) TagSite.buildActions(context, update, Playlist),
-            if (side == 2) USongs.buildActions(context, update, Playlist),
+            if (side == 0) SongSite.buildActions(context, update, Playlist),
+            if (side == 1) PlaylistSide.buildActions(context, update, Playlist),
+            if (side == 2) TagSite.buildActions(context, update, Playlist),
+            if (side == 3) USongs.buildActions(context, update, Playlist),
           ],
         ),
         body: (side == 0
-            ? PlaylistSide.buildContent(context, update, Playlist)
+            ? SongSite.buildContent(context, update, Playlist)
             : (side == 1
-                ? TagSite.buildContent(context, update, Playlist)
-                : USongs.buildContent(context, update, Playlist))),
+                ? PlaylistSide.buildContent(context, update, Playlist)
+                : (side == 2
+                    ? TagSite.buildContent(context, update, Playlist)
+                    : USongs.buildContent(context, update, Playlist)))),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.downloading),
           onPressed: () {
             setState(() {
-              if (side == 1) UpdateAllTags();
+              if (side == 2) UpdateAllTags();
             });
           },
         ),
@@ -94,17 +98,25 @@ class _MainSite extends State<MainSite> {
               this.side = index;
             });
           },
-          items: const [
+          items: [
             BottomNavigationBarItem(
               icon: Icon(Icons.play_arrow),
+              backgroundColor: CFG.ContrastColor,
+              label: "Current Song",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.play_arrow),
+              backgroundColor: CFG.ContrastColor,
               label: "Current Playlist",
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.tag),
+              backgroundColor: CFG.ContrastColor,
               label: "All Tags",
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.fiber_new_outlined),
+              backgroundColor: CFG.ContrastColor,
               label: "Unsorted Songs",
             ),
           ],
