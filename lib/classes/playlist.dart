@@ -1,6 +1,7 @@
 import 'song.dart';
 import "tag.dart";
 import "../settings.dart";
+import 'package:audioplayers/audioplayers.dart';
 
 /* Playlist */
 class CurrentPlayList {

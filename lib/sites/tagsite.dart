@@ -7,8 +7,6 @@ import 'components/search.dart';
 import 'components/string_input.dart';
 import 'components/checkbox.dart';
 
-// TODO Fix Create Tag Button Color
-
 bool ShouldShowTag(int key, String search) {
   if (search == "") return true;
 
