@@ -18,41 +18,15 @@ class SearchSongPage extends StatefulWidget {
 }
 
 class _SearchSongPage extends State<SearchSongPage> {
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("Search"),
-        ),
-        body: Container(
-          child: Column(
-            children: [
-              Container(
-                child: TextField(
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Search',
-                  ),
-                ),
-              ),
-              Container(
-                child: Text("Search"),
-              ),
-              TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text("Close"))
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+  String searchinfo = "";
+  String searchcount = "";
+  bool searching = false;
 
-/*
+  void StartSearch() async {
+    setState(() {
+      searching = true;
+    });
+
     int count = 0;
     List<String> path = [];
     for (String p in CFG.Config["SearchPaths"]) {
@@ -64,6 +38,7 @@ class _SearchSongPage extends State<SearchSongPage> {
         Directory dir = Directory(path[i]);
         List<FileSystemEntity> _files;
         _files = dir.listSync(recursive: true, followLinks: true);
+        int reload = 0;
 
         for (FileSystemEntity entity in _files) {
           await Future.delayed(Duration(milliseconds: 1));
@@ -73,17 +48,64 @@ class _SearchSongPage extends State<SearchSongPage> {
               count += 1;
             }
           }
+          reload += 1;
+          if (reload > 100) {
+            reload = 0;
+            setState(() {
+              searchcount = "Found $count songs";
+              searchinfo += "Scanning $path\n";
+            });
+          }
         }
       } catch (e) {
-        CFG.ShowSth("There was an error searching: " + path[i], context);
+        //CFG.ShowSth("There was an error searching: " + path[i], context);
       }
       ;
     }
-    CFG.ShowSth("Created $count new Songs", context);
     if (count > 0) {
       SaveSongs();
     }
- */
+
+    setState(() {
+      searchcount = "Found $count songs";
+      searchinfo = "Finished searching";
+      searching = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: CFG.ContrastColor,
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Icon(Icons.arrow_back),
+        ),
+        appBar: AppBar(
+          title: Text("Search"),
+        ),
+        body: Container(
+          child: Center(
+            child: Column(
+              children: [
+                Container(
+                  child: TextButton(
+                    onPressed: () => StartSearch(),
+                    child: Text(searching ? "Searching..." : "Start Search"),
+                  ),
+                ),
+                Text(searchcount),
+                Text(searchinfo),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 void ShowConfig(context, void Function(void Function()) update) {
   Navigator.of(context).push(
