@@ -9,10 +9,8 @@ class CurrentPlayList {
   int last_added_pos = 0;
 
   void AddToPlaylist(Song song) {
-    for (int i = 0; i < songs.length; i++) {
-      if (songs[i].filename == song.filename) {
-        return;
-      }
+    if (!songs.contains(song)) {
+      return;
     }
     songs.add(song);
   }
@@ -43,6 +41,18 @@ class CurrentPlayList {
 
   void Shuffle() {
     songs.shuffle();
+  }
+
+  void PlayNextSong() {
+    if (songs.length > 0) {
+      songs.add(songs.removeAt(0));
+    }
+  }
+
+  void PlayPreviousSong() {
+    if (songs.length > 0) {
+      songs.insert(0, songs.removeAt(songs.length - 1));
+    }
   }
 
   void Save() {
