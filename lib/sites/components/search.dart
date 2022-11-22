@@ -51,8 +51,6 @@ class _SearchPageState extends State<SearchPage> {
             // The search area here
             title: Container(
               height: 40,
-              decoration: BoxDecoration(
-                  color: Colors.grey, borderRadius: BorderRadius.circular(0)),
               child: Center(
                 child: TextField(
                   onChanged: (searchtext) {
@@ -69,8 +67,8 @@ class _SearchPageState extends State<SearchPage> {
                           setState(() {});
                         },
                       ),
-                      hintText: 'Search...',
-                      border: InputBorder.none),
+                      border: OutlineInputBorder(),
+                      labelText: 'Search'),
                 ),
               ),
             )),

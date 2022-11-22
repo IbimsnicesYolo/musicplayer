@@ -6,11 +6,39 @@ import 'dart:io';
 void SearchPaths(context) async {
   Navigator.of(context).push(
     MaterialPageRoute(
-      builder: (_) => AlertDialog(
-        title: Text("Searching for Songs"),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
+      builder: (_) => SearchSongPage(),
+    ),
+  );
+}
+
+class SearchSongPage extends StatefulWidget {
+  const SearchSongPage({Key? key}) : super(key: key);
+  @override
+  State<SearchSongPage> createState() => _SearchSongPage();
+}
+
+class _SearchSongPage extends State<SearchSongPage> {
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("Search"),
+        ),
+        body: Container(
+          child: Column(
+            children: [
+              Container(
+                child: TextField(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Search',
+                  ),
+                ),
+              ),
+              Container(
+                child: Text("Search"),
+              ),
               TextButton(
                   onPressed: () {
                     Navigator.pop(context);
@@ -20,40 +48,42 @@ void SearchPaths(context) async {
           ),
         ),
       ),
-    ),
-  );
-
-  int count = 0;
-  List<String> path = [];
-  for (String p in CFG.Config["SearchPaths"]) {
-    path.add(p);
-  }
-
-  for (var i = 0; i < path.length; i++) {
-    try {
-      Directory dir = Directory(path[i]);
-      List<FileSystemEntity> _files;
-      _files = dir.listSync(recursive: true, followLinks: true);
-
-      for (FileSystemEntity entity in _files) {
-        await Future.delayed(Duration(milliseconds: 1));
-        String path = entity.path;
-        if (path.endsWith('.mp3')) {
-          if (CreateSong(path)) {
-            count += 1;
-          }
-        }
-      }
-    } catch (e) {
-      CFG.ShowSth("There was an error searching: " + path[i], context);
-    }
-    ;
-  }
-  CFG.ShowSth("Created $count new Songs", context);
-  if (count > 0) {
-    SaveSongs();
+    );
   }
 }
+
+/*
+    int count = 0;
+    List<String> path = [];
+    for (String p in CFG.Config["SearchPaths"]) {
+      path.add(p);
+    }
+
+    for (var i = 0; i < path.length; i++) {
+      try {
+        Directory dir = Directory(path[i]);
+        List<FileSystemEntity> _files;
+        _files = dir.listSync(recursive: true, followLinks: true);
+
+        for (FileSystemEntity entity in _files) {
+          await Future.delayed(Duration(milliseconds: 1));
+          String path = entity.path;
+          if (path.endsWith('.mp3')) {
+            if (CreateSong(path)) {
+              count += 1;
+            }
+          }
+        }
+      } catch (e) {
+        CFG.ShowSth("There was an error searching: " + path[i], context);
+      }
+      ;
+    }
+    CFG.ShowSth("Created $count new Songs", context);
+    if (count > 0) {
+      SaveSongs();
+    }
+ */
 
 void ShowConfig(context, void Function(void Function()) update) {
   Navigator.of(context).push(
