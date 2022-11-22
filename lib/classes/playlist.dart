@@ -9,7 +9,7 @@ class CurrentPlayList {
   int last_added_pos = 0;
 
   void AddToPlaylist(Song song) {
-    if (!songs.contains(song)) {
+    if (songs.contains(song)) {
       return;
     }
     songs.add(song);
@@ -40,7 +40,12 @@ class CurrentPlayList {
   }
 
   void Shuffle() {
+    if (songs.length < 1) {
+      return;
+    }
+    Song current = songs.removeAt(0);
     songs.shuffle();
+    songs.insert(0, current);
   }
 
   void PlayNextSong() {
@@ -84,5 +89,7 @@ class CurrentPlayList {
 
   void Clear() {
     songs = [];
+    last_added_pos = 0;
+    Save();
   }
 }
