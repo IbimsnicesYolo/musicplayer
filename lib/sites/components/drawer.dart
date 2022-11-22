@@ -4,7 +4,9 @@ import "../../classes/song.dart";
 import 'dart:io';
 
 class SearchSongPage extends StatefulWidget {
-  const SearchSongPage({Key? key}) : super(key: key);
+  const SearchSongPage({
+    Key? key,
+  }) : super(key: key);
   @override
   State<SearchSongPage> createState() => _SearchSongPage();
 }
@@ -102,12 +104,28 @@ class _SearchSongPage extends State<SearchSongPage> {
   }
 }
 
-void ShowConfig(context, void Function(void Function()) update) {
-  Navigator.of(context).push(
-    MaterialPageRoute(
-      builder: (_) => AlertDialog(
-        title: Text("Config"),
-        content: SingleChildScrollView(
+class ShowConfig extends StatefulWidget {
+  ShowConfig({Key? key}) : super(key: key);
+
+  @override
+  State<ShowConfig> createState() => _ShowConfig();
+}
+
+class _ShowConfig extends State<ShowConfig> {
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: CFG.ContrastColor,
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Icon(Icons.arrow_back),
+        ),
+        appBar: AppBar(
+          title: Text("Config"),
+        ),
+        body: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
               for (var key in CFG.Config.keys)
@@ -115,7 +133,6 @@ void ShowConfig(context, void Function(void Function()) update) {
               TextButton(
                   onPressed: () {
                     Navigator.pop(context);
-                    update(() {});
                     CFG.SaveConfig();
                   },
                   child: Text("Close"))
@@ -123,8 +140,8 @@ void ShowConfig(context, void Function(void Function()) update) {
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class SongDrawer extends Drawer {
@@ -165,7 +182,13 @@ class SongDrawer extends Drawer {
                     TextButton(
                       child: const Text("Open Settings"),
                       onPressed: () {
-                        ShowConfig(context, c);
+                        Navigator.of(context)
+                            .push(
+                              MaterialPageRoute(
+                                builder: (_) => ShowConfig(),
+                              ),
+                            )
+                            .then((value) => c(() {}));
                       },
                     ),
                   ],
