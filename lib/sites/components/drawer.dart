@@ -3,14 +3,6 @@ import '../../settings.dart' as CFG;
 import "../../classes/song.dart";
 import 'dart:io';
 
-void SearchPaths(context) async {
-  Navigator.of(context).push(
-    MaterialPageRoute(
-      builder: (_) => SearchSongPage(),
-    ),
-  );
-}
-
 class SearchSongPage extends StatefulWidget {
   const SearchSongPage({Key? key}) : super(key: key);
   @override
@@ -39,6 +31,7 @@ class _SearchSongPage extends State<SearchSongPage> {
         List<FileSystemEntity> _files;
         _files = dir.listSync(recursive: true, followLinks: true);
         int reload = 0;
+        int filecount = _files.length;
 
         for (FileSystemEntity entity in _files) {
           await Future.delayed(Duration(milliseconds: 1));
@@ -49,7 +42,7 @@ class _SearchSongPage extends State<SearchSongPage> {
             }
           }
           reload += 1;
-          if (reload > 100) {
+          if (reload % (filecount / 10) == 0) {
             reload = 0;
             setState(() {
               searchcount = "Found $count songs";
@@ -58,7 +51,9 @@ class _SearchSongPage extends State<SearchSongPage> {
           }
         }
       } catch (e) {
-        //CFG.ShowSth("There was an error searching: " + path[i], context);
+        setState(() {
+          searchinfo += "\t Error Searching $path\n";
+        });
       }
       ;
     }
@@ -67,7 +62,7 @@ class _SearchSongPage extends State<SearchSongPage> {
     }
 
     setState(() {
-      searchcount = "Found $count songs";
+      searchcount = "Found $count new songs";
       searchinfo = "Finished searching";
       searching = false;
     });
@@ -159,8 +154,13 @@ class SongDrawer extends Drawer {
                     TextButton(
                         child: const Text("Search for new Songs"),
                         onPressed: () {
-                          SearchPaths(context);
-                          c(() {});
+                          Navigator.of(context)
+                              .push(
+                                MaterialPageRoute(
+                                  builder: (_) => SearchSongPage(),
+                                ),
+                              )
+                              .then((value) => c(() {}));
                         }),
                     TextButton(
                       child: const Text("Open Settings"),
