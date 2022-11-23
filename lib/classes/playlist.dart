@@ -8,6 +8,10 @@ class CurrentPlayList {
   List<Song> songs = [];
   int last_added_pos = 0;
 
+  AudioPlayer player = AudioPlayer();
+  AudioPlayer player2 = AudioPlayer();
+  int currentplayer = 1;
+
   void AddToPlaylist(Song song) {
     if (songs.contains(song)) {
       return;
@@ -91,5 +95,34 @@ class CurrentPlayList {
     songs = [];
     last_added_pos = 0;
     Save();
+  }
+
+  void StartPlaying() {
+    if (songs.length > 0) {
+      if (currentplayer == 1) {
+        player2.stop();
+        currentplayer = 1;
+      } else {
+        player.stop();
+        currentplayer = 2;
+      }
+    }
+  }
+
+  void StopPlaying() {
+    if (songs.length > 0) {
+      player.stop();
+      player2.stop();
+    }
+  }
+
+  void PausePlaying() {
+    if (songs.length > 0) {
+      if (currentplayer == 1) {
+        player.pause();
+      } else {
+        player2.pause();
+      }
+    }
   }
 }
