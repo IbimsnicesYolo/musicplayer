@@ -9,8 +9,6 @@ class CurrentPlayList {
   int last_added_pos = 0;
 
   AudioPlayer player = AudioPlayer();
-  AudioPlayer player2 = AudioPlayer();
-  int currentplayer = 1;
 
   void AddToPlaylist(Song song) {
     if (songs.contains(song)) {
@@ -97,32 +95,19 @@ class CurrentPlayList {
     Save();
   }
 
-  void StartPlaying() {
+  void StartPlaying() async {
     if (songs.length > 0) {
-      if (currentplayer == 1) {
-        player2.stop();
-        currentplayer = 1;
-      } else {
-        player.stop();
-        currentplayer = 2;
-      }
+      await player.setSource(DeviceFileSource(songs[0].path));
+      await player.stop();
+      await player.play(DeviceFileSource(songs[0].path));
     }
   }
 
-  void StopPlaying() {
-    if (songs.length > 0) {
-      player.stop();
-      player2.stop();
-    }
+  void StopPlaying() async {
+    await player.stop();
   }
 
-  void PausePlaying() {
-    if (songs.length > 0) {
-      if (currentplayer == 1) {
-        player.pause();
-      } else {
-        player2.pause();
-      }
-    }
+  void PausePlaying() async {
+    await player.pause();
   }
 }

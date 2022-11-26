@@ -33,7 +33,6 @@ class _SearchSongPage extends State<SearchSongPage> {
         List<FileSystemEntity> _files;
         _files = dir.listSync(recursive: true, followLinks: true);
         int reload = 0;
-        int filecount = _files.length;
 
         for (FileSystemEntity entity in _files) {
           await Future.delayed(Duration(milliseconds: 1));
@@ -44,7 +43,7 @@ class _SearchSongPage extends State<SearchSongPage> {
             }
           }
           reload += 1;
-          if (reload % (filecount / 10) == 0) {
+          if (reload > 10) {
             reload = 0;
             setState(() {
               searchcount = "Found $count songs";
@@ -89,7 +88,7 @@ class _SearchSongPage extends State<SearchSongPage> {
               children: [
                 Container(
                   child: TextButton(
-                    onPressed: () => StartSearch(),
+                    onPressed: StartSearch,
                     child: Text(searching ? "Searching..." : "Start Search"),
                   ),
                 ),
