@@ -29,7 +29,7 @@ void StringInput(
             if (clearbutton)
               TextButton(
                 style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
+                  primary: Colors.white,
                   backgroundColor: Colors.lightGreenAccent,
                 ),
                 child: const Text("Strip ()"),
@@ -41,7 +41,7 @@ void StringInput(
               ),
             TextButton(
               style: TextButton.styleFrom(
-                foregroundColor: Colors.white,
+                primary: Colors.white,
                 backgroundColor: Colors.red,
               ),
               child: Text(Button2),
@@ -53,7 +53,7 @@ void StringInput(
             ),
             TextButton(
               style: TextButton.styleFrom(
-                foregroundColor: Colors.white,
+                primary: Colors.white,
                 backgroundColor: Colors.green,
               ),
               child: Text(Button1),
