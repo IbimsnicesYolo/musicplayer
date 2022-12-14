@@ -57,15 +57,16 @@ class _TagEdit extends State<TagEdit> {
           },
           child: const Icon(Icons.arrow_back),
         ),
-        body: Column(
-          children: [
-            for (Tag t in Tags.values)
-              CoolerCheckBox(Songs[s.filename].tags.contains(t.id), (bool? b) {
-                ToUpdate[s.filename] = [t.id, b];
-              }, t.name),
-          ],
+        body: ListView(
+            children: [
+              for (Tag t in Tags.values)
+                CoolerCheckBox(Songs[s.filename].tags.contains(t.id),
+                    (bool? b) {
+                  ToUpdate[s.filename] = [t.id, b];
+                }, t.name),
+            ],
+          ),
         ),
-      ),
     );
   }
 }
