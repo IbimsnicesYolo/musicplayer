@@ -29,8 +29,9 @@ class _SearchSongPage extends State<SearchSongPage> {
 
     for (var i = 0; i < path.length; i++) {
       setState(() {
+        String a = path[i];
         searchcount = "Found $count songs";
-        searchinfo += "Scanning $path[i]\n";
+        searchinfo += "Scanning $a\n";
       });
       try {
         Directory dir = Directory(path[i]);
@@ -45,10 +46,16 @@ class _SearchSongPage extends State<SearchSongPage> {
               count += 1;
             }
           }
+          if (count % 100 == 0) {
+            setState(() {
+              searchcount = "Found $count songs";
+            });
+          }
         }
       } catch (e) {
         setState(() {
-          searchinfo += "\t Error Searching $path[i]\n";
+          String a = path[i];
+          searchinfo += "\t Error Searching $a\n";
         });
       }
       ;
