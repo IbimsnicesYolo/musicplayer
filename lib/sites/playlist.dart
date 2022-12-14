@@ -1,11 +1,10 @@
 import "../classes/playlist.dart";
-import "../classes/tag.dart";
 import "../classes/song.dart";
 import "../settings.dart";
 import 'package:flutter/material.dart';
 import 'components/search.dart';
 import 'components/string_input.dart';
-import 'components/checkbox.dart';
+import 'components/tagedit.dart';
 
 bool ShouldShowSong(String key, String search) {
   if (search == "") return true;
@@ -109,31 +108,9 @@ PopupMenuButton SongTile(BuildContext context, Song s,
         );
       }
       if (result == 2) {
-        Map<String, List> ToUpdate = {};
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => MaterialApp(
-              theme: ThemeData.dark(),
-              home: AlertDialog(
-                actions: <Widget>[
-                  for (Tag t in Tags.values)
-                    CoolerCheckBox(Songs[s.filename].tags.contains(t.id),
-                        (bool? b) {
-                      ToUpdate[s.filename] = [t.id, b];
-                    }, t.name),
-                  Center(
-                    child: TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          ToUpdate.forEach((key, value) {
-                            UpdateSongTags(key, value[0], value[1]);
-                          });
-                        },
-                        child: Text("Close")),
-                  ),
-                ],
-              ),
-            ),
+            builder: (_) => TagEdit(s)
           ),
         );
       }

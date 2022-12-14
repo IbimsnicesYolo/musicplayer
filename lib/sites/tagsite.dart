@@ -5,7 +5,7 @@ import "../settings.dart";
 import 'package:flutter/material.dart';
 import 'components/search.dart';
 import 'components/string_input.dart';
-import 'components/checkbox.dart';
+import 'components/tagedit.dart';
 
 bool ShouldShowTag(int key, String search) {
   if (search == "") return true;
@@ -303,31 +303,9 @@ PopupMenuButton SongTile(
   return PopupMenuButton(
     onSelected: (result) {
       if (result == 0) {
-        Map<String, List> ToUpdate = {};
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => MaterialApp(
-              theme: ThemeData.dark(),
-              home: AlertDialog(
-                actions: <Widget>[
-                  for (Tag t in Tags.values)
-                    CoolerCheckBox(Songs[songkey].tags.contains(t.id),
-                        (bool? b) {
-                      ToUpdate[Songs[songkey].filename] = [t.id, b];
-                    }, t.name),
-                  Center(
-                    child: TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          ToUpdate.forEach((key, value) {
-                            UpdateSongTags(key, value[0], value[1]);
-                          });
-                        },
-                        child: Text("Close")),
-                  ),
-                ],
-              ),
-            ),
+              builder: (_) => TagEdit(Songs[songkey])
           ),
         );
       }
