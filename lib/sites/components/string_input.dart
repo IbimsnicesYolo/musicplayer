@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 // Possible Overflow because _textFieldController never gets disposed
+// Hint Text is constantly Tag Name
 
 void StringInput(
     context,
@@ -28,36 +29,36 @@ void StringInput(
             if (clearbutton)
               TextButton(
                 style: TextButton.styleFrom(
-                  primary: Colors.white,
+                  foregroundColor: Colors.white,
                   backgroundColor: Colors.lightGreenAccent,
                 ),
                 child: const Text("Strip ()"),
                 // replace all () with ""
                 onPressed: () {
                   _textFieldController.text = _textFieldController.text
-                      .replaceAll(RegExp(r"\(.*\)"), "");
+                      .replaceAll(RegExp(r"\(.*\)"), "").trim();
                 },
               ),
             TextButton(
               style: TextButton.styleFrom(
-                primary: Colors.white,
+                foregroundColor: Colors.white,
                 backgroundColor: Colors.red,
               ),
               child: Text(Button2),
               onPressed: () {
-                OnPressed2(_textFieldController.text);
+                OnPressed2(_textFieldController.text.trim());
                 _textFieldController.clear();
                 Navigator.pop(context);
               },
             ),
             TextButton(
               style: TextButton.styleFrom(
-                primary: Colors.white,
+                foregroundColor: Colors.white,
                 backgroundColor: Colors.green,
               ),
               child: Text(Button1),
               onPressed: () {
-                OnPressed1(_textFieldController.text);
+                OnPressed1(_textFieldController.text.trim());
                 _textFieldController.clear();
                 Navigator.pop(context);
               },
