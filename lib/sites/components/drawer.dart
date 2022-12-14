@@ -28,11 +28,14 @@ class _SearchSongPage extends State<SearchSongPage> {
     }
 
     for (var i = 0; i < path.length; i++) {
+      setState(() {
+        searchcount = "Found $count songs";
+        searchinfo += "Scanning $path[i]\n";
+      });
       try {
         Directory dir = Directory(path[i]);
         List<FileSystemEntity> _files;
         _files = dir.listSync(recursive: true, followLinks: true);
-        int reload = 0;
 
         for (FileSystemEntity entity in _files) {
           await Future.delayed(Duration(milliseconds: 1));
@@ -42,18 +45,10 @@ class _SearchSongPage extends State<SearchSongPage> {
               count += 1;
             }
           }
-          reload += 1;
-          if (reload > 10) {
-            reload = 0;
-            setState(() {
-              searchcount = "Found $count songs";
-              searchinfo += "Scanning $path\n";
-            });
-          }
         }
       } catch (e) {
         setState(() {
-          searchinfo += "\t Error Searching $path\n";
+          searchinfo += "\t Error Searching $path[i]\n";
         });
       }
       ;
