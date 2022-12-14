@@ -73,7 +73,7 @@ void DeleteTag(Tag t) {
       }
     },
   );
-  ShouldSaveTags = true;
+  SaveTags();
 }
 
 void UpdateAllTags() {

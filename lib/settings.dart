@@ -32,6 +32,7 @@ Map Config = {
 
 /* Config */
 void SaveConfig() {
+  SaveSongs();
   String appDocDirectory = "storage/emulated/0/Music";
   File(appDocDirectory + '/config.json')
       .create(recursive: true)

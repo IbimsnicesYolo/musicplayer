@@ -49,16 +49,13 @@ bool CreateSong(path) {
     return false;
   }
   String interpret =
-      path.split("/").last.split(" - ").first.replaceAll(RegExp(".mp3"), "");
+      filename.split(" -_ ").first.replaceAll(RegExp(".mp3"), "").trim();
 
-  String title = path
-      .split("/")
-      .last
-      .split(" - ")
+  String title = filename.split(" -_ ")
       .last
       .replaceAll(RegExp(".mp3"), "")
       .split(" _ ")
-      .first;
+      .first.trim();
 
   Song newsong = Song(path);
   newsong.title = title;
