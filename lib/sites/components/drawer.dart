@@ -15,6 +15,8 @@ class _SearchSongPage extends State<SearchSongPage> {
   String searchinfo = "";
   String searchcount = "";
   bool searching = false;
+  List<String> FoundSongs = [];
+  bool SongEdit = false;
 
   void StartSearch() async {
     setState(() {
@@ -43,6 +45,7 @@ class _SearchSongPage extends State<SearchSongPage> {
           String path = entity.path;
           if (path.endsWith('.mp3')) {
             if (CreateSong(path)) {
+              FoundSongs.add(path);
               count += 1;
             }
           }
@@ -71,6 +74,79 @@ class _SearchSongPage extends State<SearchSongPage> {
     });
   }
 
+  Center SearchPage() {
+    return Center(
+      child: Column(
+        children: [
+          Container(
+            child: TextButton(
+              onPressed: StartSearch,
+              child: Text(searching ? "Searching..." : "Start Search"),
+            ),
+          ),
+          Text(searchcount),
+          Text(searchinfo),
+          ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  SongEdit = true;
+                });
+              },
+              child: const Text("Edit Songs"))
+        ],
+      ),
+    );
+  }
+
+  Center SongEditPage() {
+    String currentsong = "";
+    try {
+      currentsong = FoundSongs[0];
+    } catch (e) {
+      setState(() {
+        SongEdit = false;
+      });
+    }
+
+    if (currentsong == "") {
+      setState(() {
+        SongEdit = false;
+      });
+      return Center();
+    }
+
+    Song csong = Songs[currentsong.split("/").last];
+
+    return Center(
+      child: Column(
+        children: [
+          ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  SongEdit = false;
+                });
+              },
+              child: const Text("Back")),
+          Text(csong.filename),
+          ElevatedButton(
+              onPressed: () {}, child: Text("Title: ${csong.title}")),
+          ElevatedButton(
+              onPressed: () {}, child: Text("Artist: ${csong.interpret}")),
+          ElevatedButton(
+              onPressed: () {}, child: const Text("Create Artist Tag")),
+          ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  searchcount = "";
+                  FoundSongs.removeAt(0);
+                });
+              },
+              child: const Text("Done")),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -85,20 +161,7 @@ class _SearchSongPage extends State<SearchSongPage> {
           title: Text("Search"),
         ),
         body: Container(
-          child: Center(
-            child: Column(
-              children: [
-                Container(
-                  child: TextButton(
-                    onPressed: StartSearch,
-                    child: Text(searching ? "Searching..." : "Start Search"),
-                  ),
-                ),
-                Text(searchcount),
-                Text(searchinfo),
-              ],
-            ),
-          ),
+          child: SongEdit ? SongEditPage() : SearchPage(),
         ),
       ),
     );
