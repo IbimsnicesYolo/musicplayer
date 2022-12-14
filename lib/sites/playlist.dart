@@ -16,17 +16,13 @@ bool ShouldShowSong(String key, String search) {
   if (Songs[key].interpret.toLowerCase().contains(search.toLowerCase()))
     return true;
 
-  List<String> name = Songs[key].title.toLowerCase().split(" ");
-  name += Songs[key].interpret.toLowerCase().split(" ");
-  name += Songs[key].filename.toLowerCase().split(" ");
-
   List<String> searchname = search.toLowerCase().split(" ");
 
-  for (String s in name) {
+
     for (String s2 in searchname) {
-      if (s.contains(s2)) return true;
+      if (Songs[key].title.contains(s2) || Songs[key].interpret.contains(s2)) return true;
     }
-  }
+
 
   return false;
 }

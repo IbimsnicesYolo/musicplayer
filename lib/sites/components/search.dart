@@ -74,7 +74,7 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ),
             )),
-        body: widget.content(s, update),
+        body: widget.content(s.trim(), update),
       ),
     );
   }

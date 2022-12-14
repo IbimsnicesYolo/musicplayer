@@ -12,14 +12,11 @@ bool ShouldShowTag(int key, String search) {
 
   if (Tags[key].name.toLowerCase().contains(search.toLowerCase())) return true;
 
-  List<String> name = Tags[key].name.toLowerCase().split(" ");
   List<String> searchname = search.toLowerCase().split(" ");
 
-  for (String s in name) {
     for (String s2 in searchname) {
-      if (s.contains(s2)) return true;
+      if (Tags[key].name.contains(s2)) return true;
     }
-  }
 
   return false;
 }
