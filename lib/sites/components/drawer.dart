@@ -221,34 +221,44 @@ class _SearchSongPage extends State<SearchSongPage> {
           Text(csong.filename + "\n"),
           ElevatedButton(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => StringInputExpanded(
-                        Title: "Song Title Edit",
-                        Text: csong.title,
-                        additionalinfos: csong.interpret + "|" + csong.filename,
-                        OnSaved: (String s) {
-                          csong.title = s;
-                          UpdateSongTitle(csong.filename, s);
-                        }),
-                  ),
-                );
+                Navigator.of(context)
+                    .push(
+                      MaterialPageRoute(
+                        builder: (_) => StringInputExpanded(
+                            Title: "Song Title Edit",
+                            Text: csong.title,
+                            additionalinfos: csong.filename,
+                            OnSaved: (String s) {
+                              csong.title = s;
+                              UpdateSongTitle(csong.filename, s);
+                            }),
+                      ),
+                    )
+                    .then((value) => {
+                          csong.title = value,
+                          UpdateSongTitle(csong.filename, value),
+                        });
               },
               child: Text("Title: ${csong.title}")),
           ElevatedButton(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => StringInputExpanded(
-                        Title: "Song Artist Edit",
-                        Text: csong.interpret,
-                        additionalinfos: csong.title + "|" + csong.filename,
-                        OnSaved: (String s) {
-                          csong.interpret = s;
-                          UpdateSongTitle(csong.filename, s);
-                        }),
-                  ),
-                );
+                Navigator.of(context)
+                    .push(
+                      MaterialPageRoute(
+                        builder: (_) => StringInputExpanded(
+                            Title: "Song Artist Edit",
+                            Text: csong.interpret,
+                            additionalinfos: csong.filename,
+                            OnSaved: (String s) {
+                              csong.interpret = s;
+                              UpdateSongInterpret(csong.filename, s);
+                            }),
+                      ),
+                    )
+                    .then((value) => {
+                          csong.interpret = value,
+                          UpdateSongInterpret(csong.filename, value),
+                        });
               },
               child: Text("Artist: ${csong.title}")),
           ElevatedButton(

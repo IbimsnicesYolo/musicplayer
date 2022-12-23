@@ -62,18 +62,45 @@ PopupMenuButton SongTile(BuildContext context, Song s,
     onSelected: (result) {
       if (result == 0) {
         // Change Title
-        StringInput(context, "New Song Title", "Save", "Cancel", (String si) {
-          UpdateSongTitle(s.filename, si);
-          c(() {});
-        }, (String si) {}, true, s.title, "");
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(
+                builder: (_) => StringInputExpanded(
+                    Title: "Song Title Edit",
+                    Text: s.title,
+                    additionalinfos: s.filename,
+                    OnSaved: (String si) {
+                      s.title = si;
+                      UpdateSongTitle(s.filename, si);
+                    }),
+              ),
+            )
+            .then((value) => {
+                  s.title = value,
+                  UpdateSongTitle(s.filename, value),
+                  c(() {})
+                });
       }
       if (result == 1) {
         // Change Interpret
-        StringInput(context, "New Song Interpret", "Save", "Cancel",
-            (String si) {
-          UpdateSongInterpret(s.filename, si);
-          c(() {});
-        }, (String si) {}, true, s.interpret, "");
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(
+                builder: (_) => StringInputExpanded(
+                    Title: "Song Artist Edit",
+                    Text: s.interpret,
+                    additionalinfos: s.filename,
+                    OnSaved: (String si) {
+                      s.interpret = si;
+                      UpdateSongInterpret(s.filename, si);
+                    }),
+              ),
+            )
+            .then((value) => {
+                  s.interpret = value,
+                  UpdateSongInterpret(s.filename, value),
+                  c(() {})
+                });
       }
       if (result == 2) {
         Navigator.of(context).push(

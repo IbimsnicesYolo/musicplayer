@@ -97,16 +97,42 @@ class _StringInputExpanded extends State<StringInputExpanded> {
   Widget build(BuildContext context) {
     TextEditingController _textFieldController =
         TextEditingController(text: widget.Text);
+
+    List<String> possibleinputs = [widget.additionalinfos];
+
+    widget.Text.split(" ").forEach((element) {
+      if (element.length > 2) {
+        possibleinputs.add(element);
+      }
+    });
+
+    widget.additionalinfos.split(" ").forEach((element) {
+      element = element.replaceAll(".mp3", "").replaceAll("Lyrics", "").trim();
+      possibleinputs.add(element);
+      element.split(" ").forEach((element) {
+        possibleinputs.add(element);
+      });
+    });
+    possibleinputs.add("Unknown");
+
+    possibleinputs = possibleinputs.toSet().toList();
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.blueGrey,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: FloatingActionButton(
           backgroundColor: CFG.ContrastColor,
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.of(context).pop(_textFieldController.text),
           child: const Icon(Icons.arrow_back),
         ),
         appBar: AppBar(
           title: Text(widget.Title),
+          backgroundColor: CFG.HomeColor,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () =>
+                Navigator.of(context).pop(_textFieldController.text),
+          ),
         ),
         body: Container(
           child: ListView(
@@ -114,15 +140,20 @@ class _StringInputExpanded extends State<StringInputExpanded> {
               ListTile(
                 title: TextField(
                   controller: _textFieldController,
+                  decoration: InputDecoration(border: OutlineInputBorder()),
                   onChanged: (value) {
                     widget.OnSaved(value);
                   },
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                child: Text(widget.Text),
-              ),
+              for (String s in possibleinputs)
+                ListTile(
+                  title: Text(s),
+                  onTap: () {
+                    _textFieldController.text = s;
+                    widget.OnSaved(s);
+                  },
+                ),
             ],
           ),
         ),
