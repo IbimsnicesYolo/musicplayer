@@ -226,7 +226,7 @@ class _SearchSongPage extends State<SearchSongPage> {
                     builder: (_) => StringInputExpanded(
                         Title: "Song Title Edit",
                         Text: csong.title,
-                        csong: csong,
+                        additionalinfos: csong.interpret + "|" + csong.filename,
                         OnSaved: (String s) {
                           csong.title = s;
                           UpdateSongTitle(csong.filename, s);
@@ -242,7 +242,7 @@ class _SearchSongPage extends State<SearchSongPage> {
                     builder: (_) => StringInputExpanded(
                         Title: "Song Artist Edit",
                         Text: csong.interpret,
-                        csong: csong,
+                        additionalinfos: csong.title + "|" + csong.filename,
                         OnSaved: (String s) {
                           csong.interpret = s;
                           UpdateSongTitle(csong.filename, s);
@@ -357,6 +357,10 @@ class _ShowTagDeletion extends State<ShowTagDeletion> {
         ),
         body: Center(
           child: TextButton(
+              style: TextButton.styleFrom(
+                primary: Colors.white,
+                backgroundColor: Colors.red,
+              ),
               onPressed: () {
                 Tags = {};
                 ShouldSaveTags = true;
@@ -368,7 +372,7 @@ class _ShowTagDeletion extends State<ShowTagDeletion> {
                 SaveSongs();
                 Navigator.pop(context);
               },
-              child: Text("Delete All Tags")),
+              child: Text("Delete All Tags", style: TextStyle(fontSize: 30))),
         ),
       ),
     );
@@ -398,6 +402,10 @@ class _ShowSongDeletion extends State<ShowSongDeletion> {
         ),
         body: Center(
           child: TextButton(
+              style: TextButton.styleFrom(
+                primary: Colors.white,
+                backgroundColor: Colors.red,
+              ),
               onPressed: () {
                 Songs = {};
                 ShouldSaveSongs = true;
@@ -405,7 +413,7 @@ class _ShowSongDeletion extends State<ShowSongDeletion> {
                 SaveSongs();
                 Navigator.pop(context);
               },
-              child: Text("Delete All Songs")),
+              child: Text("Delete All Songs", style: TextStyle(fontSize: 30))),
         ),
       ),
     );

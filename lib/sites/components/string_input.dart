@@ -79,13 +79,13 @@ class StringInputExpanded extends StatefulWidget {
     Key? key,
     required this.Title,
     required this.Text,
-    required this.csong,
+    required this.additionalinfos,
     required this.OnSaved,
   }) : super(key: key);
 
   final String Title;
   final String Text;
-  final Song csong;
+  final String additionalinfos;
   final void Function(String) OnSaved;
 
   @override
@@ -96,7 +96,7 @@ class _StringInputExpanded extends State<StringInputExpanded> {
   @override
   Widget build(BuildContext context) {
     TextEditingController _textFieldController =
-        TextEditingController(text: widget.csong.title);
+        TextEditingController(text: widget.Text);
     return SafeArea(
       child: Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -115,10 +115,13 @@ class _StringInputExpanded extends State<StringInputExpanded> {
                 title: TextField(
                   controller: _textFieldController,
                   onChanged: (value) {
-                    widget.csong.title = value;
                     widget.OnSaved(value);
                   },
                 ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(10),
+                child: Text(widget.Text),
               ),
             ],
           ),
