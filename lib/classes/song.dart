@@ -51,11 +51,13 @@ bool CreateSong(path) {
   String interpret =
       filename.split(" -_ ").first.replaceAll(RegExp(".mp3"), "").trim();
 
-  String title = filename.split(" -_ ")
+  String title = filename
+      .split(" -_ ")
       .last
       .replaceAll(RegExp(".mp3"), "")
       .split(" _ ")
-      .first.trim();
+      .first
+      .trim();
 
   Song newsong = Song(path);
   newsong.title = title;
@@ -65,8 +67,6 @@ bool CreateSong(path) {
   ShouldSaveSongs = true;
   return true;
 }
-
-// TODO remove all these SaveSongs and save in the next setstate of the mainsite
 
 void UpdateSongInterpret(String key, String newtitle) {
   Songs[key].interpret = newtitle;
@@ -93,9 +93,6 @@ void UpdateSongTags(String key, int Tagid, bool? add) {
 
 void DeleteSong(Song s) {
   if (Songs.containsKey(s.filename)) {
-    for (int tagid in s.tags) {
-      Tags[tagid].used = Tags[tagid].used - 1;
-    }
     Songs.remove(s.filename);
     ShouldSaveSongs = true;
   }
