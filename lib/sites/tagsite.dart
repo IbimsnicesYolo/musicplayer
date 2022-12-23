@@ -189,7 +189,9 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
         onSelected: (result) {
           if (result == 0) {
             // Change Name
-            StringInput(context, "Rename Tag", "Save", "Cancel", (String s) {
+            StringInput(
+                context, "Rename Tag: " + key.toString(), "Save", "Cancel",
+                (String s) {
               UpdateTagName(Tags[key].id, s);
               c(() {});
             }, (String s) {}, false, Tags[key].name, "");
