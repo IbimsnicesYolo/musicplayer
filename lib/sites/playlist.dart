@@ -47,7 +47,6 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
   );
 }
 
-// TODO Fit the Song Tile perfectly
 Container buildContent(BuildContext context, void Function(void Function()) c,
     CurrentPlayList Playlist) {
   return Container(

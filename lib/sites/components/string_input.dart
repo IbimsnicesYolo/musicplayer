@@ -92,7 +92,6 @@ class StringInputExpanded extends StatefulWidget {
   State<StringInputExpanded> createState() => _StringInputExpanded();
 }
 
-// TODO: Add Examples for New String
 class _StringInputExpanded extends State<StringInputExpanded> {
   @override
   Widget build(BuildContext context) {
