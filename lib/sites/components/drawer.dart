@@ -119,7 +119,7 @@ class _SearchSongPage extends State<SearchSongPage> {
         searchcount = "Found $count songs";
         searchinfo += "Scanning $a\n";
       });
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(milliseconds: 500));
       try {
         Directory dir = Directory(path[i]);
         List<FileSystemEntity> _files;
@@ -173,6 +173,12 @@ class _SearchSongPage extends State<SearchSongPage> {
           Text(searchinfo),
           ElevatedButton(
               onPressed: () {
+                if (searching) {
+                  return;
+                }
+                if (FoundSongs.length == 0) {
+                  return;
+                }
                 setState(() {
                   SongEdit = true;
                 });
@@ -212,7 +218,7 @@ class _SearchSongPage extends State<SearchSongPage> {
                 });
               },
               child: const Text("Back")),
-          Text(csong.filename),
+          Text(csong.filename + "\n"),
           ElevatedButton(
               onPressed: () {
                 Navigator.of(context).push(
@@ -230,9 +236,30 @@ class _SearchSongPage extends State<SearchSongPage> {
               },
               child: Text("Title: ${csong.title}")),
           ElevatedButton(
-              onPressed: () {}, child: Text("Artist: ${csong.interpret}")),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => StringInputExpanded(
+                        Title: "Song Artist Edit",
+                        Text: csong.interpret,
+                        csong: csong,
+                        OnSaved: (String s) {
+                          csong.interpret = s;
+                          UpdateSongTitle(csong.filename, s);
+                        }),
+                  ),
+                );
+              },
+              child: Text("Artist: ${csong.title}")),
           ElevatedButton(
-              onPressed: () {}, child: const Text("Create Artist Tag")),
+              onPressed: () {
+                int id = CreateTag(csong.interpret);
+                if (id > 0) {
+                  UpdateSongTags(csong.filename, id, true);
+                  SaveTags();
+                }
+              },
+              child: const Text("Create Artist Tag")),
           ElevatedButton(
               onPressed: () {
                 setState(() {

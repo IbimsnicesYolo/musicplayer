@@ -19,8 +19,17 @@ class Tag {
       {'n': value.name, 'u': value.used, 'i': value.id};
 }
 
-void CreateTag(name) {
+int CreateTag(name) {
   int newid = 0;
+  Tags.forEach((key, value) {
+    if (value.name.trim() == name.trim()) {
+      newid = -1;
+    }
+  });
+  if (newid == -1) {
+    return -1;
+  }
+
   for (var i = 0; i < Tags.length; i++) {
     if (Tags.containsKey(i) && Tags[i].id == newid) {
       newid = i + 1;
@@ -30,6 +39,7 @@ void CreateTag(name) {
   newtag.id = newid;
   Tags[newtag.id] = newtag;
   ShouldSaveTags = true;
+  return newid;
 }
 
 void UpdateTagName(tag, name) {

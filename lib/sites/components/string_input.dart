@@ -92,9 +92,12 @@ class StringInputExpanded extends StatefulWidget {
   State<StringInputExpanded> createState() => _StringInputExpanded();
 }
 
+// TODO: Add Examples for New String
 class _StringInputExpanded extends State<StringInputExpanded> {
   @override
   Widget build(BuildContext context) {
+    TextEditingController _textFieldController =
+        TextEditingController(text: widget.csong.title);
     return SafeArea(
       child: Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -110,9 +113,8 @@ class _StringInputExpanded extends State<StringInputExpanded> {
           child: ListView(
             children: <Widget>[
               ListTile(
-                title: Text(widget.Text),
-                subtitle: TextField(
-                  controller: TextEditingController(text: widget.csong.title),
+                title: TextField(
+                  controller: _textFieldController,
                   onChanged: (value) {
                     widget.csong.title = value;
                     widget.OnSaved(value);

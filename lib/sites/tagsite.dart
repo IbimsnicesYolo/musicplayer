@@ -97,7 +97,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
             onPressed: () {
               StringInput(context, "Create new Tag", "Create", "Cancel",
                   (String s) {
-                CreateTag(s);
+                int id = CreateTag(s);
                 SaveTags();
                 c(() {});
               }, (String s) {}, false, "", "Tag Name");
