@@ -35,7 +35,7 @@ int CreateTag(name) {
       newid = i + 1;
     }
   }
-  Tag newtag = Tag(name);
+  Tag newtag = Tag(name.trim());
   newtag.id = newid;
   Tags[newtag.id] = newtag;
   ShouldSaveTags = true;
@@ -44,7 +44,7 @@ int CreateTag(name) {
 
 void UpdateTagName(tag, name) {
   if (Tags.containsKey(tag)) {
-    Tags[tag].name = name;
+    Tags[tag].name = name.trim();
     ShouldSaveTags = true;
   }
 }

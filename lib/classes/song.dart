@@ -69,12 +69,12 @@ bool CreateSong(path) {
 }
 
 void UpdateSongInterpret(String key, String newtitle) {
-  Songs[key].interpret = newtitle;
+  Songs[key].interpret = newtitle.trim();
   ShouldSaveSongs = true;
 }
 
 void UpdateSongTitle(String key, String newtitle) {
-  Songs[key].title = newtitle;
+  Songs[key].title = newtitle.trim();
   ShouldSaveSongs = true;
 }
 
