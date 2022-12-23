@@ -1,7 +1,91 @@
 import 'package:flutter/material.dart';
 import '../../settings.dart' as CFG;
 import "../../classes/song.dart";
+import "../../classes/tag.dart";
 import 'dart:io';
+import "string_input.dart";
+
+class SongDrawer extends Drawer {
+  const SongDrawer({
+    Key? key,
+    required this.c,
+  }) : super(key: key);
+
+  final void Function(void Function()) c;
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      backgroundColor: CFG.HomeColor,
+      // column holds all the widgets in the drawer
+      child: Column(
+        children: <Widget>[
+          // This container holds the align
+          Container(
+            // This align moves the children to the bottom
+            child: Align(
+              alignment: FractionalOffset.bottomCenter,
+              // This container holds all the children that will be aligned
+              // on the bottom and should not scroll with the above ListView
+              child: Container(
+                child: Column(
+                  children: [
+                    TextButton(
+                        child: const Text("Search for new Songs"),
+                        onPressed: () {
+                          Navigator.of(context)
+                              .push(
+                                MaterialPageRoute(
+                                  builder: (_) => const SearchSongPage(),
+                                ),
+                              )
+                              .then((value) => c(() {}));
+                        }),
+                    TextButton(
+                      child: const Text("Open Settings"),
+                      onPressed: () {
+                        Navigator.of(context)
+                            .push(
+                              MaterialPageRoute(
+                                builder: (_) => ShowConfig(),
+                              ),
+                            )
+                            .then((value) => c(() {}));
+                      },
+                    ),
+                    TextButton(
+                      child: const Text("Delete All Tags"),
+                      onPressed: () {
+                        Navigator.of(context)
+                            .push(
+                              MaterialPageRoute(
+                                builder: (_) => ShowTagDeletion(),
+                              ),
+                            )
+                            .then((value) => c(() {}));
+                      },
+                    ),
+                    TextButton(
+                      child: const Text("Delete All Songs"),
+                      onPressed: () {
+                        Navigator.of(context)
+                            .push(
+                              MaterialPageRoute(
+                                builder: (_) => ShowSongDeletion(),
+                              ),
+                            )
+                            .then((value) => c(() {}));
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class SearchSongPage extends StatefulWidget {
   const SearchSongPage({
@@ -35,6 +119,7 @@ class _SearchSongPage extends State<SearchSongPage> {
         searchcount = "Found $count songs";
         searchinfo += "Scanning $a\n";
       });
+      await Future.delayed(const Duration(seconds: 1));
       try {
         Directory dir = Directory(path[i]);
         List<FileSystemEntity> _files;
@@ -208,59 +293,77 @@ class _ShowConfig extends State<ShowConfig> {
   }
 }
 
-class SongDrawer extends Drawer {
-  const SongDrawer({
-    Key? key,
-    required this.c,
-  }) : super(key: key);
+class ShowTagDeletion extends StatefulWidget {
+  ShowTagDeletion({Key? key}) : super(key: key);
 
-  final void Function(void Function()) c;
+  @override
+  State<ShowTagDeletion> createState() => _ShowTagDeletion();
+}
+
+class _ShowTagDeletion extends State<ShowTagDeletion> {
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      backgroundColor: CFG.HomeColor,
-      // column holds all the widgets in the drawer
-      child: Column(
-        children: <Widget>[
-          // This container holds the align
-          Container(
-            // This align moves the children to the bottom
-            child: Align(
-              alignment: FractionalOffset.bottomCenter,
-              // This container holds all the children that will be aligned
-              // on the bottom and should not scroll with the above ListView
-              child: Container(
-                child: Column(
-                  children: [
-                    TextButton(
-                        child: const Text("Search for new Songs"),
-                        onPressed: () {
-                          Navigator.of(context)
-                              .push(
-                                MaterialPageRoute(
-                                  builder: (_) => SearchSongPage(),
-                                ),
-                              )
-                              .then((value) => c(() {}));
-                        }),
-                    TextButton(
-                      child: const Text("Open Settings"),
-                      onPressed: () {
-                        Navigator.of(context)
-                            .push(
-                              MaterialPageRoute(
-                                builder: (_) => ShowConfig(),
-                              ),
-                            )
-                            .then((value) => c(() {}));
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
+    return SafeArea(
+      child: Scaffold(
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: CFG.ContrastColor,
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Icon(Icons.arrow_back),
+        ),
+        appBar: AppBar(
+          title: Text("Tag Deletion"),
+        ),
+        body: Center(
+          child: TextButton(
+              onPressed: () {
+                Tags = {};
+                SaveTags();
+                UpdateAllTags();
+                Songs.forEach((key, value) {
+                  value.tags = [];
+                });
+                SaveSongs();
+                Navigator.pop(context);
+              },
+              child: Text("Delete All Tags")),
+        ),
+      ),
+    );
+  }
+}
+
+class ShowSongDeletion extends StatefulWidget {
+  ShowSongDeletion({Key? key}) : super(key: key);
+
+  @override
+  State<ShowSongDeletion> createState() => _ShowSongDeletion();
+}
+
+class _ShowSongDeletion extends State<ShowSongDeletion> {
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: CFG.ContrastColor,
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Icon(Icons.arrow_back),
+        ),
+        appBar: AppBar(
+          title: Text("Song Deletion"),
+        ),
+        body: Center(
+          child: TextButton(
+              onPressed: () {
+                Songs = {};
+                UpdateAllTags();
+                SaveSongs();
+                Navigator.pop(context);
+              },
+              child: Text("Delete All Songs")),
+        ),
       ),
     );
   }
