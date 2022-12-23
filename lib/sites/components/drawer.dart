@@ -214,7 +214,21 @@ class _SearchSongPage extends State<SearchSongPage> {
               child: const Text("Back")),
           Text(csong.filename),
           ElevatedButton(
-              onPressed: () {}, child: Text("Title: ${csong.title}")),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => StringInputExpanded(
+                        Title: "Song Title Edit",
+                        Text: csong.title,
+                        csong: csong,
+                        OnSaved: (String s) {
+                          csong.title = s;
+                          UpdateSongTitle(csong.filename, s);
+                        }),
+                  ),
+                );
+              },
+              child: Text("Title: ${csong.title}")),
           ElevatedButton(
               onPressed: () {}, child: Text("Artist: ${csong.interpret}")),
           ElevatedButton(
@@ -318,6 +332,7 @@ class _ShowTagDeletion extends State<ShowTagDeletion> {
           child: TextButton(
               onPressed: () {
                 Tags = {};
+                ShouldSaveTags = true;
                 SaveTags();
                 UpdateAllTags();
                 Songs.forEach((key, value) {
@@ -358,6 +373,7 @@ class _ShowSongDeletion extends State<ShowSongDeletion> {
           child: TextButton(
               onPressed: () {
                 Songs = {};
+                ShouldSaveSongs = true;
                 UpdateAllTags();
                 SaveSongs();
                 Navigator.pop(context);

@@ -16,11 +16,10 @@ bool ShouldShowSong(String key, String search) {
 
   List<String> searchname = search.toLowerCase().split(" ");
 
-
   for (String s2 in searchname) {
-    if (Songs[key].title.contains(s2) || Songs[key].interpret.contains(s2)) return true;
+    if (Songs[key].title.contains(s2) || Songs[key].interpret.contains(s2))
+      return true;
   }
-
 
   return false;
 }
@@ -31,16 +30,16 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
     onPressed: () => Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => SearchPage(
-          (search, update) => Container(
-            child: ListView(
-              children: [
-                for (String key in Songs.keys)
-                  if (ShouldShowSong(key, search))
-                    SongTile(context, Songs[key], c, Playlist),
-              ],
-            ),
-          ),""
-        ),
+            (search, update) => Container(
+                  child: ListView(
+                    children: [
+                      for (String key in Songs.keys)
+                        if (ShouldShowSong(key, search))
+                          SongTile(context, Songs[key], c, Playlist),
+                    ],
+                  ),
+                ),
+            ""),
       ),
     ),
     icon: const Icon(Icons.search),
@@ -63,42 +62,23 @@ PopupMenuButton SongTile(BuildContext context, Song s,
     onSelected: (result) {
       if (result == 0) {
         // Change Title
-        StringInput(
-          context,
-          "New Song Title",
-          "Save",
-          "Cancel",
-          (String si) {
-            UpdateSongTitle(s.filename, si);
-            c(() {});
-          },
-          (String si) {},
-          true,
-          s.title,
-        );
+        StringInput(context, "New Song Title", "Save", "Cancel", (String si) {
+          UpdateSongTitle(s.filename, si);
+          c(() {});
+        }, (String si) {}, true, s.title, "");
       }
       if (result == 1) {
         // Change Interpret
-        StringInput(
-          context,
-          "New Song Interpret",
-          "Save",
-          "Cancel",
-          (String si) {
-            UpdateSongInterpret(s.filename, si);
-            c(() {});
-          },
-          (String si) {},
-          true,
-          s.interpret,
-        );
+        StringInput(context, "New Song Interpret", "Save", "Cancel",
+            (String si) {
+          UpdateSongInterpret(s.filename, si);
+          c(() {});
+        }, (String si) {}, true, s.interpret, "");
       }
       if (result == 2) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-                builder: (_) => TagEdit(s)
-            ),
-          );
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => TagEdit(s)),
+        );
       }
       if (result == 3) {
         DeleteSong(s);
