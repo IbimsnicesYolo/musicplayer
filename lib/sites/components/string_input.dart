@@ -116,50 +116,53 @@ class _StringInputExpanded extends State<StringInputExpanded> {
     possibleinputs.add("Unknown");
 
     possibleinputs = possibleinputs.toSet().toList();
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.blueGrey,
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: CFG.ContrastColor,
-          onPressed: () =>
-              Navigator.of(context).pop(_textFieldController.text.trim()),
-          child: const Icon(Icons.arrow_back),
-        ),
-        appBar: AppBar(
-          title: Text(widget.Title),
-          backgroundColor: CFG.HomeColor,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
+    return MaterialApp(
+      theme: ThemeData.dark(),
+      home: SafeArea(
+        child: Scaffold(
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: CFG.ContrastColor,
             onPressed: () =>
                 Navigator.of(context).pop(_textFieldController.text.trim()),
+            child: const Icon(Icons.arrow_back),
           ),
-        ),
-        body: Container(
-          child: ListView(
-            children: <Widget>[
-              ListTile(
-                title: TextField(
-                  controller: _textFieldController,
-                  decoration: InputDecoration(
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _textFieldController.clear();
-                        },
-                      ),
-                      border: OutlineInputBorder(),
-                      labelText: 'New Name'),
-                ),
-              ),
-              for (String s in possibleinputs)
+          appBar: AppBar(
+            title: Text(widget.Title),
+            backgroundColor: CFG.HomeColor,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () =>
+                  Navigator.of(context).pop(_textFieldController.text.trim()),
+            ),
+          ),
+          body: Container(
+            child: ListView(
+              children: <Widget>[
                 ListTile(
-                  title: Text(s),
-                  onTap: () {
-                    _textFieldController.text += " " + s;
-                  },
+                  title: TextField(
+                    controller: _textFieldController,
+                    decoration: InputDecoration(
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            _textFieldController.clear();
+                          },
+                        ),
+                        border: OutlineInputBorder(),
+                        labelText: 'New Name'),
+                  ),
                 ),
-            ],
+                for (String s in possibleinputs)
+                  ListTile(
+                    title: Text(s),
+                    onTap: () {
+                      _textFieldController.text += " " + s;
+                    },
+                  ),
+              ],
+            ),
           ),
         ),
       ),

@@ -302,7 +302,7 @@ class _SearchSongPage extends State<SearchSongPage> {
           child: const Icon(Icons.arrow_back),
         ),
         appBar: AppBar(
-          title: Text("Search"),
+          title: Text("Search for unregistered Songs"),
         ),
         body: Container(
           child: SongEdit ? SongEditPage() : SearchPage(),

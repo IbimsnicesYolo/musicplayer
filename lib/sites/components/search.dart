@@ -9,11 +9,12 @@ class SearchPage extends StatefulWidget {
   String s;
 
   @override
-  State<SearchPage> createState() => _SearchPageState(s: s, myController: TextEditingController(text: s));
+  State<SearchPage> createState() =>
+      _SearchPageState(s: s, myController: TextEditingController(text: s));
 }
 
 class _SearchPageState extends State<SearchPage> {
-  _SearchPageState({required this.s,required this.myController});
+  _SearchPageState({required this.s, required this.myController});
   TextEditingController myController;
 
   String s;
@@ -35,46 +36,49 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.blueGrey,
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: CFG.ContrastColor,
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Icon(Icons.arrow_back),
-        ),
-        appBar: AppBar(
-            leading: IconButton(
-              onPressed: () => Navigator.of(context).pop(),
-              icon: const Icon(Icons.arrow_back),
-            ),
-            backgroundColor: CFG.HomeColor,
-            // The search area here
-            title: Container(
-              height: 40,
-              child: Center(
-                child: TextField(
-                  onChanged: (stext) {
-                    this.s = stext;
-                    setState(() {});
-                  },
-                  controller: myController,
-                  decoration: InputDecoration(
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          myController.clear();
-                          this.s = "";
-                          setState(() {});
-                        },
-                      ),
-                      border: OutlineInputBorder(),
-                      labelText: 'Search'),
-                ),
+    return MaterialApp(
+      theme: ThemeData.dark(),
+      home: SafeArea(
+        child: Scaffold(
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: CFG.ContrastColor,
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Icon(Icons.arrow_back),
+          ),
+          appBar: AppBar(
+              leading: IconButton(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.arrow_back),
               ),
-            )),
-        body: widget.content(s.trim(), update),
+              backgroundColor: CFG.HomeColor,
+              // The search area here
+              title: Container(
+                height: 40,
+                child: Center(
+                  child: TextField(
+                    onChanged: (stext) {
+                      this.s = stext;
+                      setState(() {});
+                    },
+                    controller: myController,
+                    decoration: InputDecoration(
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            myController.clear();
+                            this.s = "";
+                            setState(() {});
+                          },
+                        ),
+                        border: OutlineInputBorder(),
+                        labelText: 'Search'),
+                  ),
+                ),
+              )),
+          body: widget.content(s.trim(), update),
+        ),
       ),
     );
   }
