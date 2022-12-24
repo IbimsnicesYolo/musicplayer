@@ -122,7 +122,8 @@ class _StringInputExpanded extends State<StringInputExpanded> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: FloatingActionButton(
           backgroundColor: CFG.ContrastColor,
-          onPressed: () => Navigator.of(context).pop(_textFieldController.text),
+          onPressed: () =>
+              Navigator.of(context).pop(_textFieldController.text.trim()),
           child: const Icon(Icons.arrow_back),
         ),
         appBar: AppBar(
@@ -131,7 +132,7 @@ class _StringInputExpanded extends State<StringInputExpanded> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () =>
-                Navigator.of(context).pop(_textFieldController.text),
+                Navigator.of(context).pop(_textFieldController.text.trim()),
           ),
         ),
         body: Container(
@@ -140,18 +141,22 @@ class _StringInputExpanded extends State<StringInputExpanded> {
               ListTile(
                 title: TextField(
                   controller: _textFieldController,
-                  decoration: InputDecoration(border: OutlineInputBorder()),
-                  onChanged: (value) {
-                    widget.OnSaved(value);
-                  },
+                  decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _textFieldController.clear();
+                        },
+                      ),
+                      border: OutlineInputBorder(),
+                      labelText: 'New Name'),
                 ),
               ),
               for (String s in possibleinputs)
                 ListTile(
                   title: Text(s),
                   onTap: () {
-                    _textFieldController.text = s;
-                    widget.OnSaved(s);
+                    _textFieldController.text += " " + s;
                   },
                 ),
             ],
