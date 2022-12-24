@@ -4,6 +4,7 @@ import "../../classes/song.dart";
 import "../../classes/tag.dart";
 import 'dart:io';
 import "string_input.dart";
+import "elevatedbutton.dart";
 
 class SongDrawer extends Drawer {
   const SongDrawer({
@@ -171,7 +172,7 @@ class _SearchSongPage extends State<SearchSongPage> {
           ),
           Text(searchcount),
           Text(searchinfo),
-          ElevatedButton(
+          StyledElevatedButton(
               onPressed: () {
                 if (searching) {
                   return;
@@ -211,15 +212,9 @@ class _SearchSongPage extends State<SearchSongPage> {
     return Center(
       child: Column(
         children: [
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  SongEdit = false;
-                });
-              },
-              child: const Text("Back")),
-          Text(csong.filename + "\n"),
-          ElevatedButton(
+          Text("\n" + csong.filename + "\n",
+              style: const TextStyle(fontSize: 20)),
+          StyledElevatedButton(
               onPressed: () {
                 Navigator.of(context)
                     .push(
@@ -240,7 +235,7 @@ class _SearchSongPage extends State<SearchSongPage> {
                         });
               },
               child: Text("Title: ${csong.title}")),
-          ElevatedButton(
+          StyledElevatedButton(
               onPressed: () {
                 Navigator.of(context)
                     .push(
@@ -261,23 +256,36 @@ class _SearchSongPage extends State<SearchSongPage> {
                         });
               },
               child: Text("Artist: ${csong.title}")),
-          ElevatedButton(
-              onPressed: () {
-                int id = CreateTag(csong.interpret);
-                if (id > 0) {
-                  UpdateSongTags(csong.filename, id, true);
-                  SaveTags();
-                }
-              },
-              child: const Text("Create Artist Tag")),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  searchcount = "";
-                  FoundSongs.removeAt(0);
-                });
-              },
-              child: const Text("Done")),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              StyledElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    SongEdit = false;
+                  });
+                },
+                child: const Text("Back"),
+              ),
+              StyledElevatedButton(
+                  onPressed: () {
+                    int id = CreateTag(csong.interpret);
+                    if (id > 0) {
+                      UpdateSongTags(csong.filename, id, true);
+                      SaveTags();
+                    }
+                  },
+                  child: const Text("Create Artist Tag")),
+              StyledElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      searchcount = "";
+                      FoundSongs.removeAt(0);
+                    });
+                  },
+                  child: const Text("Done")),
+            ],
+          ),
         ],
       ),
     );

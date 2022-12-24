@@ -23,11 +23,11 @@ int CreateTag(name) {
   int newid = 0;
   Tags.forEach((key, value) {
     if (value.name.trim() == name.trim()) {
-      newid = -1;
+      newid = key;
     }
   });
-  if (newid == -1) {
-    return -1;
+  if (newid != 0) {
+    return newid;
   }
 
   for (var i = 0; i < Tags.length; i++) {
