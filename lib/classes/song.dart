@@ -79,7 +79,7 @@ void UpdateSongTitle(String key, String newtitle) {
 }
 
 void UpdateSongTags(String key, int Tagid, bool? add) {
-  if (add != null && add) {
+  if (add != null && add && !Songs[key].tags.contains(Tagid)) {
     Songs[key].tags.add(Tagid);
     Tags[Tagid].used += 1;
   } else {
