@@ -232,6 +232,7 @@ class _SearchSongPage extends State<SearchSongPage> {
                     .then((value) => {
                           csong.title = value,
                           UpdateSongTitle(csong.filename, value),
+                          setState(() {}),
                         });
               },
               child: Text("Title: ${csong.title}")),
@@ -253,6 +254,7 @@ class _SearchSongPage extends State<SearchSongPage> {
                     .then((value) => {
                           csong.interpret = value,
                           UpdateSongInterpret(csong.filename, value),
+                          setState(() {}),
                         });
               },
               child: Text("Artist: ${csong.title}")),
