@@ -197,7 +197,11 @@ class _SearchSongPage extends State<SearchSongPage> {
               children: [
                 Container(
                   child: TextButton(
-                    onPressed: StartSearch,
+                    onPressed: () {
+                      if (!searching) {
+                        StartSearch();
+                      }
+                    },
                     child: Text(searching ? "Searching..." : "Start Search"),
                   ),
                 ),
