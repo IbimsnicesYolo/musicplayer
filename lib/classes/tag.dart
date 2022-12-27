@@ -20,13 +20,13 @@ class Tag {
 }
 
 int CreateTag(name) {
-  int newid = 0;
+  int newid = -1;
   Tags.forEach((key, value) {
     if (value.name.trim() == name.trim()) {
       newid = key;
     }
   });
-  if (newid != 0) {
+  if (newid != -1) {
     return newid;
   }
 
