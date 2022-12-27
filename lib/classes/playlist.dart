@@ -53,12 +53,14 @@ class CurrentPlayList {
   void PlayNextSong() {
     if (songs.length > 0) {
       songs.add(songs.removeAt(0));
+      StartPlaying();
     }
   }
 
   void PlayPreviousSong() {
     if (songs.length > 0) {
       songs.insert(0, songs.removeAt(songs.length - 1));
+      StartPlaying();
     }
   }
 
@@ -108,6 +110,10 @@ class CurrentPlayList {
   }
 
   void PausePlaying() async {
-    await player.pause();
+    if (player.state == PlayerState.playing) {
+      await player.pause();
+    } else {
+      await player.resume();
+    }
   }
 }
