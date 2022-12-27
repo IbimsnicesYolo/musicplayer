@@ -121,10 +121,12 @@ void SaveSongs() async {
   String appDocDirectory = "storage/emulated/0/Music";
   String json = "{";
   bool nosongsfound = true;
-  Songs.forEach((k, v) {
+  await Future.delayed(Duration(milliseconds: 10));
+  for (var song in Songs.values) {
+    await Future.delayed(Duration(milliseconds: 5));
     nosongsfound = false;
-    json += '"' + k + '":' + jsonEncode(v.toJson(v)) + ",";
-  });
+    json += '"' + song.filename + '":' + jsonEncode(song.toJson(song)) + ",";
+  }
 
   if (nosongsfound) {
     json = "{}";
@@ -132,6 +134,7 @@ void SaveSongs() async {
     json = json.substring(0, json.length - 1) + "}";
     // remove last comma, close json
   }
+  await Future.delayed(Duration(milliseconds: 100));
   File(appDocDirectory + '/songs.json').writeAsString(json);
 }
 
