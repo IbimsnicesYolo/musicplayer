@@ -11,6 +11,7 @@ class Song {
   String filename = "";
   String title = "Song Title";
   String interpret = "Song Interpret";
+  String featuring = "";
   String hash = "";
   bool hastags = false;
   List tags = [];
@@ -21,6 +22,7 @@ class Song {
     print(filename);
     print(title);
     print(interpret);
+    print(featuring);
     print(tags.toString());
   }
 
@@ -29,6 +31,7 @@ class Song {
         filename = json['f'],
         title = json['t'],
         interpret = json['i'],
+        featuring = json['fe'],
         hastags = json['h'],
         tags = json['ta'];
   Map<String, dynamic> toJson(Song value) => {
@@ -36,6 +39,7 @@ class Song {
         'f': value.filename,
         't': value.title,
         'i': value.interpret,
+        'fe': value.featuring,
         'h': value.hastags,
         'ta': value.tags
       };
@@ -63,6 +67,7 @@ bool CreateSong(path) {
   newsong.title = title;
   newsong.filename = filename;
   newsong.interpret = interpret;
+  newsong.featuring = interpret.split("feat.").last.trim();
   Songs[filename] = newsong;
   ShouldSaveSongs = true;
   return true;
@@ -70,6 +75,11 @@ bool CreateSong(path) {
 
 void UpdateSongInterpret(String key, String newtitle) {
   Songs[key].interpret = newtitle.trim();
+  ShouldSaveSongs = true;
+}
+
+void UpdateSongFeaturing(String key, String newtitle) {
+  Songs[key].featuring = newtitle.trim();
   ShouldSaveSongs = true;
 }
 
