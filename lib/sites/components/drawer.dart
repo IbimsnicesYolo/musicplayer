@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../settings.dart' as CFG;
+import "../../classes/playlist.dart";
 import "../../classes/song.dart";
 import "../../classes/tag.dart";
 import 'dart:io';
@@ -7,11 +8,10 @@ import "string_input.dart";
 import "elevatedbutton.dart";
 
 class SongDrawer extends Drawer {
-  const SongDrawer({
-    Key? key,
-    required this.c,
-  }) : super(key: key);
+  const SongDrawer({Key? key, required this.c, required this.Playlist})
+      : super(key: key);
 
+  final CurrentPlayList Playlist;
   final void Function(void Function()) c;
   @override
   Widget build(BuildContext context) {
@@ -37,6 +37,17 @@ class SongDrawer extends Drawer {
                               .push(
                                 MaterialPageRoute(
                                   builder: (_) => SearchSongPage(),
+                                ),
+                              )
+                              .then((value) => c(() {}));
+                        }),
+                    TextButton(
+                        child: const Text("Edit Song Informations"),
+                        onPressed: () {
+                          Navigator.of(context)
+                              .push(
+                                MaterialPageRoute(
+                                  builder: (_) => ShowSongEdit(),
                                 ),
                               )
                               .then((value) => c(() {}));
@@ -71,7 +82,9 @@ class SongDrawer extends Drawer {
                         Navigator.of(context)
                             .push(
                               MaterialPageRoute(
-                                builder: (_) => ShowSongDeletion(),
+                                builder: (_) => ShowSongDeletion(
+                                  Pl: Playlist,
+                                ),
                               ),
                             )
                             .then((value) => c(() {}));
@@ -100,8 +113,6 @@ class _SearchSongPage extends State<SearchSongPage> {
   String searchinfo = "";
   String searchcount = "";
   bool searching = false;
-  List<String> FoundSongs = [];
-  bool SongEdit = false;
 
   void StartSearch() async {
     setState(() {
@@ -131,7 +142,6 @@ class _SearchSongPage extends State<SearchSongPage> {
           String path = entity.path;
           if (path.endsWith('.mp3')) {
             if (CreateSong(path)) {
-              FoundSongs.add(path);
               count += 1;
             }
           }
@@ -150,6 +160,7 @@ class _SearchSongPage extends State<SearchSongPage> {
       ;
     }
     if (count > 0) {
+      ShouldSaveSongs = true;
       SaveSongs();
     }
 
@@ -160,58 +171,78 @@ class _SearchSongPage extends State<SearchSongPage> {
     });
   }
 
-  Center SearchPage() {
-    return Center(
-      child: Column(
-        children: [
-          Container(
-            child: TextButton(
-              onPressed: StartSearch,
-              child: Text(searching ? "Searching..." : "Start Search"),
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: CFG.ContrastColor,
+          onPressed: () => {
+            Navigator.of(context).pop(),
+          },
+          child: const Icon(Icons.arrow_back),
+        ),
+        appBar: AppBar(
+          title: Text("Search for unregistered Songs"),
+          backgroundColor: CFG.HomeColor,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
+        body: Container(
+          child: Center(
+            child: Column(
+              children: [
+                Container(
+                  child: TextButton(
+                    onPressed: StartSearch,
+                    child: Text(searching ? "Searching..." : "Start Search"),
+                  ),
+                ),
+                Text(searchcount),
+                Text(searchinfo),
+              ],
             ),
           ),
-          Text(searchcount),
-          Text(searchinfo),
-          StyledElevatedButton(
-              onPressed: () {
-                if (searching) {
-                  return;
-                }
-                if (FoundSongs.length == 0) {
-                  return;
-                }
-                setState(() {
-                  SongEdit = true;
-                });
-              },
-              child: const Text("Edit Songs"))
-        ],
+        ),
       ),
     );
   }
+}
+
+class ShowSongEdit extends StatefulWidget {
+  ShowSongEdit({Key? key}) : super(key: key);
+
+  @override
+  State<ShowSongEdit> createState() => _ShowSongEdit();
+}
+
+// TODO add SearchPage in appbar where you can search for songs and add them via swipe to the FoundSongs list
+class _ShowSongEdit extends State<ShowSongEdit> {
+  List<Song> FoundSongs = AllNotEditedSongs();
+  int currentsong = 0;
 
   Center SongEditPage() {
-    String currentsong = "";
-    try {
-      currentsong = FoundSongs[0];
-    } catch (e) {
-      setState(() {
-        SongEdit = false;
-      });
+    if (currentsong < 0) {
+      return Center(
+        child: Text("No Songs Found"),
+      );
     }
-
-    if (currentsong == "") {
-      setState(() {
-        SongEdit = false;
-      });
-      return Center();
+    if (currentsong >= FoundSongs.length) {
+      return Center(
+        child: Text("Done Editing all Songs"),
+      );
     }
-
-    Song csong = Songs[currentsong.split("/").last];
+    Song csong = FoundSongs[currentsong];
 
     return Center(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Text("Editing Song ${currentsong + 1} of ${FoundSongs.length}\n",
+              style: const TextStyle(fontSize: 15)),
           Text("\n" + csong.filename + "\n",
               style: const TextStyle(fontSize: 20)),
           StyledElevatedButton(
@@ -236,62 +267,57 @@ class _SearchSongPage extends State<SearchSongPage> {
                         });
               },
               child: Text("Title: ${csong.title}")),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              StyledElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context)
-                        .push(
-                          MaterialPageRoute(
-                            builder: (_) => StringInputExpanded(
-                                Title: "Song Artist Edit",
-                                Text: csong.interpret,
-                                additionalinfos: csong.filename,
-                                OnSaved: (String s) {
-                                  csong.interpret = s;
-                                  UpdateSongInterpret(csong.filename, s);
-                                }),
-                          ),
-                        )
-                        .then((value) => {
-                              csong.interpret = value,
-                              UpdateSongInterpret(csong.filename, value),
-                              setState(() {}),
-                            });
-                  },
-                  child: Text("Artist: ${csong.title}")),
-              StyledElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context)
-                        .push(
-                          MaterialPageRoute(
-                            builder: (_) => StringInputExpanded(
-                                Title: "Song Featuring Edit",
-                                Text: csong.featuring,
-                                additionalinfos: csong.filename,
-                                OnSaved: (String s) {
-                                  csong.interpret = s;
-                                  UpdateSongFeaturing(csong.filename, s);
-                                }),
-                          ),
-                        )
-                        .then((value) => {
-                              csong.featuring = value,
-                              UpdateSongFeaturing(csong.filename, value),
-                              setState(() {}),
-                            });
-                  },
-                  child: Text("Featuring: ${csong.featuring}")),
-            ],
-          ),
+          StyledElevatedButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .push(
+                      MaterialPageRoute(
+                        builder: (_) => StringInputExpanded(
+                            Title: "Song Artist Edit",
+                            Text: csong.interpret,
+                            additionalinfos: csong.filename,
+                            OnSaved: (String s) {
+                              csong.interpret = s;
+                              UpdateSongInterpret(csong.filename, s);
+                            }),
+                      ),
+                    )
+                    .then((value) => {
+                          csong.interpret = value,
+                          UpdateSongInterpret(csong.filename, value),
+                          setState(() {}),
+                        });
+              },
+              child: Text("Artist: ${csong.interpret}")),
+          StyledElevatedButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .push(
+                      MaterialPageRoute(
+                        builder: (_) => StringInputExpanded(
+                            Title: "Song Featuring Edit",
+                            Text: csong.featuring,
+                            additionalinfos: csong.filename,
+                            OnSaved: (String s) {
+                              csong.interpret = s;
+                              UpdateSongFeaturing(csong.filename, s);
+                            }),
+                      ),
+                    )
+                    .then((value) => {
+                          csong.featuring = value,
+                          UpdateSongFeaturing(csong.filename, value),
+                          setState(() {}),
+                        });
+              },
+              child: Text("Featuring: ${csong.featuring}")),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               StyledElevatedButton(
                 onPressed: () {
                   setState(() {
-                    SongEdit = false;
+                    currentsong -= 1;
                   });
                 },
                 child: const Text("Back"),
@@ -301,15 +327,14 @@ class _SearchSongPage extends State<SearchSongPage> {
                     int id = CreateTag(csong.interpret);
                     if (id > 0) {
                       UpdateSongTags(csong.filename, id, true);
-                      SaveTags();
                     }
                   },
                   child: const Text("Create Artist Tag")),
               StyledElevatedButton(
                   onPressed: () {
                     setState(() {
-                      searchcount = "";
-                      FoundSongs.removeAt(0);
+                      currentsong += 1;
+                      csong.edited = true;
                     });
                   },
                   child: const Text("Done")),
@@ -327,14 +352,31 @@ class _SearchSongPage extends State<SearchSongPage> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: FloatingActionButton(
           backgroundColor: CFG.ContrastColor,
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => {
+            ShouldSaveSongs = true,
+            ShouldSaveTags = true,
+            SaveTags(),
+            SaveSongs(),
+            Navigator.of(context).pop(),
+          },
           child: const Icon(Icons.arrow_back),
         ),
         appBar: AppBar(
-          title: Text("Search for unregistered Songs"),
+          title: Text("Song Edit"),
+          backgroundColor: CFG.HomeColor,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => {
+              ShouldSaveSongs = true,
+              ShouldSaveTags = true,
+              SaveTags(),
+              SaveSongs(),
+              Navigator.of(context).pop(),
+            },
+          ),
         ),
         body: Container(
-          child: SongEdit ? SongEditPage() : SearchPage(),
+          child: SongEditPage(),
         ),
       ),
     );
@@ -427,8 +469,9 @@ class _ShowTagDeletion extends State<ShowTagDeletion> {
 }
 
 class ShowSongDeletion extends StatefulWidget {
-  ShowSongDeletion({Key? key}) : super(key: key);
+  ShowSongDeletion({Key? key, required this.Pl}) : super(key: key);
 
+  final CurrentPlayList Pl;
   @override
   State<ShowSongDeletion> createState() => _ShowSongDeletion();
 }
@@ -454,6 +497,7 @@ class _ShowSongDeletion extends State<ShowSongDeletion> {
                 backgroundColor: Colors.red,
               ),
               onPressed: () {
+                widget.Pl.Clear();
                 Songs = {};
                 ShouldSaveSongs = true;
                 UpdateAllTags();

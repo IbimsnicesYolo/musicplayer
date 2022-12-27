@@ -92,6 +92,7 @@ class CurrentPlayList {
   }
 
   void Clear() {
+    StopPlaying();
     songs = [];
     last_added_pos = 0;
     Save();

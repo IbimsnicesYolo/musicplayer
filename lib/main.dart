@@ -118,7 +118,7 @@ class _MainSite extends State<MainSite> {
             ),
           ],
         ),
-        drawer: Side.SongDrawer(c: update),
+        drawer: Side.SongDrawer(c: update, Playlist: Playlist),
       ),
     );
   }

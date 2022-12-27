@@ -13,6 +13,7 @@ class Song {
   String interpret = "Song Interpret";
   String featuring = "";
   String hash = "";
+  bool edited = false;
   bool hastags = false;
   List tags = [];
   Song(this.path);
@@ -23,6 +24,7 @@ class Song {
     print(title);
     print(interpret);
     print(featuring);
+    print(edited);
     print(tags.toString());
   }
 
@@ -32,6 +34,7 @@ class Song {
         title = json['t'],
         interpret = json['i'],
         featuring = json['fe'],
+        edited = json['e'],
         hastags = json['h'],
         tags = json['ta'];
   Map<String, dynamic> toJson(Song value) => {
@@ -40,6 +43,7 @@ class Song {
         't': value.title,
         'i': value.interpret,
         'fe': value.featuring,
+        'e': value.edited,
         'h': value.hastags,
         'ta': value.tags
       };
@@ -140,4 +144,14 @@ void ValidateSongs() {
       DeleteSong(v);
     }
   });
+}
+
+List<Song> AllNotEditedSongs() {
+  List<Song> noteditedsongs = [];
+  Songs.forEach((k, v) {
+    if (!v.edited) {
+      noteditedsongs.add(v);
+    }
+  });
+  return noteditedsongs;
 }
