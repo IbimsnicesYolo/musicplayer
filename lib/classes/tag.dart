@@ -79,7 +79,7 @@ void DeleteTag(Tag t) {
   Songs.forEach(
     (k, v) {
       if (v.tags.contains(t.id)) {
-        v.tags.remove(t.id);
+        UpdateSongTags(v.filename, t.id, false);
       }
     },
   );

@@ -325,7 +325,7 @@ class _ShowSongEdit extends State<ShowSongEdit> {
               StyledElevatedButton(
                   onPressed: () {
                     int id = CreateTag(csong.interpret);
-                    if (id > 0) {
+                    if (id >= 0) {
                       UpdateSongTags(csong.filename, id, true);
                     }
                   },
