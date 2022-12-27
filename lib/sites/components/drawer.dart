@@ -36,7 +36,7 @@ class SongDrawer extends Drawer {
                           Navigator.of(context)
                               .push(
                                 MaterialPageRoute(
-                                  builder: (_) => const SearchSongPage(),
+                                  builder: (_) => SearchSongPage(),
                                 ),
                               )
                               .then((value) => c(() {}));
@@ -236,28 +236,55 @@ class _SearchSongPage extends State<SearchSongPage> {
                         });
               },
               child: Text("Title: ${csong.title}")),
-          StyledElevatedButton(
-              onPressed: () {
-                Navigator.of(context)
-                    .push(
-                      MaterialPageRoute(
-                        builder: (_) => StringInputExpanded(
-                            Title: "Song Artist Edit",
-                            Text: csong.interpret,
-                            additionalinfos: csong.filename,
-                            OnSaved: (String s) {
-                              csong.interpret = s;
-                              UpdateSongInterpret(csong.filename, s);
-                            }),
-                      ),
-                    )
-                    .then((value) => {
-                          csong.interpret = value,
-                          UpdateSongInterpret(csong.filename, value),
-                          setState(() {}),
-                        });
-              },
-              child: Text("Artist: ${csong.title}")),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              StyledElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context)
+                        .push(
+                          MaterialPageRoute(
+                            builder: (_) => StringInputExpanded(
+                                Title: "Song Artist Edit",
+                                Text: csong.interpret,
+                                additionalinfos: csong.filename,
+                                OnSaved: (String s) {
+                                  csong.interpret = s;
+                                  UpdateSongInterpret(csong.filename, s);
+                                }),
+                          ),
+                        )
+                        .then((value) => {
+                              csong.interpret = value,
+                              UpdateSongInterpret(csong.filename, value),
+                              setState(() {}),
+                            });
+                  },
+                  child: Text("Artist: ${csong.title}")),
+              StyledElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context)
+                        .push(
+                          MaterialPageRoute(
+                            builder: (_) => StringInputExpanded(
+                                Title: "Song Featuring Edit",
+                                Text: csong.featuring,
+                                additionalinfos: csong.filename,
+                                OnSaved: (String s) {
+                                  csong.interpret = s;
+                                  UpdateSongFeaturing(csong.filename, s);
+                                }),
+                          ),
+                        )
+                        .then((value) => {
+                              csong.featuring = value,
+                              UpdateSongFeaturing(csong.filename, value),
+                              setState(() {}),
+                            });
+                  },
+                  child: Text("Featuring: ${csong.featuring}")),
+            ],
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [

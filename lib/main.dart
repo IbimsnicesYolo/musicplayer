@@ -21,7 +21,7 @@ void checkpermissions() async {
 }
 
 void main() {
-  runApp(MaterialApp(home: MainSite()));
+  runApp(MaterialApp(theme: ThemeData.dark(), home: MainSite()));
   checkpermissions();
 }
 
@@ -59,10 +59,7 @@ class _MainSite extends State<MainSite> {
   Widget build(BuildContext context) {
     CFG.LoadData(update);
     Playlist.LoadPlaylist(update);
-    return MaterialApp(
-      theme: ThemeData.dark(),
-      home: buildSafeArea(context, side),
-    );
+    return buildSafeArea(context, side);
   }
 
   SafeArea buildSafeArea(BuildContext context, side) {
