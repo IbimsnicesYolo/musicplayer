@@ -109,6 +109,7 @@ void DeleteSong(Song s) {
   if (Songs.containsKey(s.filename)) {
     Songs.remove(s.filename);
     ShouldSaveSongs = true;
+    SaveSongs();
   }
 }
 

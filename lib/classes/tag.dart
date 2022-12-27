@@ -83,7 +83,7 @@ void DeleteTag(Tag t) {
       }
     },
   );
-  ShouldSaveTags = false;
+  ShouldSaveTags = true;
   SaveTags();
 }
 
