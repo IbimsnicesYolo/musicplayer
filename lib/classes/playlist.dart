@@ -53,14 +53,18 @@ class CurrentPlayList {
   void PlayNextSong() {
     if (songs.length > 0) {
       songs.add(songs.removeAt(0));
-      StartPlaying();
+      if (player.state == PlayerState.playing) {
+        StartPlaying();
+      }
     }
   }
 
   void PlayPreviousSong() {
     if (songs.length > 0) {
       songs.insert(0, songs.removeAt(songs.length - 1));
-      StartPlaying();
+      if (player.state == PlayerState.playing) {
+        StartPlaying();
+      }
     }
   }
 

@@ -1,8 +1,7 @@
 import 'package:tagmusicplayer/sites/components/string_input.dart';
-
 import "../classes/tag.dart";
 import "../classes/playlist.dart";
-import "../settings.dart" as CFG;
+import "package:audioplayers/audioplayers.dart";
 import "unsortedsongs.dart" as USongs;
 import 'package:flutter/material.dart';
 
@@ -35,18 +34,25 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
               IconButton(
                 onPressed: () {
                   c(() {
-                    Playlist.StartPlaying();
+                    Playlist.Shuffle();
                   });
                 },
-                icon: Icon(Icons.play_arrow),
+                icon: Icon(Icons.shuffle),
               ),
               IconButton(
                 onPressed: () {
                   c(() {
-                    Playlist.PausePlaying();
+                    if (Playlist.player.state == PlayerState.playing ||
+                        Playlist.player.state == PlayerState.paused) {
+                      Playlist.PausePlaying();
+                    } else {
+                      Playlist.StartPlaying();
+                    }
                   });
                 },
-                icon: Icon(Icons.pause),
+                icon: Icon((Playlist.player.state == PlayerState.playing)
+                    ? Icons.pause
+                    : Icons.play_arrow),
               ),
               IconButton(
                 onPressed: () {
@@ -68,21 +74,13 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
           ),
           Row(
             children: [
-              IconButton(
-                onPressed: () {
-                  c(() {
-                    Playlist.Shuffle();
-                  });
-                },
-                icon: Icon(Icons.shuffle),
-              ),
-              IconButton(
+              TextButton(
                 onPressed: () {
                   c(() {
                     Playlist.Clear();
                   });
                 },
-                icon: Icon(Icons.clear),
+                child: Text("Clear Playlist"),
               ),
               TextButton(
                 onPressed: () {
