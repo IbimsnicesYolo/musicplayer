@@ -14,7 +14,8 @@ bool ShouldShowSong(String key, String search) {
   if (Songs[key].interpret.toLowerCase().contains(search.toLowerCase()))
     return true;
 
-  if (Songs[key].featuring.toLowerCase().contains(search.toLowerCase()))
+  if (Songs[key].featuring != 0 &&
+      Songs[key].featuring.toLowerCase().contains(search.toLowerCase()))
     return true;
 
   List<String> searchname = search.toLowerCase().split(" ");

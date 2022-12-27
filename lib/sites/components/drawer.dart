@@ -3,7 +3,9 @@ import '../../settings.dart' as CFG;
 import "../../classes/playlist.dart";
 import "../../classes/song.dart";
 import "../../classes/tag.dart";
+import "../allsongs.dart";
 import 'dart:io';
+import "search.dart";
 import "string_input.dart";
 import "elevatedbutton.dart";
 
@@ -47,7 +49,8 @@ class SongDrawer extends Drawer {
                           Navigator.of(context)
                               .push(
                                 MaterialPageRoute(
-                                  builder: (_) => ShowSongEdit(),
+                                  builder: (_) =>
+                                      ShowSongEdit(Playlist: Playlist, c: c),
                                 ),
                               )
                               .then((value) => c(() {}));
@@ -217,13 +220,17 @@ class _SearchSongPage extends State<SearchSongPage> {
 }
 
 class ShowSongEdit extends StatefulWidget {
-  ShowSongEdit({Key? key}) : super(key: key);
+  ShowSongEdit({Key? key, required this.Playlist, required this.c})
+      : super(key: key);
+
+  final Playlist;
+  final c;
 
   @override
   State<ShowSongEdit> createState() => _ShowSongEdit();
 }
 
-// TODO add SearchPage in appbar where you can search for songs and add them via swipe to the FoundSongs list
+// TODO add Songs via swipe from SearchPage to the FoundSongs list
 class _ShowSongEdit extends State<ShowSongEdit> {
   List<Song> FoundSongs = AllNotEditedSongs();
   int currentsong = 0;
@@ -367,6 +374,27 @@ class _ShowSongEdit extends State<ShowSongEdit> {
         ),
         appBar: AppBar(
           title: Text("Song Edit"),
+          actions: [
+            IconButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => SearchPage(
+                      (search, update) => Container(
+                            child: ListView(
+                              children: [
+                                for (String key in Songs.keys)
+                                  if (ShouldShowSong(key, search))
+                                    SongTile(context, Songs[key], widget.c,
+                                        widget.Playlist),
+                              ],
+                            ),
+                          ),
+                      ""),
+                ),
+              ),
+              icon: const Icon(Icons.search),
+            ),
+          ],
           backgroundColor: CFG.HomeColor,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
