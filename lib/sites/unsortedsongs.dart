@@ -14,11 +14,15 @@ bool ShouldShowSong(String key, String search) {
   if (Songs[key].interpret.toLowerCase().contains(search.toLowerCase()))
     return true;
 
+  if (Songs[key].featuring.toLowerCase().contains(search.toLowerCase()))
+    return true;
+
   List<String> searchname = search.toLowerCase().split(" ");
 
   for (String s2 in searchname) {
-    if (Songs[key].title.contains(s2) || Songs[key].interpret.contains(s2))
-      return true;
+    if (Songs[key].title.contains(s2) ||
+        Songs[key].interpret.contains(s2) ||
+        Songs[key].featuring.contains(s2)) return true;
   }
 
   return false;
@@ -56,6 +60,7 @@ ListView buildContent(BuildContext context, void Function(void Function()) c,
   );
 }
 
+// TODO add Featuring here
 PopupMenuButton SongTile(BuildContext context, Song s,
     void Function(void Function()) c, CurrentPlayList Playlist) {
   return PopupMenuButton(
@@ -127,7 +132,7 @@ PopupMenuButton SongTile(BuildContext context, Song s,
     },
     child: ListTile(
       title: Text(s.title),
-      subtitle: Text(s.interpret),
+      subtitle: Text(s.interpret + " | " + s.featuring),
     ),
     itemBuilder: (BuildContext context) => <PopupMenuEntry>[
       PopupMenuItem(

@@ -20,6 +20,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
               ? Playlist.songs[0].title
               : "No songs in playlist"),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               IconButton(
                 onPressed: () {
@@ -36,6 +37,30 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
                   });
                 },
                 icon: Icon(Icons.shuffle),
+              ),
+              IconButton(
+                onPressed: () {
+                  c(() {
+                    Playlist.StartPlaying();
+                  });
+                },
+                icon: Icon(Icons.play_arrow),
+              ),
+              IconButton(
+                onPressed: () {
+                  c(() {
+                    Playlist.PausePlaying();
+                  });
+                },
+                icon: Icon(Icons.pause),
+              ),
+              IconButton(
+                onPressed: () {
+                  c(() {
+                    Playlist.StopPlaying();
+                  });
+                },
+                icon: Icon(Icons.stop),
               ),
               IconButton(
                 onPressed: () {
