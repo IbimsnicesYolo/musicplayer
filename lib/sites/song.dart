@@ -1,3 +1,5 @@
+import 'package:tagmusicplayer/sites/components/string_input.dart';
+
 import "../classes/tag.dart";
 import "../classes/playlist.dart";
 import "../settings.dart" as CFG;
@@ -29,14 +31,6 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
                   });
                 },
                 icon: Icon(Icons.skip_previous),
-              ),
-              IconButton(
-                onPressed: () {
-                  c(() {
-                    Playlist.Shuffle();
-                  });
-                },
-                icon: Icon(Icons.shuffle),
               ),
               IconButton(
                 onPressed: () {
@@ -77,24 +71,40 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
               IconButton(
                 onPressed: () {
                   c(() {
+                    Playlist.Shuffle();
+                  });
+                },
+                icon: Icon(Icons.shuffle),
+              ),
+              IconButton(
+                onPressed: () {
+                  c(() {
                     Playlist.Clear();
                   });
                 },
                 icon: Icon(Icons.clear),
               ),
-              IconButton(
+              TextButton(
                 onPressed: () {
                   c(() {
-                    Playlist.Save();
+                    StringInput(context, "Tag Name to Save", "Save", "Nah",
+                        (p0) {
+                      int id = CreateTag(p0);
+                      Playlist.SaveToTag(id);
+                      Playlist.Clear();
+                    }, (p0) {}, false, "", "Tag Name");
                   });
                 },
-                icon: Icon(Icons.save),
+                child: Text("Save Playlist To Tag"),
               ),
               TextButton(
                 onPressed: () {
-                  CFG.ShowSth("Nah", context);
+                  StringInput(context, "Tag Name to Add", "Add", "Nah", (p0) {
+                    int id = CreateTag(p0);
+                    Playlist.SaveToTag(id);
+                  }, (p0) {}, false, "", "Tag Name");
                 },
-                child: Text("Add all To Tag"),
+                child: Text("Add all Songs To Tag"),
               ),
             ],
           ),

@@ -73,6 +73,17 @@ class CurrentPlayList {
     SaveConfig();
   }
 
+  void SaveToTag(id) {
+    List<String> names = [];
+    songs.forEach((element) {
+      UpdateSongTags(element.filename, id, true);
+    });
+    ShouldSaveTags = true;
+    ShouldSaveSongs = true;
+    SaveTags();
+    SaveSongs();
+  }
+
   void LoadPlaylist(void Function(void Function()) reload) {
     List savedsongs = Config["Playlist"];
     if (savedsongs.isNotEmpty) {
