@@ -2,12 +2,12 @@ import 'package:tagmusicplayer/sites/components/string_input.dart';
 import "../classes/tag.dart";
 import "../classes/playlist.dart";
 import "package:audioplayers/audioplayers.dart";
-import "unsortedsongs.dart" as USongs;
+import "allsongs.dart" as AllSongs;
 import 'package:flutter/material.dart';
 
 IconButton buildActions(BuildContext context, void Function(void Function()) c,
     CurrentPlayList Playlist) {
-  return USongs.buildActions(context, c, Playlist);
+  return AllSongs.buildActions(context, c, Playlist);
 }
 
 Container buildContent(BuildContext context, void Function(void Function()) c,

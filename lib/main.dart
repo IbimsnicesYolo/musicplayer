@@ -4,7 +4,7 @@ import "sites/components/drawer.dart" as Side;
 import "settings.dart" as CFG;
 import "sites/playlist.dart" as PlaylistSide;
 import "sites/tagsite.dart" as TagSite;
-import "sites/unsortedsongs.dart" as USongs;
+import "sites/allsongs.dart" as AllSongs;
 import "sites/song.dart" as SongSite;
 import "classes/playlist.dart";
 import "classes/tag.dart";
@@ -70,7 +70,7 @@ class _MainSite extends State<MainSite> {
             if (side == 0) SongSite.buildActions(context, update, Playlist),
             if (side == 1) PlaylistSide.buildActions(context, update, Playlist),
             if (side == 2) TagSite.buildActions(context, update, Playlist),
-            if (side == 3) USongs.buildActions(context, update, Playlist),
+            if (side == 3) AllSongs.buildActions(context, update, Playlist),
           ],
         ),
         body: (side == 0
@@ -79,7 +79,7 @@ class _MainSite extends State<MainSite> {
                 ? PlaylistSide.buildContent(context, update, Playlist)
                 : (side == 2
                     ? TagSite.buildContent(context, update, Playlist)
-                    : USongs.buildContent(context, update, Playlist)))),
+                    : AllSongs.buildContent(context, update, Playlist)))),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.downloading),
           onPressed: () {
@@ -114,7 +114,7 @@ class _MainSite extends State<MainSite> {
             BottomNavigationBarItem(
               icon: Icon(Icons.fiber_new_outlined),
               backgroundColor: CFG.ContrastColor,
-              label: "Unsorted Songs",
+              label: "All Songs",
             ),
           ],
         ),

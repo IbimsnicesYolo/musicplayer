@@ -54,13 +54,11 @@ ListView buildContent(BuildContext context, void Function(void Function()) c,
     CurrentPlayList Playlist) {
   return ListView(
     children: [
-      for (String key in Songs.keys)
-        if (!Songs[key].hastags) SongTile(context, Songs[key], c, Playlist),
+      for (String key in Songs.keys) SongTile(context, Songs[key], c, Playlist),
     ],
   );
 }
 
-// TODO add Featuring here
 PopupMenuButton SongTile(BuildContext context, Song s,
     void Function(void Function()) c, CurrentPlayList Playlist) {
   return PopupMenuButton(
@@ -108,23 +106,44 @@ PopupMenuButton SongTile(BuildContext context, Song s,
                 });
       }
       if (result == 2) {
+        // Change Featuring
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(
+                builder: (_) => StringInputExpanded(
+                    Title: "Song Featuring Edit",
+                    Text: s.featuring,
+                    additionalinfos: s.filename,
+                    OnSaved: (String si) {
+                      s.featuring = si;
+                      UpdateSongFeaturing(s.filename, si);
+                    }),
+              ),
+            )
+            .then((value) => {
+                  s.featuring = value,
+                  UpdateSongFeaturing(s.filename, value),
+                  c(() {})
+                });
+      }
+      if (result == 3) {
         Navigator.of(context).push(
           MaterialPageRoute(builder: (_) => TagEdit(s)),
         );
       }
-      if (result == 3) {
+      if (result == 4) {
         DeleteSong(s);
         c(() {});
       }
-      if (result == 4) {
+      if (result == 5) {
         Playlist.PlayNext(s);
         // Play Song as Next Song
       }
-      if (result == 5) {
+      if (result == 6) {
         Playlist.AddToPlaylist(s);
         // Add Song to End of Playlist
       }
-      if (result == 6) {
+      if (result == 7) {
         Playlist.PlayAfterLastAdded(s);
         // Add Song to End of Added Songs
       }
@@ -143,13 +162,17 @@ PopupMenuButton SongTile(BuildContext context, Song s,
         child: Text(s.interpret),
         value: 1,
       ),
+      PopupMenuItem(
+        child: Text(s.featuring),
+        value: 2,
+      ),
       const PopupMenuDivider(),
-      const PopupMenuItem(child: Text('Edit Tags'), value: 2),
-      const PopupMenuItem(child: Text('Delete Song'), value: 3),
+      const PopupMenuItem(child: Text('Edit Tags'), value: 3),
+      const PopupMenuItem(child: Text('Delete Song'), value: 4),
       const PopupMenuDivider(),
-      const PopupMenuItem(child: Text('Play Next'), value: 4),
-      const PopupMenuItem(child: Text('Add to Playlist'), value: 5),
-      const PopupMenuItem(child: Text('Add to Play Next Stack'), value: 6),
+      const PopupMenuItem(child: Text('Play Next'), value: 5),
+      const PopupMenuItem(child: Text('Add to Playlist'), value: 6),
+      const PopupMenuItem(child: Text('Add to Play Next Stack'), value: 7),
     ],
   );
 }
