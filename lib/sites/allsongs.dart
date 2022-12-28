@@ -6,6 +6,9 @@ import 'components/string_input.dart';
 import 'components/tagedit.dart';
 
 bool ShouldShowSong(String key, String search) {
+  if (Songs[key].blacklisted) {
+    return false;
+  }
   if (search == "") return true;
 
   if (Songs[key].title.toLowerCase().contains(search.toLowerCase()))
@@ -55,7 +58,8 @@ ListView buildContent(BuildContext context, void Function(void Function()) c,
     CurrentPlayList Playlist) {
   return ListView(
     children: [
-      for (String key in Songs.keys) SongTile(context, Songs[key], c, Playlist),
+      for (String key in Songs.keys)
+        if (ShouldShowSong(key, "")) SongTile(context, Songs[key], c, Playlist),
     ],
   );
 }

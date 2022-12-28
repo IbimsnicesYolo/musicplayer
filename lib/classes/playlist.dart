@@ -25,12 +25,12 @@ class CurrentPlayList {
   }
 
   void InsertAsNext(Song song) {
-    last_added_pos = 0;
+    last_added_pos = 1;
     if (!songs.contains(song)) {
-      songs.insert(0, song);
+      songs.insert(1, song);
     } else {
       songs.remove(song);
-      songs.insert(0, song);
+      songs.insert(1, song);
     }
   }
 
@@ -59,7 +59,6 @@ class CurrentPlayList {
   }
 
   void PlayNextSong() {
-    print("PlayNextSong");
     if (songs.length > 0) {
       songs.add(songs.removeAt(0));
       if (player.state == PlayerState.playing || start) {
@@ -83,17 +82,13 @@ class CurrentPlayList {
   }
 
   void LoadNextToPlayer() async {
-    print("Loading next song");
     if (songs.length > 0) {
-      await player.setSource(DeviceFileSource(songs[0].path));
-      await player.stop();
-      await player.play(DeviceFileSource(songs[0].path));
-      player.seek(Duration(seconds: 0));
+      await StartPlaying();
       await player.pause();
     }
   }
 
-  void StartPlaying() async {
+  Future<void> StartPlaying() async {
     if (songs.length > 0) {
       await player.setSource(DeviceFileSource(songs[0].path));
       await player.stop();

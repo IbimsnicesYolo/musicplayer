@@ -109,7 +109,7 @@ Map GetSongsFromTag(Tag T) {
   for (String s in Songs.keys) {
     Song so = Songs[s];
     List t = so.tags;
-    if (t.indexOf(T.id, 0) != -1) {
+    if (t.indexOf(T.id, 0) != -1 && !so.blacklisted) {
       songs[so.filename] = so;
     }
   }

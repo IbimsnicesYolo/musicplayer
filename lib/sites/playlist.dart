@@ -8,6 +8,9 @@ import 'components/string_input.dart';
 import 'components/tagedit.dart';
 
 bool ShouldShowSong(String key, String search) {
+  if (Songs[key].blacklisted) {
+    return false;
+  }
   if (search == "") return true;
 
   if (Songs[key].title.toLowerCase().contains(search.toLowerCase()))
@@ -119,67 +122,72 @@ Dismissible SongTile(BuildContext context, Song s,
         ),
       ),
     ),
-    child: PopupMenuButton(
-      onSelected: (result) {
-        if (result == 0) {
-          // Change Title
-          StringInput(context, "New Song Title", "Save", "Cancel", (String si) {
-            UpdateSongTitle(s.filename, si);
-            c(() {});
-          }, (String si) {}, true, s.title, "");
-        }
-        if (result == 1) {
-          // Change Interpret
-          StringInput(context, "New Song Interpret", "Save", "Cancel",
-              (String si) {
-            UpdateSongInterpret(s.filename, si);
-            c(() {});
-          }, (String si) {}, true, s.interpret, "");
-        }
-        if (result == 2) {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => TagEdit(s)),
-          );
-        }
-        if (result == 3) {
-          DeleteSong(s);
-          c(() {});
-        }
-        if (result == 4) {
-          Playlist.InsertAsNext(s);
-          // Play Song as Next Song
-        }
-        if (result == 5) {
-          Playlist.AddToPlaylist(s);
-          // Add Song to End of Playlist
-        }
-        if (result == 6) {
-          Playlist.InsertAfterLastAdded(s);
-          // Add Song to End of Added Songs
-        }
-        Playlist.Save();
+    child: ListTile(
+      title: Text(s.title),
+      subtitle: Text(s.interpret),
+      onLongPress: () => {
+        Playlist.InsertAsNext(s),
+        Playlist.PlayNextSong(),
       },
-      child: ListTile(
-        title: Text(s.title),
-        subtitle: Text(s.interpret),
+      trailing: PopupMenuButton(
+        onSelected: (result) {
+          if (result == 0) {
+            // Change Title
+            StringInput(context, "New Song Title", "Save", "Cancel",
+                (String si) {
+              UpdateSongTitle(s.filename, si);
+              c(() {});
+            }, (String si) {}, true, s.title, "");
+          }
+          if (result == 1) {
+            // Change Interpret
+            StringInput(context, "New Song Interpret", "Save", "Cancel",
+                (String si) {
+              UpdateSongInterpret(s.filename, si);
+              c(() {});
+            }, (String si) {}, true, s.interpret, "");
+          }
+          if (result == 2) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => TagEdit(s)),
+            );
+          }
+          if (result == 3) {
+            DeleteSong(s);
+            c(() {});
+          }
+          if (result == 4) {
+            Playlist.InsertAsNext(s);
+            // Play Song as Next Song
+          }
+          if (result == 5) {
+            Playlist.AddToPlaylist(s);
+            // Add Song to End of Playlist
+          }
+          if (result == 6) {
+            Playlist.InsertAfterLastAdded(s);
+            // Add Song to End of Added Songs
+          }
+          Playlist.Save();
+        },
+        itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+          PopupMenuItem(
+            child: Text(s.title),
+            value: 0,
+          ),
+          PopupMenuItem(
+            child: Text(s.interpret),
+            value: 1,
+          ),
+          const PopupMenuDivider(),
+          const PopupMenuItem(child: Text('Edit Tags'), value: 2),
+          const PopupMenuItem(child: Text('Delete Song'), value: 3),
+          const PopupMenuDivider(),
+          const PopupMenuItem(child: Text('Play Next'), value: 4),
+          const PopupMenuItem(child: Text('Add to Playlist'), value: 5),
+          const PopupMenuItem(child: Text('Add to Play Next Stack'), value: 6),
+        ],
       ),
-      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-        PopupMenuItem(
-          child: Text(s.title),
-          value: 0,
-        ),
-        PopupMenuItem(
-          child: Text(s.interpret),
-          value: 1,
-        ),
-        const PopupMenuDivider(),
-        const PopupMenuItem(child: Text('Edit Tags'), value: 2),
-        const PopupMenuItem(child: Text('Delete Song'), value: 3),
-        const PopupMenuDivider(),
-        const PopupMenuItem(child: Text('Play Next'), value: 4),
-        const PopupMenuItem(child: Text('Add to Playlist'), value: 5),
-        const PopupMenuItem(child: Text('Add to Play Next Stack'), value: 6),
-      ],
     ),
   );
 }

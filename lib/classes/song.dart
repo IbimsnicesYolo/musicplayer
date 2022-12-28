@@ -14,6 +14,7 @@ class Song {
   String featuring = "";
   String hash = "";
   bool edited = false;
+  bool blacklisted = false;
   bool hastags = false;
   List tags = [];
   Song(this.path);
@@ -25,6 +26,7 @@ class Song {
     print(interpret);
     print(featuring);
     print(edited);
+    print(blacklisted);
     print(tags.toString());
   }
 
@@ -36,6 +38,7 @@ class Song {
         featuring = json['fe'],
         edited = json['e'],
         hastags = json['h'],
+        blacklisted = json['b'],
         tags = json['ta'];
   Map<String, dynamic> toJson(Song value) => {
         'p': value.path,
@@ -45,6 +48,7 @@ class Song {
         'fe': value.featuring,
         'e': value.edited,
         'h': value.hastags,
+        'b': value.blacklisted,
         'ta': value.tags
       };
 }

@@ -68,6 +68,19 @@ class SongDrawer extends Drawer {
                       },
                     ),
                     TextButton(
+                      child: const Text("Open Blacklist"),
+                      onPressed: () {
+                        Navigator.of(context)
+                            .push(
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    ShowBlacklist(Playlist: Playlist, c: c),
+                              ),
+                            )
+                            .then((value) => c(() {}));
+                      },
+                    ),
+                    TextButton(
                       child: const Text("Delete All Tags"),
                       onPressed: () {
                         Navigator.of(context)
@@ -335,12 +348,21 @@ class _ShowSongEdit extends State<ShowSongEdit> {
               ),
               StyledElevatedButton(
                   onPressed: () {
-                    int id = CreateTag(csong.interpret);
-                    if (id > -1) {
-                      UpdateSongTags(csong.filename, id, true);
-                    }
                     currentsong += 1;
                     csong.edited = true;
+                    csong.blacklisted = true;
+                    ShouldSaveSongs = true;
+                    SaveSongs();
+                    setState(() {});
+                  },
+                  child: const Text("Blacklist")),
+              StyledElevatedButton(
+                  onPressed: () {
+                    int id = CreateTag(csong.interpret);
+                    UpdateSongTags(csong.filename, id, true);
+                    currentsong += 1;
+                    csong.edited = true;
+                    setState(() {});
 
                     if (currentsong % 10 == 0) {
                       SaveSongs();
@@ -453,6 +475,69 @@ class _ShowConfig extends State<ShowConfig> {
   }
 }
 
+class ShowBlacklist extends StatefulWidget {
+  ShowBlacklist({Key? key, required this.Playlist, required this.c})
+      : super(key: key);
+
+  final Playlist;
+  final c;
+  @override
+  State<ShowBlacklist> createState() => _ShowBlacklist();
+}
+
+class _ShowBlacklist extends State<ShowBlacklist> {
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: CFG.ContrastColor,
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Icon(Icons.arrow_back),
+        ),
+        appBar: AppBar(
+          title: Text("Blacklist"),
+          actions: [
+            IconButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => SearchPage(
+                      (search, update) => Container(
+                            child: ListView(
+                              children: [
+                                for (String key in Songs.keys)
+                                  if (ShouldShowSong(key, search))
+                                    BlackListTile(context, Songs[key], true),
+                              ],
+                            ),
+                          ),
+                      ""),
+                ),
+              ),
+              icon: const Icon(Icons.search),
+            ),
+          ],
+          backgroundColor: CFG.HomeColor,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => {
+              Navigator.of(context).pop(),
+            },
+          ),
+        ),
+        body: ListView(
+          children: [
+            for (String key in Songs.keys)
+              if (Songs[key].blacklisted)
+                BlackListTile(context, Songs[key], false),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class ShowTagDeletion extends StatefulWidget {
   ShowTagDeletion({Key? key}) : super(key: key);
 
@@ -539,4 +624,102 @@ class _ShowSongDeletion extends State<ShowSongDeletion> {
       ),
     );
   }
+}
+
+PopupMenuButton BlackListTile(BuildContext context, Song s, bool isSearch) {
+  return PopupMenuButton(
+    onSelected: (result) {
+      if (result == 0) {
+        // Change Title
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(
+                builder: (_) => StringInputExpanded(
+                    Title: "Song Title Edit",
+                    Text: s.title,
+                    additionalinfos: s.filename,
+                    OnSaved: (String si) {
+                      s.title = si;
+                      UpdateSongTitle(s.filename, si);
+                    }),
+              ),
+            )
+            .then((value) => {
+                  s.title = value,
+                  UpdateSongTitle(s.filename, value),
+                });
+      }
+      if (result == 1) {
+        // Change Interpret
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(
+                builder: (_) => StringInputExpanded(
+                    Title: "Song Artist Edit",
+                    Text: s.interpret,
+                    additionalinfos: s.filename,
+                    OnSaved: (String si) {
+                      s.interpret = si;
+                      UpdateSongInterpret(s.filename, si);
+                    }),
+              ),
+            )
+            .then((value) => {
+                  s.interpret = value,
+                  UpdateSongInterpret(s.filename, value),
+                });
+      }
+      if (result == 2) {
+        // Change Featuring
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(
+                builder: (_) => StringInputExpanded(
+                    Title: "Song Featuring Edit",
+                    Text: s.featuring,
+                    additionalinfos: s.filename,
+                    OnSaved: (String si) {
+                      s.featuring = si;
+                      UpdateSongFeaturing(s.filename, si);
+                    }),
+              ),
+            )
+            .then((value) => {
+                  s.featuring = value,
+                  UpdateSongFeaturing(s.filename, value),
+                });
+      }
+      if (result == 3) {
+        if (isSearch) {
+          s.blacklisted = true;
+        } else {
+          s.blacklisted = false;
+        }
+        ShouldSaveSongs = true;
+        SaveSongs();
+      }
+    },
+    child: ListTile(
+      title: Text(s.title),
+      subtitle: Text(s.filename),
+    ),
+    itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+      PopupMenuItem(
+        child: Text(s.title),
+        value: 0,
+      ),
+      PopupMenuItem(
+        child: Text(s.interpret),
+        value: 1,
+      ),
+      PopupMenuItem(
+        child: Text(s.featuring),
+        value: 2,
+      ),
+      const PopupMenuDivider(),
+      PopupMenuItem(
+          child: Text(isSearch ? 'Blacklist Song' : "Un Blacklist Song"),
+          value: 3),
+    ],
+  );
 }
