@@ -80,14 +80,16 @@ class _MainSite extends State<MainSite> {
                 : (side == 2
                     ? TagSite.buildContent(context, update, Playlist)
                     : AllSongs.buildContent(context, update, Playlist)))),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.downloading),
-          onPressed: () {
-            setState(() {
-              if (side == 2) UpdateAllTags();
-            });
-          },
-        ),
+        floatingActionButton: (side == 1
+            ? null
+            : FloatingActionButton(
+                child: Icon(Icons.downloading),
+                onPressed: () {
+                  setState(() {
+                    if (side == 2) UpdateAllTags();
+                  });
+                },
+              )),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: this.side,
           onTap: (int index) {

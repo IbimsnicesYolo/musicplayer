@@ -1,7 +1,7 @@
 import 'package:tagmusicplayer/sites/components/string_input.dart';
 import "../classes/tag.dart";
 import "../classes/playlist.dart";
-import "package:audioplayers/audioplayers.dart";
+import "components/music_control.dart";
 import "allsongs.dart" as AllSongs;
 import 'package:flutter/material.dart';
 
@@ -17,61 +17,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
     child: Center(
       child: Column(
         children: [
-          Text((Playlist.songs.length > 0)
-              ? Playlist.songs[0].title
-              : "No songs in playlist"),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              IconButton(
-                onPressed: () {
-                  c(() {
-                    Playlist.PlayPreviousSong();
-                  });
-                },
-                icon: Icon(Icons.skip_previous),
-              ),
-              IconButton(
-                onPressed: () {
-                  c(() {
-                    Playlist.Shuffle();
-                  });
-                },
-                icon: Icon(Icons.shuffle),
-              ),
-              IconButton(
-                onPressed: () {
-                  c(() {
-                    if (Playlist.player.state == PlayerState.playing ||
-                        Playlist.player.state == PlayerState.paused) {
-                      Playlist.PausePlaying();
-                    } else {
-                      Playlist.StartPlaying();
-                    }
-                  });
-                },
-                icon: Icon((Playlist.player.state == PlayerState.playing)
-                    ? Icons.pause
-                    : Icons.play_arrow),
-              ),
-              IconButton(
-                onPressed: () {
-                  c(() {
-                    Playlist.StopPlaying();
-                  });
-                },
-                icon: Icon(Icons.stop),
-              ),
-              IconButton(
-                onPressed: () {
-                  c(() {
-                    Playlist.PlayNextSong();
-                  });
-                },
-                icon: Icon(Icons.skip_next),
-              ),
-            ],
-          ),
+          ControlTile(Playlist: Playlist, c: c),
           Row(
             children: [
               TextButton(

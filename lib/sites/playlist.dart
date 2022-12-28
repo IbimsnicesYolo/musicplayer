@@ -3,6 +3,7 @@ import "../classes/song.dart";
 import "../settings.dart";
 import 'package:flutter/material.dart';
 import 'components/search.dart';
+import "components/music_control.dart";
 import 'components/string_input.dart';
 import 'components/tagedit.dart';
 
@@ -56,9 +57,12 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
     CurrentPlayList Playlist) {
   return Container(
     child: ListView(
+      reverse: true,
       children: [
         if (!Playlist.songs.isEmpty) ...[
-          for (Song s in Playlist.songs) SongTile(context, s, c, Playlist),
+          ControlTile(Playlist: Playlist, c: c),
+          for (int i = 0; i < Playlist.songs.length; i++)
+            SongTile(context, Playlist.songs[i], c, Playlist),
         ] else ...[
           const Align(
             alignment: Alignment.center,
@@ -74,68 +78,108 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
   );
 }
 
-PopupMenuButton SongTile(BuildContext context, Song s,
+Dismissible SongTile(BuildContext context, Song s,
     void Function(void Function()) c, CurrentPlayList Playlist) {
-  return PopupMenuButton(
-    onSelected: (result) {
-      if (result == 0) {
-        // Change Title
-        StringInput(context, "New Song Title", "Save", "Cancel", (String si) {
-          UpdateSongTitle(s.filename, si);
-          c(() {});
-        }, (String si) {}, true, s.title, "");
-      }
-      if (result == 1) {
-        // Change Interpret
-        StringInput(context, "New Song Interpret", "Save", "Cancel",
-            (String si) {
-          UpdateSongInterpret(s.filename, si);
-          c(() {});
-        }, (String si) {}, true, s.interpret, "");
-      }
-      if (result == 2) {
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => TagEdit(s)),
-        );
-      }
-      if (result == 3) {
-        DeleteSong(s);
-        c(() {});
-      }
-      if (result == 4) {
-        Playlist.PlayNext(s);
-        // Play Song as Next Song
-      }
-      if (result == 5) {
-        Playlist.AddToPlaylist(s);
-        // Add Song to End of Playlist
-      }
-      if (result == 6) {
+  return Dismissible(
+    key: Key(s.filename + s.hash),
+    onDismissed: (DismissDirection direction) {
+      if (direction == DismissDirection.startToEnd) {
+        // Dismissed to the left)
+        // background
+        Playlist.RemoveSong(s);
+      } else {
+        // secondary background
+        s.hash += "2";
         Playlist.PlayAfterLastAdded(s);
-        // Add Song to End of Added Songs
       }
       Playlist.Save();
     },
-    child: ListTile(
-      title: Text(s.title),
-      subtitle: Text(s.interpret),
+    background: Container(
+      color: Colors.red,
+      child: Padding(
+        padding: const EdgeInsets.all(15),
+        child: Row(
+          children: [
+            Icon(Icons.add, color: Colors.white),
+            Text('Remove from Playlist', style: TextStyle(color: Colors.white)),
+          ],
+        ),
+      ),
     ),
-    itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-      PopupMenuItem(
-        child: Text(s.title),
-        value: 0,
+    secondaryBackground: Container(
+      color: Colors.green,
+      child: Padding(
+        padding: const EdgeInsets.all(15),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Icon(Icons.add, color: Colors.white),
+            Text('Play Next', style: TextStyle(color: Colors.white)),
+          ],
+        ),
       ),
-      PopupMenuItem(
-        child: Text(s.interpret),
-        value: 1,
+    ),
+    child: PopupMenuButton(
+      onSelected: (result) {
+        if (result == 0) {
+          // Change Title
+          StringInput(context, "New Song Title", "Save", "Cancel", (String si) {
+            UpdateSongTitle(s.filename, si);
+            c(() {});
+          }, (String si) {}, true, s.title, "");
+        }
+        if (result == 1) {
+          // Change Interpret
+          StringInput(context, "New Song Interpret", "Save", "Cancel",
+              (String si) {
+            UpdateSongInterpret(s.filename, si);
+            c(() {});
+          }, (String si) {}, true, s.interpret, "");
+        }
+        if (result == 2) {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => TagEdit(s)),
+          );
+        }
+        if (result == 3) {
+          DeleteSong(s);
+          c(() {});
+        }
+        if (result == 4) {
+          Playlist.PlayNext(s);
+          // Play Song as Next Song
+        }
+        if (result == 5) {
+          Playlist.AddToPlaylist(s);
+          // Add Song to End of Playlist
+        }
+        if (result == 6) {
+          Playlist.PlayAfterLastAdded(s);
+          // Add Song to End of Added Songs
+        }
+        Playlist.Save();
+      },
+      child: ListTile(
+        title: Text(s.title),
+        subtitle: Text(s.interpret),
       ),
-      const PopupMenuDivider(),
-      const PopupMenuItem(child: Text('Edit Tags'), value: 2),
-      const PopupMenuItem(child: Text('Delete Song'), value: 3),
-      const PopupMenuDivider(),
-      const PopupMenuItem(child: Text('Play Next'), value: 4),
-      const PopupMenuItem(child: Text('Add to Playlist'), value: 5),
-      const PopupMenuItem(child: Text('Add to Play Next Stack'), value: 6),
-    ],
+      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+        PopupMenuItem(
+          child: Text(s.title),
+          value: 0,
+        ),
+        PopupMenuItem(
+          child: Text(s.interpret),
+          value: 1,
+        ),
+        const PopupMenuDivider(),
+        const PopupMenuItem(child: Text('Edit Tags'), value: 2),
+        const PopupMenuItem(child: Text('Delete Song'), value: 3),
+        const PopupMenuDivider(),
+        const PopupMenuItem(child: Text('Play Next'), value: 4),
+        const PopupMenuItem(child: Text('Add to Playlist'), value: 5),
+        const PopupMenuItem(child: Text('Add to Play Next Stack'), value: 6),
+      ],
+    ),
   );
 }
