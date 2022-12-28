@@ -1,7 +1,8 @@
-import 'package:tagmusicplayer/sites/components/string_input.dart';
 import "../classes/tag.dart";
 import "../classes/playlist.dart";
+import 'components/string_input.dart';
 import "components/music_control.dart";
+import "components/player_widget.dart";
 import "allsongs.dart" as AllSongs;
 import 'package:flutter/material.dart';
 
@@ -17,7 +18,17 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
     child: Center(
       child: Column(
         children: [
+          Padding(
+            padding: EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 10),
+            child: Text(
+              (Playlist.songs.length > 0)
+                  ? Playlist.songs[0].title
+                  : "No songs in playlist",
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
           ControlTile(Playlist: Playlist, c: c),
+          PlayerWidget(player: Playlist.player),
           Row(
             children: [
               TextButton(

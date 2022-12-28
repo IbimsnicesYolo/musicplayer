@@ -3,12 +3,20 @@ import "tag.dart";
 import "../settings.dart";
 import 'package:audioplayers/audioplayers.dart';
 
-/* Playlist */
 class CurrentPlayList {
   List<Song> songs = [];
   int last_added_pos = 0;
 
   AudioPlayer player = AudioPlayer();
+
+  CurrentPlayList() {
+    player.setReleaseMode(ReleaseMode.stop);
+    player.onPlayerComplete.listen((event) {
+      player.seek(Duration(seconds: 0));
+      PlayNextSong();
+      StartPlaying();
+    });
+  }
 
   void AddToPlaylist(Song song) {
     if (songs.contains(song)) {
@@ -17,7 +25,7 @@ class CurrentPlayList {
     songs.add(song);
   }
 
-  void PlayNext(Song song) {
+  void InsertAsNext(Song song) {
     last_added_pos = 0;
     if (!songs.contains(song)) {
       songs.insert(0, song);
@@ -27,7 +35,7 @@ class CurrentPlayList {
     }
   }
 
-  void PlayAfterLastAdded(Song song) {
+  void InsertAfterLastAdded(Song song) {
     last_added_pos += 1;
     if (!songs.contains(song)) {
       songs.insert(last_added_pos, song);
@@ -48,6 +56,7 @@ class CurrentPlayList {
     Song current = songs.removeAt(0);
     songs.shuffle();
     songs.insert(0, current);
+    Save();
   }
 
   void PlayNextSong() {
@@ -65,6 +74,26 @@ class CurrentPlayList {
       if (player.state == PlayerState.playing) {
         StartPlaying();
       }
+    }
+  }
+
+  void StartPlaying() async {
+    if (songs.length > 0) {
+      await player.setSource(DeviceFileSource(songs[0].path));
+      await player.stop();
+      await player.play(DeviceFileSource(songs[0].path));
+    }
+  }
+
+  void StopPlaying() async {
+    await player.stop();
+  }
+
+  void PausePlaying() async {
+    if (player.state == PlayerState.playing) {
+      await player.pause();
+    } else {
+      await player.resume();
     }
   }
 
@@ -111,25 +140,5 @@ class CurrentPlayList {
     songs = [];
     last_added_pos = 0;
     Save();
-  }
-
-  void StartPlaying() async {
-    if (songs.length > 0) {
-      await player.setSource(DeviceFileSource(songs[0].path));
-      await player.stop();
-      await player.play(DeviceFileSource(songs[0].path));
-    }
-  }
-
-  void StopPlaying() async {
-    await player.stop();
-  }
-
-  void PausePlaying() async {
-    if (player.state == PlayerState.playing) {
-      await player.pause();
-    } else {
-      await player.resume();
-    }
   }
 }

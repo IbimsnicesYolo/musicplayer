@@ -99,12 +99,12 @@ class _MainSite extends State<MainSite> {
           },
           items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.music_note_sharp),
+              icon: Icon(Icons.play_arrow),
               backgroundColor: CFG.ContrastColor,
               label: "Current Song",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.play_arrow),
+              icon: Icon(Icons.music_note),
               backgroundColor: CFG.ContrastColor,
               label: "Current Playlist",
             ),
@@ -114,7 +114,7 @@ class _MainSite extends State<MainSite> {
               label: "All Tags",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.fiber_new_outlined),
+              icon: Icon(Icons.all_inclusive_sharp),
               backgroundColor: CFG.ContrastColor,
               label: "All Songs",
             ),

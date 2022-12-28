@@ -300,7 +300,7 @@ PopupMenuButton SongTile(
         );
       }
       if (result == 1) {
-        Playlist.PlayNext(Songs[songkey]);
+        Playlist.InsertAsNext(Songs[songkey]);
 // Play Song as Next Song
       }
       if (result == 2) {
@@ -308,7 +308,7 @@ PopupMenuButton SongTile(
 // Add Song to End of Playlist
       }
       if (result == 3) {
-        Playlist.PlayAfterLastAdded(Songs[songkey]);
+        Playlist.InsertAfterLastAdded(Songs[songkey]);
 // Add Song to End of Added Songs
       }
       Playlist.Save();

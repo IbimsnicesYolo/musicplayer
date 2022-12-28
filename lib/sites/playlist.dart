@@ -90,7 +90,7 @@ Dismissible SongTile(BuildContext context, Song s,
       } else {
         // secondary background
         s.hash += "2";
-        Playlist.PlayAfterLastAdded(s);
+        Playlist.InsertAfterLastAdded(s);
       }
       Playlist.Save();
     },
@@ -146,7 +146,7 @@ Dismissible SongTile(BuildContext context, Song s,
           c(() {});
         }
         if (result == 4) {
-          Playlist.PlayNext(s);
+          Playlist.InsertAsNext(s);
           // Play Song as Next Song
         }
         if (result == 5) {
@@ -154,7 +154,7 @@ Dismissible SongTile(BuildContext context, Song s,
           // Add Song to End of Playlist
         }
         if (result == 6) {
-          Playlist.PlayAfterLastAdded(s);
+          Playlist.InsertAfterLastAdded(s);
           // Add Song to End of Added Songs
         }
         Playlist.Save();

@@ -137,7 +137,7 @@ PopupMenuButton SongTile(BuildContext context, Song s,
         c(() {});
       }
       if (result == 5) {
-        Playlist.PlayNext(s);
+        Playlist.InsertAsNext(s);
         // Play Song as Next Song
       }
       if (result == 6) {
@@ -145,7 +145,7 @@ PopupMenuButton SongTile(BuildContext context, Song s,
         // Add Song to End of Playlist
       }
       if (result == 7) {
-        Playlist.PlayAfterLastAdded(s);
+        Playlist.InsertAfterLastAdded(s);
         // Add Song to End of Added Songs
       }
       Playlist.Save();

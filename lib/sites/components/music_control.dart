@@ -20,9 +20,6 @@ class _ControlTile extends State<ControlTile> {
         alignment: Alignment.center,
         child: Column(
           children: [
-            Text((widget.Playlist.songs.length > 0)
-                ? widget.Playlist.songs[0].title
-                : "No songs in playlist"),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
