@@ -51,11 +51,11 @@ class Song {
 
 bool CreateSong(path) {
   String filename = path.split("/").last;
-  // INFO: already filters for multiple file of the same song
 
   if (Songs.containsKey(filename)) {
     return false;
   }
+
   String interpret =
       filename.split(" -_ ").first.replaceAll(RegExp(".mp3"), "").trim();
 
@@ -71,7 +71,10 @@ bool CreateSong(path) {
   newsong.title = title;
   newsong.filename = filename;
   newsong.interpret = interpret;
-  newsong.featuring = interpret.split("feat.").last.trim();
+  if (interpret.contains("feat.")) {
+    newsong.featuring = interpret.split("feat.").last.trim();
+    newsong.interpret = interpret.split("feat.").first.trim();
+  }
   Songs[filename] = newsong;
   ShouldSaveSongs = true;
   return true;

@@ -339,14 +339,12 @@ class _ShowSongEdit extends State<ShowSongEdit> {
                     if (id > -1) {
                       UpdateSongTags(csong.filename, id, true);
                     }
-                  },
-                  child: const Text("Create Artist Tag")),
-              StyledElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      currentsong += 1;
-                      csong.edited = true;
-                    });
+                    currentsong += 1;
+                    csong.edited = true;
+
+                    if (currentsong % 10 == 0) {
+                      SaveSongs();
+                    }
                   },
                   child: const Text("Done")),
             ],

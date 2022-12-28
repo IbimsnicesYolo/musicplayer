@@ -6,15 +6,14 @@ import 'package:audioplayers/audioplayers.dart';
 class CurrentPlayList {
   List<Song> songs = [];
   int last_added_pos = 0;
-
+  bool start = false;
   AudioPlayer player = AudioPlayer();
 
   CurrentPlayList() {
     player.setReleaseMode(ReleaseMode.stop);
     player.onPlayerComplete.listen((event) {
-      player.seek(Duration(seconds: 0));
+      start = true;
       PlayNextSong();
-      StartPlaying();
     });
   }
 
@@ -60,10 +59,14 @@ class CurrentPlayList {
   }
 
   void PlayNextSong() {
+    print("PlayNextSong");
     if (songs.length > 0) {
       songs.add(songs.removeAt(0));
-      if (player.state == PlayerState.playing) {
+      if (player.state == PlayerState.playing || start) {
+        start = false;
         StartPlaying();
+      } else {
+        LoadNextToPlayer();
       }
     }
   }
@@ -73,7 +76,20 @@ class CurrentPlayList {
       songs.insert(0, songs.removeAt(songs.length - 1));
       if (player.state == PlayerState.playing) {
         StartPlaying();
+      } else {
+        LoadNextToPlayer();
       }
+    }
+  }
+
+  void LoadNextToPlayer() async {
+    print("Loading next song");
+    if (songs.length > 0) {
+      await player.setSource(DeviceFileSource(songs[0].path));
+      await player.stop();
+      await player.play(DeviceFileSource(songs[0].path));
+      player.seek(Duration(seconds: 0));
+      await player.pause();
     }
   }
 
@@ -82,6 +98,7 @@ class CurrentPlayList {
       await player.setSource(DeviceFileSource(songs[0].path));
       await player.stop();
       await player.play(DeviceFileSource(songs[0].path));
+      player.seek(Duration(seconds: 0));
     }
   }
 
