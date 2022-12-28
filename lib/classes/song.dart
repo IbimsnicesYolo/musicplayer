@@ -124,7 +124,7 @@ void SaveSongs() async {
   bool nosongsfound = true;
   await Future.delayed(Duration(milliseconds: 10));
   for (var song in Songs.values) {
-    await Future.delayed(Duration(milliseconds: 5));
+    await Future.delayed(Duration(milliseconds: 1));
     nosongsfound = false;
     json += '"' + song.filename + '":' + jsonEncode(song.toJson(song)) + ",";
   }
@@ -135,7 +135,7 @@ void SaveSongs() async {
     json = json.substring(0, json.length - 1) + "}";
     // remove last comma, close json
   }
-  await Future.delayed(Duration(milliseconds: 100));
+  await Future.delayed(Duration(milliseconds: 10));
   File(appDocDirectory + '/songs.json').writeAsString(json);
 }
 

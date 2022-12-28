@@ -29,6 +29,7 @@ int CreateTag(name) {
   if (newid != -1) {
     return newid;
   }
+  newid = 0;
 
   for (var i = 0; i < Tags.length; i++) {
     if (Tags.containsKey(i) && Tags[i].id == newid) {
@@ -75,7 +76,6 @@ void SaveTags() async {
 }
 
 void DeleteTag(Tag t) {
-  Tags.remove(t.id);
   Songs.forEach(
     (k, v) {
       if (v.tags.contains(t.id)) {
@@ -83,6 +83,7 @@ void DeleteTag(Tag t) {
       }
     },
   );
+  Tags.remove(t.id);
   ShouldSaveTags = true;
   SaveTags();
 }
