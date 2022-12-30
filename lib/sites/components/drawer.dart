@@ -250,11 +250,9 @@ class _ShowSongEdit extends State<ShowSongEdit> {
 
   Center SongEditPage() {
     if (currentsong < 0) {
-      return Center(
-        child: Text("No Songs Found"),
-      );
+      currentsong = FoundSongs.length - 1;
     }
-    if (currentsong >= FoundSongs.length) {
+    if (currentsong >= FoundSongs.length || currentsong < 0) {
       return Center(
         child: Text("Done Editing all Songs"),
       );
@@ -359,7 +357,9 @@ class _ShowSongEdit extends State<ShowSongEdit> {
               StyledElevatedButton(
                   onPressed: () {
                     int id = CreateTag(csong.interpret);
+                    int id2 = CreateTag(csong.featuring);
                     UpdateSongTags(csong.filename, id, true);
+                    UpdateSongTags(csong.filename, id2, true);
                     currentsong += 1;
                     csong.edited = true;
                     setState(() {});
