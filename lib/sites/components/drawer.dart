@@ -60,7 +60,7 @@ class SongDrawer extends Drawer {
                         child: const Text("Add All To Edit"),
                         onPressed: () {
                           Songs.forEach((key, value) {
-                            value.blacklisted = true;
+                            value.edited = true;
                           });
                           ShouldSaveSongs = true;
                           SaveSongs();
