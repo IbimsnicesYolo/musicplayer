@@ -1,6 +1,6 @@
 import "package:audioplayers/audioplayers.dart";
 import 'package:flutter/material.dart';
-import 'package:tagmusicplayer/classes/playlist.dart';
+import '../../../classes/playlist.dart';
 
 class ControlTile extends StatefulWidget {
   ControlTile({Key? key, required this.Playlist, required this.c})

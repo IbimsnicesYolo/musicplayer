@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import "../../settings.dart" as CFG;
-import "../../classes/song.dart";
 // Possible Overflow because _textFieldController never gets disposed
 // Hint Text is constantly Tag Name
 

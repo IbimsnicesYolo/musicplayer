@@ -5,7 +5,7 @@ import "../settings.dart";
 import 'package:flutter/material.dart';
 import 'components/search.dart';
 import 'components/string_input.dart';
-import 'components/tagedit.dart';
+import 'components/songtile.dart';
 
 bool ShouldShowTag(int key, String search) {
   if (search == "") return true;
@@ -174,7 +174,8 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
                                   ),
                                 ),
                               ),
-                              child: SongTile(context, Playlist, songkey, key),
+                              child:
+                                  TagSongTile(context, Playlist, songkey, key),
                             ),
                       ],
                     ),
@@ -258,7 +259,7 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
                                         ),
                                       ),
                                     ),
-                                    child: SongTile(
+                                    child: TagSongTile(
                                         context, Playlist, songkey, key),
                                   ),
                             ],
@@ -287,42 +288,5 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
     ]),
     title: Text(Tags[key].name),
     subtitle: Text(Tags[key].used.toString()),
-  );
-}
-
-PopupMenuButton SongTile(
-    BuildContext context, CurrentPlayList Playlist, String songkey, int key) {
-  return PopupMenuButton(
-    onSelected: (result) {
-      if (result == 0) {
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => TagEdit(Songs[songkey])),
-        );
-      }
-      if (result == 1) {
-        Playlist.InsertAsNext(Songs[songkey]);
-// Play Song as Next Song
-      }
-      if (result == 2) {
-        Playlist.AddToPlaylist(Songs[songkey]);
-// Add Song to End of Playlist
-      }
-      if (result == 3) {
-        Playlist.InsertAfterLastAdded(Songs[songkey]);
-// Add Song to End of Added Songs
-      }
-      Playlist.Save();
-    },
-    child: ListTile(
-      title: Text(Songs[songkey].title),
-      subtitle: Text(Songs[songkey].interpret),
-    ),
-    itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-      const PopupMenuItem(child: Text('Edit Tags'), value: 0),
-      const PopupMenuDivider(),
-      const PopupMenuItem(child: Text('Play Next'), value: 1),
-      const PopupMenuItem(child: Text('Add to Playlist'), value: 2),
-      const PopupMenuItem(child: Text('Add to Play Next Stack'), value: 3),
-    ],
   );
 }

@@ -8,6 +8,7 @@ import 'dart:io';
 import "search.dart";
 import "string_input.dart";
 import "elevatedbutton.dart";
+import "songtile.dart";
 
 class SongDrawer extends Drawer {
   const SongDrawer({Key? key, required this.c, required this.Playlist})
