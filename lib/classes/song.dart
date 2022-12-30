@@ -79,6 +79,22 @@ bool CreateSong(path) {
     newsong.featuring = interpret.split("feat.").last.trim();
     newsong.interpret = interpret.split("feat.").first.trim();
   }
+  if (interpret.contains("feat")) {
+    newsong.featuring = interpret.split("feat").last.trim();
+    newsong.interpret = interpret.split("feat").first.trim();
+  }
+  if (interpret.contains("ft")) {
+    newsong.featuring = interpret.split("ft").last.trim();
+    newsong.interpret = interpret.split("ft").first.trim();
+  }
+  if (interpret.contains("ft.")) {
+    newsong.featuring = interpret.split("ft.").last.trim();
+    newsong.interpret = interpret.split("ft.").first.trim();
+  }
+  if (interpret.contains("Feat.")) {
+    newsong.featuring = interpret.split("Feat.").last.trim();
+    newsong.interpret = interpret.split("Feat.").first.trim();
+  }
   Songs[filename] = newsong;
   ShouldSaveSongs = true;
   return true;
