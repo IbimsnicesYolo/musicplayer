@@ -51,7 +51,11 @@ class _CoolerCheckBox extends State<CoolerCheckBox> {
             setState(() {
               isChecked = value!;
             });
-            c(value);
+            if (value != null) {
+              c(value);
+            } else {
+              c(false);
+            }
           },
         ),
         Text(text),
