@@ -92,6 +92,11 @@ PopupMenuButton SongTile(BuildContext context, Song s,
         Playlist.InsertAfterLastAdded(s);
         // Add Song to End of Added Songs
       }
+      if (result == 8) {
+        s.blacklisted = !s.blacklisted;
+        ShouldSaveSongs = true;
+        SaveSongs();
+      }
       Playlist.Save();
     },
     child: ListTile(
@@ -118,6 +123,10 @@ PopupMenuButton SongTile(BuildContext context, Song s,
       const PopupMenuItem(child: Text('Play Next'), value: 5),
       const PopupMenuItem(child: Text('Add to Playlist'), value: 6),
       const PopupMenuItem(child: Text('Add to Play Next Stack'), value: 7),
+      const PopupMenuDivider(),
+      PopupMenuItem(
+          child: Text(s.blacklisted ? 'Un Blacklist Song' : "Blacklist Song"),
+          value: 8),
     ],
   );
 }
