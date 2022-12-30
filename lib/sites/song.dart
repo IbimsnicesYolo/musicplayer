@@ -29,6 +29,8 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
           ),
           ControlTile(Playlist: Playlist, c: c),
           PlayerWidget(player: Playlist.player),
+          Text("Lautstärke:"),
+          VolumeWidget(player: Playlist.player),
           Row(
             children: [
               TextButton(

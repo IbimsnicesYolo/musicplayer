@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
@@ -95,6 +94,47 @@ class _PlayerWidgetState extends State<PlayerWidget> {
 
     _positionSubscription = player.onPositionChanged.listen(
       (p) => setState(() => _position = p),
+    );
+  }
+}
+
+class VolumeWidget extends StatefulWidget {
+  final AudioPlayer player;
+
+  const VolumeWidget({
+    Key? key,
+    required this.player,
+  }) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return _VolumeWidget();
+  }
+}
+
+class _VolumeWidget extends State<VolumeWidget> {
+  AudioPlayer get player => widget.player;
+  double volume = 1.0;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Slider(
+          min: 0.0,
+          max: 1.0,
+          onChanged: (v) {
+            volume = v;
+            setState(() {});
+            player.setVolume(v);
+          },
+          value: volume,
+        ),
+        Text(
+          "",
+          style: const TextStyle(fontSize: 16.0),
+        ),
+      ],
     );
   }
 }
