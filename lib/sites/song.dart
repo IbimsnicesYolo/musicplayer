@@ -13,7 +13,6 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
 
 Container buildContent(BuildContext context, void Function(void Function()) c,
     CurrentPlayList Playlist) {
-  UpdateAllTags();
   return Container(
     child: Center(
       child: Column(
