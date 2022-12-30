@@ -7,7 +7,8 @@ class CurrentPlayList {
   List<Song> songs = [];
   int last_added_pos = 0;
   bool start = false;
-  AudioPlayer player = AudioPlayer();
+  int CurrentPlayerID = 213871123;
+  AudioPlayer player = AudioPlayer(playerId: "213871123");
 
   CurrentPlayList() {
     player.setReleaseMode(ReleaseMode.stop);

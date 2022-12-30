@@ -5,6 +5,9 @@ import "components/music_control.dart";
 import "components/player_widget.dart";
 import "allsongs.dart" as AllSongs;
 import 'package:flutter/material.dart';
+import 'package:flutter_visualizers/Visualizers/LineVisualizer.dart';
+import 'package:flutter_visualizers/Visualizers/MultiWaveVisualizer.dart';
+import 'package:flutter_visualizers/visualizer.dart';
 
 IconButton buildActions(BuildContext context, void Function(void Function()) c,
     CurrentPlayList Playlist) {
@@ -13,7 +16,7 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
 
 Container buildContent(BuildContext context, void Function(void Function()) c,
     CurrentPlayList Playlist) {
-  UpdateAllTags();
+  int playerID = Playlist.CurrentPlayerID;
   return Container(
     child: Center(
       child: Column(
@@ -64,6 +67,20 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
                 child: Text("Add all Songs To Tag"),
               ),
             ],
+          ),
+          Visualizer(
+            builder: (BuildContext context, List<int> wave) {
+              return new CustomPaint(
+                painter: new LineVisualizer(
+                  waveData: wave,
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  color: Colors.blueAccent,
+                ),
+                child: new Container(),
+              );
+            },
+            id: playerID,
           ),
         ],
       ),
