@@ -31,6 +31,8 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
           PlayerWidget(player: Playlist.player),
           Text("Lautstärke:"),
           VolumeWidget(player: Playlist.player),
+          Text("Balance:"),
+          BalanceWidget(player: Playlist.player),
           Row(
             children: [
               TextButton(

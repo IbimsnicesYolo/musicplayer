@@ -131,7 +131,48 @@ class _VolumeWidget extends State<VolumeWidget> {
           value: volume,
         ),
         Text(
-          "",
+          volume.toString(),
+          style: const TextStyle(fontSize: 16.0),
+        ),
+      ],
+    );
+  }
+}
+
+class BalanceWidget extends StatefulWidget {
+  final AudioPlayer player;
+
+  const BalanceWidget({
+    Key? key,
+    required this.player,
+  }) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return _BalanceWidget();
+  }
+}
+
+class _BalanceWidget extends State<BalanceWidget> {
+  AudioPlayer get player => widget.player;
+  double balance = 0.0;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Slider(
+          min: -1.0,
+          max: 1.0,
+          onChanged: (v) {
+            balance = v;
+            setState(() {});
+            player.setBalance(v);
+          },
+          value: balance,
+        ),
+        Text(
+          balance.toString(),
           style: const TextStyle(fontSize: 16.0),
         ),
       ],
