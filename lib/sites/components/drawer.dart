@@ -56,6 +56,15 @@ class SongDrawer extends Drawer {
                               .then((value) => c(() {}));
                         }),
                     TextButton(
+                        child: const Text("Add All To Edit"),
+                        onPressed: () {
+                          Songs.forEach((key, value) {
+                            value.blacklisted = true;
+                          });
+                          ShouldSaveSongs = true;
+                          SaveSongs();
+                        }),
+                    TextButton(
                       child: const Text("Open Settings"),
                       onPressed: () {
                         Navigator.of(context)
