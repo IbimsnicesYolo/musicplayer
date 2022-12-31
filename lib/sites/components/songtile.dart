@@ -4,8 +4,12 @@ import 'package:flutter/material.dart';
 import "../../classes/song.dart";
 import "../../classes/playlist.dart";
 
-PopupMenuButton SongTile(BuildContext context, Song s,
-    void Function(void Function()) c, CurrentPlayList Playlist) {
+PopupMenuButton SongTile(
+    BuildContext context,
+    Song s,
+    void Function(void Function()) c,
+    CurrentPlayList Playlist,
+    bool showchild) {
   return PopupMenuButton(
     onSelected: (result) {
       if (result == 0) {
@@ -99,10 +103,12 @@ PopupMenuButton SongTile(BuildContext context, Song s,
       }
       Playlist.Save();
     },
-    child: ListTile(
-      title: Text(s.title),
-      subtitle: Text(s.interpret + " | " + s.featuring),
-    ),
+    child: (showchild)
+        ? ListTile(
+            title: Text(s.title),
+            subtitle: Text(s.interpret + " | " + s.featuring),
+          )
+        : null,
     itemBuilder: (BuildContext context) => <PopupMenuEntry>[
       PopupMenuItem(
         child: Text(s.title),
@@ -127,104 +133,6 @@ PopupMenuButton SongTile(BuildContext context, Song s,
       PopupMenuItem(
           child: Text(s.blacklisted ? 'Un Blacklist Song' : "Blacklist Song"),
           value: 8),
-    ],
-  );
-}
-
-PopupMenuButton BlackListTile(BuildContext context, Song s, bool isSearch) {
-  return PopupMenuButton(
-    onSelected: (result) {
-      if (result == 0) {
-        // Change Title
-        Navigator.of(context)
-            .push(
-              MaterialPageRoute(
-                builder: (_) => StringInputExpanded(
-                    Title: "Song Title Edit",
-                    Text: s.title,
-                    additionalinfos: s.filename,
-                    OnSaved: (String si) {
-                      s.title = si;
-                      UpdateSongTitle(s.filename, si);
-                    }),
-              ),
-            )
-            .then((value) => {
-                  s.title = value,
-                  UpdateSongTitle(s.filename, value),
-                });
-      }
-      if (result == 1) {
-        // Change Interpret
-        Navigator.of(context)
-            .push(
-              MaterialPageRoute(
-                builder: (_) => StringInputExpanded(
-                    Title: "Song Artist Edit",
-                    Text: s.interpret,
-                    additionalinfos: s.filename,
-                    OnSaved: (String si) {
-                      s.interpret = si;
-                      UpdateSongInterpret(s.filename, si);
-                    }),
-              ),
-            )
-            .then((value) => {
-                  s.interpret = value,
-                  UpdateSongInterpret(s.filename, value),
-                });
-      }
-      if (result == 2) {
-        // Change Featuring
-        Navigator.of(context)
-            .push(
-              MaterialPageRoute(
-                builder: (_) => StringInputExpanded(
-                    Title: "Song Featuring Edit",
-                    Text: s.featuring,
-                    additionalinfos: s.filename,
-                    OnSaved: (String si) {
-                      s.featuring = si;
-                      UpdateSongFeaturing(s.filename, si);
-                    }),
-              ),
-            )
-            .then((value) => {
-                  s.featuring = value,
-                  UpdateSongFeaturing(s.filename, value),
-                });
-      }
-      if (result == 3) {
-        if (isSearch) {
-          s.blacklisted = true;
-        } else {
-          s.blacklisted = false;
-        }
-        ShouldSaveSongs = true;
-        SaveSongs();
-      }
-    },
-    child: ListTile(
-      title: Text(s.title),
-      subtitle: Text(s.filename),
-    ),
-    itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-      PopupMenuItem(
-        child: Text(s.title),
-        value: 0,
-      ),
-      PopupMenuItem(
-        child: Text(s.interpret),
-        value: 1,
-      ),
-      PopupMenuItem(
-        child: Text(s.featuring),
-        value: 2,
-      ),
-      const PopupMenuDivider(),
-      PopupMenuItem(
-          child: Text(isSearch ? 'Blacklist Song' : "Un Blacklist Song"),
-          value: 3),
     ],
   );
 }
@@ -272,7 +180,7 @@ Dismissible DismissibleSongTile(BuildContext context, Song s,
     key: Key(s.filename + s.hash),
     onDismissed: (DismissDirection direction) {
       if (direction == DismissDirection.startToEnd) {
-        // Dismissed to the left)
+        // Dismissed to the left
         // background
         Playlist.RemoveSong(s);
       } else {
@@ -314,65 +222,7 @@ Dismissible DismissibleSongTile(BuildContext context, Song s,
         Playlist.InsertAsNext(s),
         Playlist.PlayNextSong(),
       },
-      trailing: PopupMenuButton(
-        onSelected: (result) {
-          if (result == 0) {
-            // Change Title
-            StringInput(context, "New Song Title", "Save", "Cancel",
-                (String si) {
-              UpdateSongTitle(s.filename, si);
-              c(() {});
-            }, (String si) {}, true, s.title, "");
-          }
-          if (result == 1) {
-            // Change Interpret
-            StringInput(context, "New Song Interpret", "Save", "Cancel",
-                (String si) {
-              UpdateSongInterpret(s.filename, si);
-              c(() {});
-            }, (String si) {}, true, s.interpret, "");
-          }
-          if (result == 2) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => TagEdit(s)),
-            );
-          }
-          if (result == 3) {
-            DeleteSong(s);
-            c(() {});
-          }
-          if (result == 4) {
-            Playlist.InsertAsNext(s);
-            // Play Song as Next Song
-          }
-          if (result == 5) {
-            Playlist.AddToPlaylist(s);
-            // Add Song to End of Playlist
-          }
-          if (result == 6) {
-            Playlist.InsertAfterLastAdded(s);
-            // Add Song to End of Added Songs
-          }
-          Playlist.Save();
-        },
-        itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-          PopupMenuItem(
-            child: Text(s.title),
-            value: 0,
-          ),
-          PopupMenuItem(
-            child: Text(s.interpret),
-            value: 1,
-          ),
-          const PopupMenuDivider(),
-          const PopupMenuItem(child: Text('Edit Tags'), value: 2),
-          const PopupMenuItem(child: Text('Delete Song'), value: 3),
-          const PopupMenuDivider(),
-          const PopupMenuItem(child: Text('Play Next'), value: 4),
-          const PopupMenuItem(child: Text('Add to Playlist'), value: 5),
-          const PopupMenuItem(child: Text('Add to Play Next Stack'), value: 6),
-        ],
-      ),
+      trailing: SongTile(context, s, c, Playlist, false),
     ),
   );
 }

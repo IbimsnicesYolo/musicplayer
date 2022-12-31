@@ -415,7 +415,7 @@ class _ShowSongEdit extends State<ShowSongEdit> {
                                 for (String key in Songs.keys)
                                   if (ShouldShowSong(key, search))
                                     SongTile(context, Songs[key], widget.c,
-                                        widget.Playlist),
+                                        widget.Playlist, true),
                               ],
                             ),
                           ),
@@ -518,7 +518,8 @@ class _ShowBlacklist extends State<ShowBlacklist> {
                               children: [
                                 for (String key in Songs.keys)
                                   if (ShouldShowSong(key, search))
-                                    BlackListTile(context, Songs[key], true),
+                                    SongTile(context, Songs[key], widget.c,
+                                        widget.Playlist, true),
                               ],
                             ),
                           ),
