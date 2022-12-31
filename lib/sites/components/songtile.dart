@@ -182,7 +182,7 @@ Dismissible DismissibleSongTile(BuildContext context, Song s,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Icon(Icons.add, color: Colors.white),
-            Text('Play Next', style: TextStyle(color: Colors.white)),
+            Text('Stack', style: TextStyle(color: Colors.white)),
           ],
         ),
       ),

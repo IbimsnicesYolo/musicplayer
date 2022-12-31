@@ -33,7 +33,7 @@ class SongDrawer extends Drawer {
               child: Container(
                 child: Column(
                   children: [
-                    TextButton(
+                    StyledElevatedButton(
                         child: const Text("Search for new Songs"),
                         onPressed: () {
                           Navigator.of(context)
@@ -44,7 +44,7 @@ class SongDrawer extends Drawer {
                               )
                               .then((value) => c(() {}));
                         }),
-                    TextButton(
+                    StyledElevatedButton(
                         child: const Text("Edit Song Informations"),
                         onPressed: () {
                           Navigator.of(context)
@@ -56,7 +56,7 @@ class SongDrawer extends Drawer {
                               )
                               .then((value) => c(() {}));
                         }),
-                    TextButton(
+                    StyledElevatedButton(
                         child: const Text("Add All To Edit"),
                         onPressed: () {
                           Songs.forEach((key, value) {
@@ -65,7 +65,7 @@ class SongDrawer extends Drawer {
                           ShouldSaveSongs = true;
                           SaveSongs();
                         }),
-                    TextButton(
+                    StyledElevatedButton(
                       child: const Text("Open Settings"),
                       onPressed: () {
                         Navigator.of(context)
@@ -77,7 +77,7 @@ class SongDrawer extends Drawer {
                             .then((value) => c(() {}));
                       },
                     ),
-                    TextButton(
+                    StyledElevatedButton(
                       child: const Text("Open Blacklist"),
                       onPressed: () {
                         Navigator.of(context)
@@ -90,7 +90,7 @@ class SongDrawer extends Drawer {
                             .then((value) => c(() {}));
                       },
                     ),
-                    TextButton(
+                    StyledElevatedButton(
                       child: const Text("Delete All Tags"),
                       onPressed: () {
                         Navigator.of(context)
@@ -102,7 +102,7 @@ class SongDrawer extends Drawer {
                             .then((value) => c(() {}));
                       },
                     ),
-                    TextButton(
+                    StyledElevatedButton(
                       child: const Text("Delete All Songs"),
                       onPressed: () {
                         Navigator.of(context)
