@@ -146,43 +146,6 @@ PopupMenuButton SongTile(
   );
 }
 
-PopupMenuButton TagSongTile(
-    BuildContext context, CurrentPlayList Playlist, String songkey, int key) {
-  return PopupMenuButton(
-    onSelected: (result) {
-      if (result == 0) {
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => TagEdit(Songs[songkey])),
-        );
-      }
-      if (result == 1) {
-        Playlist.InsertAsNext(Songs[songkey]);
-// Play Song as Next Song
-      }
-      if (result == 2) {
-        Playlist.AddToPlaylist(Songs[songkey]);
-// Add Song to End of Playlist
-      }
-      if (result == 3) {
-        Playlist.InsertAfterLastAdded(Songs[songkey]);
-// Add Song to End of Added Songs
-      }
-      Playlist.Save();
-    },
-    child: ListTile(
-      title: Text(Songs[songkey].title),
-      subtitle: Text(Songs[songkey].interpret),
-    ),
-    itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-      const PopupMenuItem(child: Text('Edit Tags'), value: 0),
-      const PopupMenuDivider(),
-      const PopupMenuItem(child: Text('Play Next'), value: 1),
-      const PopupMenuItem(child: Text('Add to Playlist'), value: 2),
-      const PopupMenuItem(child: Text('Add to Play Next Stack'), value: 3),
-    ],
-  );
-}
-
 Dismissible DismissibleSongTile(BuildContext context, Song s,
     void Function(void Function()) c, CurrentPlayList Playlist) {
   return Dismissible(
