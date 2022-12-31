@@ -6,9 +6,9 @@ Mobile Music Player
 W.I.P
 
  - UI: Done
-- Backend: Done
-- Performance Improvements: In Work
-- Actually able to Play Audio: Next big goal
+ - Backend: Done
+ - Frontend: Done
+ - Next Goal: Database change to sql
 
 
 

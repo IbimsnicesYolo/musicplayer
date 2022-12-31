@@ -60,7 +60,7 @@ class SongDrawer extends Drawer {
                         child: const Text("Add All To Edit"),
                         onPressed: () {
                           Songs.forEach((key, value) {
-                            value.edited = true;
+                            value.edited = false;
                           });
                           ShouldSaveSongs = true;
                           SaveSongs();
@@ -367,9 +367,11 @@ class _ShowSongEdit extends State<ShowSongEdit> {
               StyledElevatedButton(
                   onPressed: () {
                     int id = CreateTag(csong.interpret);
-                    int id2 = CreateTag(csong.featuring);
                     UpdateSongTags(csong.filename, id, true);
-                    UpdateSongTags(csong.filename, id2, true);
+                    if (csong.featuring != "") {
+                      int id2 = CreateTag(csong.featuring);
+                      UpdateSongTags(csong.filename, id2, true);
+                    }
                     currentsong += 1;
                     csong.edited = true;
                     setState(() {});
