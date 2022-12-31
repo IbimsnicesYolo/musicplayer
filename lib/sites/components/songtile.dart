@@ -99,6 +99,7 @@ PopupMenuButton SongTile(
       }
       if (result == 8) {
         s.blacklisted = !s.blacklisted;
+        c(() {});
         ShouldSaveSongs = true;
         SaveSongs();
       }

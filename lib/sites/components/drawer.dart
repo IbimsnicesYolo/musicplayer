@@ -361,6 +361,7 @@ class _ShowSongEdit extends State<ShowSongEdit> {
                     csong.blacklisted = true;
                     ShouldSaveSongs = true;
                     SaveSongs();
+                    widget.c(() {});
                     setState(() {});
                   },
                   child: const Text("Blacklist")),
@@ -565,7 +566,18 @@ class _ShowBlacklist extends State<ShowBlacklist> {
           children: [
             for (String key in Songs.keys)
               if (Songs[key].blacklisted)
-                BlackListTile(context, Songs[key], false),
+                SongTile(context, Songs[key], widget.c, widget.Playlist, true, {
+                  0: true,
+                  1: true,
+                  2: true,
+                  3: false,
+                  4: false,
+                  5: false,
+                  6: false,
+                  7: false,
+                  8: true,
+                  9: false,
+                }),
           ],
         ),
       ),
