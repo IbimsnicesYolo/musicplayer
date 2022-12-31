@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import "../../settings.dart" as CFG;
 // Possible Overflow because _textFieldController never gets disposed
+// Hint Text is constantly Tag Name
 
 void StringInput(
     context,
@@ -9,7 +11,8 @@ void StringInput(
     void Function(String) OnPressed1,
     void Function(String) OnPressed2,
     bool clearbutton,
-    String value) {
+    String value,
+    String htext) {
   TextEditingController _textFieldController = TextEditingController();
   _textFieldController.text = value;
 
@@ -22,7 +25,7 @@ void StringInput(
           content: TextField(
             onChanged: (value) {},
             controller: _textFieldController,
-            decoration: InputDecoration(hintText: "Tag Name"),
+            decoration: InputDecoration(hintText: htext),
           ),
           actions: <Widget>[
             if (clearbutton)
@@ -35,7 +38,8 @@ void StringInput(
                 // replace all () with ""
                 onPressed: () {
                   _textFieldController.text = _textFieldController.text
-                      .replaceAll(RegExp(r"\(.*\)"), "");
+                      .replaceAll(RegExp(r"\(.*\)"), "")
+                      .trim();
                 },
               ),
             TextButton(
@@ -45,7 +49,7 @@ void StringInput(
               ),
               child: Text(Button2),
               onPressed: () {
-                OnPressed2(_textFieldController.text);
+                OnPressed2(_textFieldController.text.trim());
                 _textFieldController.clear();
                 Navigator.pop(context);
               },
@@ -57,7 +61,7 @@ void StringInput(
               ),
               child: Text(Button1),
               onPressed: () {
-                OnPressed1(_textFieldController.text);
+                OnPressed1(_textFieldController.text.trim());
                 _textFieldController.clear();
                 Navigator.pop(context);
               },
@@ -67,4 +71,100 @@ void StringInput(
       ),
     ),
   );
+}
+
+class StringInputExpanded extends StatefulWidget {
+  const StringInputExpanded({
+    Key? key,
+    required this.Title,
+    required this.Text,
+    required this.additionalinfos,
+    required this.OnSaved,
+  }) : super(key: key);
+
+  final String Title;
+  final String Text;
+  final String additionalinfos;
+  final void Function(String) OnSaved;
+
+  @override
+  State<StringInputExpanded> createState() => _StringInputExpanded();
+}
+
+class _StringInputExpanded extends State<StringInputExpanded> {
+  @override
+  Widget build(BuildContext context) {
+    TextEditingController _textFieldController =
+        TextEditingController(text: widget.Text);
+
+    List<String> possibleinputs = [widget.additionalinfos];
+
+    widget.Text.split(" ").forEach((element) {
+      if (element.length > 2) {
+        possibleinputs.add(element);
+      }
+    });
+
+    widget.additionalinfos.split(" ").forEach((element) {
+      element = element.replaceAll(".mp3", "").replaceAll("Lyrics", "").trim();
+      possibleinputs.add(element);
+      element.split(" ").forEach((element) {
+        possibleinputs.add(element);
+      });
+    });
+    possibleinputs.add("Unknown");
+
+    possibleinputs = possibleinputs.toSet().toList();
+    return MaterialApp(
+      theme: ThemeData.dark(),
+      home: SafeArea(
+        child: Scaffold(
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: CFG.ContrastColor,
+            onPressed: () =>
+                Navigator.of(context).pop(_textFieldController.text.trim()),
+            child: const Icon(Icons.arrow_back),
+          ),
+          appBar: AppBar(
+            title: Text(widget.Title),
+            backgroundColor: CFG.HomeColor,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () =>
+                  Navigator.of(context).pop(_textFieldController.text.trim()),
+            ),
+          ),
+          body: Container(
+            child: ListView(
+              children: <Widget>[
+                ListTile(
+                  title: TextField(
+                    controller: _textFieldController,
+                    decoration: InputDecoration(
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            _textFieldController.clear();
+                          },
+                        ),
+                        border: OutlineInputBorder(),
+                        labelText: 'New Name'),
+                  ),
+                ),
+                for (String s in possibleinputs)
+                  ListTile(
+                    title: Text(s),
+                    onTap: () {
+                      _textFieldController.text += " " + s;
+                    },
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

@@ -4,8 +4,8 @@ import "sites/components/drawer.dart" as Side;
 import "settings.dart" as CFG;
 import "sites/playlist.dart" as PlaylistSide;
 import "sites/tagsite.dart" as TagSite;
-import "sites/unsortedsongs.dart" as USongs;
-import "classes/song.dart";
+import "sites/allsongs.dart" as AllSongs;
+import "sites/song.dart" as SongSite;
 import "classes/playlist.dart";
 import "classes/tag.dart";
 
@@ -21,7 +21,7 @@ void checkpermissions() async {
 }
 
 void main() {
-  runApp(MaterialApp(home: MainSite()));
+  runApp(MaterialApp(theme: ThemeData.dark(), home: MainSite()));
   checkpermissions();
 }
 
@@ -59,10 +59,7 @@ class _MainSite extends State<MainSite> {
   Widget build(BuildContext context) {
     CFG.LoadData(update);
     Playlist.LoadPlaylist(update);
-    return MaterialApp(
-      theme: ThemeData.dark(),
-      home: buildSafeArea(context, side),
-    );
+    return buildSafeArea(context, side);
   }
 
   SafeArea buildSafeArea(BuildContext context, side) {
@@ -70,25 +67,29 @@ class _MainSite extends State<MainSite> {
       child: Scaffold(
         appBar: AppBar(
           actions: [
-            if (side == 0) PlaylistSide.buildActions(context, update, Playlist),
-            if (side == 1) TagSite.buildActions(context, update, Playlist),
-            if (side == 2) USongs.buildActions(context, update, Playlist),
+            if (side == 0) SongSite.buildActions(context, update, Playlist),
+            if (side == 1) PlaylistSide.buildActions(context, update, Playlist),
+            if (side == 2) TagSite.buildActions(context, update, Playlist),
+            if (side == 3) AllSongs.buildActions(context, update, Playlist),
           ],
         ),
         body: (side == 0
-            ? PlaylistSide.buildContent(context, update, Playlist)
+            ? SongSite.buildContent(context, update, Playlist)
             : (side == 1
-                ? TagSite.buildContent(context, update, Playlist)
-                : USongs.buildContent(context, update, Playlist))),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.downloading),
-          onPressed: () {
-            setState(() {
-              if (side == 1)
-                UpdateAllTags();
-            });
-          },
-        ),
+                ? PlaylistSide.buildContent(context, update, Playlist)
+                : (side == 2
+                    ? TagSite.buildContent(context, update, Playlist)
+                    : AllSongs.buildContent(context, update, Playlist)))),
+        floatingActionButton: (side == 1
+            ? null
+            : FloatingActionButton(
+                child: Icon(Icons.downloading),
+                onPressed: () {
+                  setState(() {
+                    if (side == 2) UpdateAllTags();
+                  });
+                },
+              )),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: this.side,
           onTap: (int index) {
@@ -96,22 +97,30 @@ class _MainSite extends State<MainSite> {
               this.side = index;
             });
           },
-          items: const [
+          items: [
             BottomNavigationBarItem(
               icon: Icon(Icons.play_arrow),
+              backgroundColor: CFG.ContrastColor,
+              label: "Current Song",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.music_note),
+              backgroundColor: CFG.ContrastColor,
               label: "Current Playlist",
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.tag),
+              backgroundColor: CFG.ContrastColor,
               label: "All Tags",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.fiber_new_outlined),
-              label: "Unsorted Songs",
+              icon: Icon(Icons.all_inclusive_sharp),
+              backgroundColor: CFG.ContrastColor,
+              label: "All Songs",
             ),
           ],
         ),
-        drawer: Side.SongDrawer(c: update),
+        drawer: Side.SongDrawer(c: update, Playlist: Playlist),
       ),
     );
   }

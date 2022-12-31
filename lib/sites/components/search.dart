@@ -3,18 +3,21 @@ import '../../settings.dart' as CFG;
 
 // Search Page
 class SearchPage extends StatefulWidget {
-  SearchPage(this.content, {Key? key}) : super(key: key);
+  SearchPage(this.content, this.s, {Key? key}) : super(key: key);
 
   final content;
+  String s;
 
   @override
-  State<SearchPage> createState() => _SearchPageState();
+  State<SearchPage> createState() =>
+      _SearchPageState(s: s, myController: TextEditingController(text: s));
 }
 
 class _SearchPageState extends State<SearchPage> {
-  final myController = TextEditingController();
+  _SearchPageState({required this.s, required this.myController});
+  TextEditingController myController;
 
-  String searchtext = "";
+  String s;
 
   @override
   void dispose() {
@@ -33,44 +36,49 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-            backgroundColor: CFG.HomeColor,
-            // The search area here
-            title: Container(
-              height: 40,
-              decoration: BoxDecoration(
-                  color: CFG.ContrastColor,
-                  borderRadius: BorderRadius.circular(5)),
-              child: Center(
-                child: TextField(
-                  onChanged: (searchtext) {
-                    this.searchtext = searchtext;
-                    setState(() {});
-                  },
-                  controller: myController,
-                  decoration: InputDecoration(
-                      prefixIcon: IconButton(
-                        icon: const Icon(Icons.backspace_outlined),
-                        onPressed: () {
-                          Navigator.maybePop(context);
-                        },
-                      ),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          myController.clear();
-                          this.searchtext = "";
-                          setState(() {});
-                        },
-                      ),
-                      hintText: 'Search...',
-                      border: InputBorder.none),
-                ),
+    return MaterialApp(
+      theme: ThemeData.dark(),
+      home: SafeArea(
+        child: Scaffold(
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: CFG.ContrastColor,
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Icon(Icons.arrow_back),
+          ),
+          appBar: AppBar(
+              leading: IconButton(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.arrow_back),
               ),
-            )),
-        body: widget.content(searchtext, update),
+              backgroundColor: CFG.HomeColor,
+              // The search area here
+              title: Container(
+                height: 40,
+                child: Center(
+                  child: TextField(
+                    onChanged: (stext) {
+                      this.s = stext;
+                      setState(() {});
+                    },
+                    controller: myController,
+                    decoration: InputDecoration(
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            myController.clear();
+                            this.s = "";
+                            setState(() {});
+                          },
+                        ),
+                        border: OutlineInputBorder(),
+                        labelText: 'Search'),
+                  ),
+                ),
+              )),
+          body: widget.content(s.trim(), update),
+        ),
       ),
     );
   }

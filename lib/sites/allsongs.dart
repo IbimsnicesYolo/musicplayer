@@ -1,10 +1,8 @@
-import "../classes/playlist.dart";
 import "../classes/song.dart";
-import "../settings.dart";
+import "../classes/playlist.dart";
 import 'package:flutter/material.dart';
 import 'components/search.dart';
-import "components/music_control.dart";
-import 'components/songtile.dart';
+import "components/songtile.dart";
 
 bool ShouldShowSong(String key, String search) {
   if (Songs[key].blacklisted) {
@@ -18,7 +16,7 @@ bool ShouldShowSong(String key, String search) {
   if (Songs[key].interpret.toLowerCase().contains(search.toLowerCase()))
     return true;
 
-  if (Songs[key].featuring != "" &&
+  if (Songs[key].featuring != 0 &&
       Songs[key].featuring.toLowerCase().contains(search.toLowerCase()))
     return true;
 
@@ -42,9 +40,19 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
             (search, update) => Container(
                   child: ListView(
                     children: [
-                      for (String key in Config["Playlist"])
+                      for (String key in Songs.keys)
                         if (ShouldShowSong(key, search))
-                          DismissibleSongTile(context, Songs[key], c, Playlist),
+                          SongTile(context, Songs[key], c, Playlist, true, {
+                            0: true,
+                            1: true,
+                            2: true,
+                            3: true,
+                            4: true,
+                            5: true,
+                            6: true,
+                            7: true,
+                            8: true,
+                          }),
                     ],
                   ),
                 ),
@@ -55,27 +63,23 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
   );
 }
 
-Container buildContent(BuildContext context, void Function(void Function()) c,
+ListView buildContent(BuildContext context, void Function(void Function()) c,
     CurrentPlayList Playlist) {
-  return Container(
-    child: ListView(
-      reverse: true,
-      children: [
-        if (!Playlist.songs.isEmpty) ...[
-          ControlTile(Playlist: Playlist, c: c),
-          for (int i = 0; i < Playlist.songs.length; i++)
-            DismissibleSongTile(context, Playlist.songs[i], c, Playlist),
-        ] else ...[
-          const Align(
-            alignment: Alignment.center,
-            heightFactor: 10,
-            child: Text(
-              'No Current Playlist',
-              style: TextStyle(color: Colors.black, fontSize: 30),
-            ),
-          ),
-        ]
-      ],
-    ),
+  return ListView(
+    children: [
+      for (String key in Songs.keys)
+        if (ShouldShowSong(key, ""))
+          SongTile(context, Songs[key], c, Playlist, true, {
+            0: true,
+            1: true,
+            2: true,
+            3: true,
+            4: true,
+            5: true,
+            6: true,
+            7: true,
+            8: true,
+          }),
+    ],
   );
 }

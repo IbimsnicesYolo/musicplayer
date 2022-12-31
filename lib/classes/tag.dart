@@ -19,22 +19,33 @@ class Tag {
       {'n': value.name, 'u': value.used, 'i': value.id};
 }
 
-void CreateTag(name) {
-  int newid = 0;
+int CreateTag(name) {
+  int newid = -1;
+  Tags.forEach((key, value) {
+    if (value.name.trim() == name.trim()) {
+      newid = key;
+    }
+  });
+  if (newid != -1) {
+    return newid;
+  }
+  newid = 0;
+
   for (var i = 0; i < Tags.length; i++) {
     if (Tags.containsKey(i) && Tags[i].id == newid) {
       newid = i + 1;
     }
   }
-  Tag newtag = Tag(name);
+  Tag newtag = Tag(name.trim());
   newtag.id = newid;
   Tags[newtag.id] = newtag;
   ShouldSaveTags = true;
+  return newid;
 }
 
 void UpdateTagName(tag, name) {
   if (Tags.containsKey(tag)) {
-    Tags[tag].name = name;
+    Tags[tag].name = name.trim();
     ShouldSaveTags = true;
   }
 }
@@ -65,15 +76,16 @@ void SaveTags() async {
 }
 
 void DeleteTag(Tag t) {
-  Tags.remove(t.id);
   Songs.forEach(
     (k, v) {
       if (v.tags.contains(t.id)) {
-        v.tags.remove(t.id);
+        UpdateSongTags(v.filename, t.id, false);
       }
     },
   );
+  Tags.remove(t.id);
   ShouldSaveTags = true;
+  SaveTags();
 }
 
 void UpdateAllTags() {
@@ -97,7 +109,7 @@ Map GetSongsFromTag(Tag T) {
   for (String s in Songs.keys) {
     Song so = Songs[s];
     List t = so.tags;
-    if (t.indexOf(T.id, 0) != -1) {
+    if (t.indexOf(T.id, 0) != -1 && !so.blacklisted) {
       songs[so.filename] = so;
     }
   }
