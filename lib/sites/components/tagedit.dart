@@ -101,6 +101,7 @@ class TagChoose extends StatefulWidget {
 }
 
 class _TagChoose extends State<TagChoose> {
+  TextEditingController create = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -116,7 +117,6 @@ class _TagChoose extends State<TagChoose> {
             // The search area here
             title: const Text("Tag Chooser")),
         backgroundColor: Colors.blueGrey,
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: FloatingActionButton(
           backgroundColor: CFG.ContrastColor,
           onPressed: () {
@@ -155,6 +155,21 @@ class _TagChoose extends State<TagChoose> {
                 ),
               ],
             ),
+            TextField(
+              controller: create,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Tag Name',
+              ),
+            ),
+            StyledElevatedButton(
+                onPressed: () {
+                  if (create.text != "") {
+                    int id = CreateTag(create.text.trim());
+                    Navigator.of(context).pop(id);
+                  }
+                },
+                child: const Text("Create Tag"))
           ],
         ),
       ),

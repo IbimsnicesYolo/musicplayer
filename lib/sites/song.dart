@@ -3,6 +3,7 @@ import "../classes/playlist.dart";
 import 'components/string_input.dart';
 import "components/music_control.dart";
 import "components/player_widget.dart";
+import "components/tagedit.dart";
 import "allsongs.dart" as AllSongs;
 import 'package:flutter/material.dart';
 
@@ -48,22 +49,27 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
               TextButton(
                 onPressed: () {
                   c(() {
-                    StringInput(context, "Tag Name to Save", "Save", "Nah",
-                        (p0) {
-                      int id = CreateTag(p0);
-                      Playlist.SaveToTag(id);
-                      Playlist.Clear();
-                    }, (p0) {}, false, "", "Tag Name");
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (_) => TagChoose()))
+                        .then((value) {
+                      if (value != -1) {
+                        Playlist.SaveToTag(value);
+                        Playlist.Clear();
+                      }
+                    });
                   });
                 },
                 child: Text("Save Playlist To Tag"),
               ),
               TextButton(
                 onPressed: () {
-                  StringInput(context, "Tag Name to Add", "Add", "Nah", (p0) {
-                    int id = CreateTag(p0);
-                    Playlist.SaveToTag(id);
-                  }, (p0) {}, false, "", "Tag Name");
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (_) => TagChoose()))
+                      .then((value) {
+                    if (value != -1) {
+                      Playlist.SaveToTag(value);
+                    }
+                  });
                 },
                 child: Text("Add all Songs To Tag"),
               ),
