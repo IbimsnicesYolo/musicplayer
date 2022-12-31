@@ -102,6 +102,12 @@ PopupMenuButton SongTile(
         ShouldSaveSongs = true;
         SaveSongs();
       }
+      if (result == 9) {
+        int index = Playlist.songs.indexOf(s);
+        for (int i = 0; i < index; i++) {
+          Playlist.AddToPlaylist(Playlist.songs.removeAt(0));
+        }
+      }
       Playlist.Save();
     },
     child: (showchild)
@@ -138,10 +144,11 @@ PopupMenuButton SongTile(
         PopupMenuItem(child: Text('Add to Playlist'), value: 6),
       if (activated[7] == true)
         PopupMenuItem(child: Text('Add to Play Next Stack'), value: 7),
-      if (activated[8] == true) const PopupMenuDivider(),
-      PopupMenuItem(
-          child: Text(s.blacklisted ? 'Un Blacklist Song' : "Blacklist Song"),
-          value: 8),
+      if (activated[8] == true)
+        PopupMenuItem(
+            child: Text(s.blacklisted ? 'Un Blacklist Song' : "Blacklist Song"),
+            value: 8),
+      if (activated[9] == true) PopupMenuItem(child: Text("Jump To"), value: 9),
     ],
   );
 }
@@ -204,6 +211,7 @@ Dismissible DismissibleSongTile(BuildContext context, Song s,
         6: false,
         7: true,
         8: false,
+        9: true,
       }),
     ),
   );
