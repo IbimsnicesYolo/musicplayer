@@ -93,13 +93,14 @@ void UpdateAllTags() {
     v.used = 0;
   });
   Songs.forEach((k, v) {
-    v.tags.forEach((element) {
-      try {
-        Tags[element].used += 1;
-      } catch (e) {
-        print("Big chungus error, tag doesnt exist:" + element.toString());
-      }
-    });
+    if (!v.blacklisted)
+      v.tags.forEach((element) {
+        try {
+          Tags[element].used += 1;
+        } catch (e) {
+          print("Big chungus error, tag doesnt exist:" + element.toString());
+        }
+      });
   });
 }
 
