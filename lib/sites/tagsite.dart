@@ -82,10 +82,15 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
 Container buildContent(BuildContext context, void Function(void Function()) c,
     CurrentPlayList Playlist) {
   UpdateAllTags();
+  List sortedtags = Tags.values.toList();
+  sortedtags.sort((a, b) {
+    return a.used.compareTo(b.used);
+  });
+  sortedtags = sortedtags.reversed.toList();
   return Container(
     child: ListView(
       children: [
-        for (int key in Tags.keys) TagTile(c, context, Playlist, key),
+        for (Tag t in sortedtags) TagTile(c, context, Playlist, t.id),
         Align(
           alignment: AlignmentDirectional.bottomCenter,
           child: ElevatedButton(
