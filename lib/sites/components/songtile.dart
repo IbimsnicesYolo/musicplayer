@@ -9,7 +9,8 @@ PopupMenuButton SongTile(
     Song s,
     void Function(void Function()) c,
     CurrentPlayList Playlist,
-    bool showchild) {
+    bool showchild,
+    Map<int, bool> activated) {
   return PopupMenuButton(
     onSelected: (result) {
       if (result == 0) {
@@ -110,26 +111,34 @@ PopupMenuButton SongTile(
           )
         : null,
     itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-      PopupMenuItem(
-        child: Text(s.title),
-        value: 0,
-      ),
-      PopupMenuItem(
-        child: Text(s.interpret),
-        value: 1,
-      ),
-      PopupMenuItem(
-        child: Text(s.featuring),
-        value: 2,
-      ),
+      if (activated[0] == true)
+        PopupMenuItem(
+          child: Text(s.title),
+          value: 0,
+        ),
+      if (activated[1] == true)
+        PopupMenuItem(
+          child: Text(s.interpret),
+          value: 1,
+        ),
+      if (activated[2] == true)
+        PopupMenuItem(
+          child: Text(s.featuring),
+          value: 2,
+        ),
       const PopupMenuDivider(),
-      const PopupMenuItem(child: Text('Edit Tags'), value: 3),
-      const PopupMenuItem(child: Text('Delete Song'), value: 4),
+      if (activated[3] == true)
+        PopupMenuItem(child: Text('Edit Tags'), value: 3),
+      if (activated[4] == true)
+        PopupMenuItem(child: Text('Delete Song'), value: 4),
       const PopupMenuDivider(),
-      const PopupMenuItem(child: Text('Play Next'), value: 5),
-      const PopupMenuItem(child: Text('Add to Playlist'), value: 6),
-      const PopupMenuItem(child: Text('Add to Play Next Stack'), value: 7),
-      const PopupMenuDivider(),
+      if (activated[5] == true)
+        PopupMenuItem(child: Text('Play Next'), value: 5),
+      if (activated[6] == true)
+        PopupMenuItem(child: Text('Add to Playlist'), value: 6),
+      if (activated[7] == true)
+        PopupMenuItem(child: Text('Add to Play Next Stack'), value: 7),
+      if (activated[8] == true) const PopupMenuDivider(),
       PopupMenuItem(
           child: Text(s.blacklisted ? 'Un Blacklist Song' : "Blacklist Song"),
           value: 8),
@@ -222,7 +231,17 @@ Dismissible DismissibleSongTile(BuildContext context, Song s,
         Playlist.InsertAsNext(s),
         Playlist.PlayNextSong(),
       },
-      trailing: SongTile(context, s, c, Playlist, false),
+      trailing: SongTile(context, s, c, Playlist, false, {
+        0: true,
+        1: false,
+        2: false,
+        3: true,
+        4: false,
+        5: true,
+        6: false,
+        7: true,
+        8: false,
+      }),
     ),
   );
 }

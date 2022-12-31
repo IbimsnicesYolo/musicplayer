@@ -42,7 +42,17 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
                     children: [
                       for (String key in Songs.keys)
                         if (ShouldShowSong(key, search))
-                          SongTile(context, Songs[key], c, Playlist, true),
+                          SongTile(context, Songs[key], c, Playlist, true, {
+                            0: true,
+                            1: true,
+                            2: true,
+                            3: true,
+                            4: true,
+                            5: true,
+                            6: true,
+                            7: true,
+                            8: true,
+                          }),
                     ],
                   ),
                 ),
@@ -59,7 +69,17 @@ ListView buildContent(BuildContext context, void Function(void Function()) c,
     children: [
       for (String key in Songs.keys)
         if (ShouldShowSong(key, ""))
-          SongTile(context, Songs[key], c, Playlist, true),
+          SongTile(context, Songs[key], c, Playlist, true, {
+            0: true,
+            1: true,
+            2: true,
+            3: true,
+            4: true,
+            5: true,
+            6: true,
+            7: true,
+            8: true,
+          }),
     ],
   );
 }
