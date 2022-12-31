@@ -139,6 +139,10 @@ class _VolumeWidget extends State<VolumeWidget> {
   }
 }
 
+/*
+ Currently not implemented in the plugin
+ Cant Change That...
+
 class BalanceWidget extends StatefulWidget {
   final AudioPlayer player;
 
@@ -171,11 +175,19 @@ class _BalanceWidget extends State<BalanceWidget> {
           },
           value: balance,
         ),
-        Text(
-          balance.toString(),
-          style: const TextStyle(fontSize: 16.0),
+        TextButton(
+          onPressed: () {
+            balance = 0.0;
+            setState(() {});
+            player.setBalance(0.0);
+          },
+          child: Text(
+            balance.toString(),
+            style: const TextStyle(fontSize: 16.0),
+          ),
         ),
       ],
     );
   }
 }
+*/

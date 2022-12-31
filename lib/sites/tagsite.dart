@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'components/search.dart';
 import 'components/string_input.dart';
 import 'components/songtile.dart';
+import 'components/tagedit.dart';
 
 bool ShouldShowTag(int key, String search) {
   if (search == "") return true;
@@ -204,6 +205,17 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
             Playlist.Save();
           }
           if (result == 2) {
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (_) => TagChoose()))
+                .then((value) {
+              if (value != -1) {
+                GetSongsFromTag(Tags[key]).forEach((songkey, song) {
+                  UpdateSongTags(songkey, value, true);
+                });
+              }
+            });
+          }
+          if (result == 3) {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (_) => SearchPage(
@@ -269,7 +281,7 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
               ),
             );
           }
-          if (result == 3) {
+          if (result == 4) {
             // Delete
             DeleteTag(Tags[key]);
             c(() {});
@@ -280,9 +292,11 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
           PopupMenuDivider(),
           const PopupMenuItem(child: Text('Add Songs to Playlist'), value: 1),
           PopupMenuDivider(),
-          const PopupMenuItem(child: Text('Search all Songs'), value: 2),
+          const PopupMenuItem(child: Text('Add Songs to other Tag'), value: 2),
           PopupMenuDivider(),
-          const PopupMenuItem(child: Text('Delete Tag'), value: 3),
+          const PopupMenuItem(child: Text('Search all Songs'), value: 3),
+          PopupMenuDivider(),
+          const PopupMenuItem(child: Text('Delete Tag'), value: 4),
         ],
       ),
     ]),

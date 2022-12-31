@@ -30,8 +30,11 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
           PlayerWidget(player: Playlist.player),
           Text("Lautstärke:"),
           VolumeWidget(player: Playlist.player),
+          /*
+          Not implemented in plugin yet
           Text("Balance:"),
           BalanceWidget(player: Playlist.player),
+          */
           Row(
             children: [
               TextButton(
