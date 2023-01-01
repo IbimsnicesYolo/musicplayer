@@ -58,6 +58,18 @@ class CurrentPlayList {
     Save();
   }
 
+  void JumpToSong(Song song) {
+    int index = songs.indexOf(song);
+    for (int i = 0; i < index; i++) {
+      songs.add(songs.removeAt(0));
+    }
+    if (player.state == PlayerState.playing) {
+      StartPlaying();
+    } else {
+      LoadNextToPlayer();
+    }
+  }
+
   void PlayNextSong() {
     if (songs.length > 0) {
       songs.add(songs.removeAt(0));

@@ -104,10 +104,7 @@ PopupMenuButton SongTile(
         SaveSongs();
       }
       if (result == 9) {
-        int index = Playlist.songs.indexOf(s);
-        for (int i = 0; i < index; i++) {
-          Playlist.AddToPlaylist(Playlist.songs.removeAt(0));
-        }
+        Playlist.JumpToSong(s);
       }
       Playlist.Save();
     },
