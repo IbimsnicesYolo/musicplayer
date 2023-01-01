@@ -122,6 +122,7 @@ class _VolumeWidget extends State<VolumeWidget> {
       children: <Widget>[
         Slider(
           min: 0.0,
+          divisions: 20,
           max: 1.0,
           onChanged: (v) {
             volume = v;
