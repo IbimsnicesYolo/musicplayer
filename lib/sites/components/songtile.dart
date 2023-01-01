@@ -196,8 +196,7 @@ Dismissible DismissibleSongTile(BuildContext context, Song s,
       title: Text(s.title),
       subtitle: Text(s.interpret),
       onLongPress: () => {
-        Playlist.InsertAsNext(s),
-        Playlist.PlayNextSong(),
+        Playlist.JumpToSong(s),
       },
       trailing: SongTile(context, s, c, Playlist, false, {
         0: true,
