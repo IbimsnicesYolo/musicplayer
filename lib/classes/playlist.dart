@@ -34,7 +34,7 @@ class CurrentPlayList {
     }
   }
 
-  void InsertAfterLastAdded(Song song) {
+  void Stack(Song song) {
     last_added_pos += 1;
     if (!songs.contains(song)) {
       songs.insert(last_added_pos, song);

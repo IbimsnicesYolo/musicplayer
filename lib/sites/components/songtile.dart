@@ -94,7 +94,7 @@ PopupMenuButton SongTile(
         // Add Song to End of Playlist
       }
       if (result == 7) {
-        Playlist.InsertAfterLastAdded(s);
+        Playlist.Stack(s);
         // Add Song to End of Added Songs
       }
       if (result == 8) {
@@ -163,7 +163,7 @@ Dismissible DismissibleSongTile(BuildContext context, Song s,
       } else {
         // secondary background
         s.hash += "2";
-        Playlist.InsertAfterLastAdded(s);
+        Playlist.Stack(s);
       }
       Playlist.Save();
     },
