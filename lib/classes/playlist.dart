@@ -2,6 +2,7 @@ import 'song.dart';
 import "tag.dart";
 import "../settings.dart";
 import 'package:audioplayers/audioplayers.dart';
+import 'package:audio_service/audio_service.dart';
 
 class CurrentPlayList {
   List<Song> songs = [];
@@ -109,11 +110,12 @@ class CurrentPlayList {
     }
   }
 
-  void StopPlaying() async {
+  Future<void> StopPlaying() async {
     await player.stop();
+    player.seek(Duration(seconds: 0));
   }
 
-  void PausePlaying() async {
+  Future<void> PausePlaying() async {
     if (player.state == PlayerState.playing) {
       await player.pause();
     } else {
@@ -164,5 +166,35 @@ class CurrentPlayList {
     songs = [];
     last_added_pos = 0;
     Save();
+  }
+}
+
+CurrentPlayList Playlist = CurrentPlayList();
+
+class MyAudioHandler extends BaseAudioHandler
+    with
+        QueueHandler, // mix in default queue callback implementations
+        SeekHandler {
+  // mix in default seek callback implementations
+
+  // The most common callbacks:
+  Future<void> play() async {
+    await Playlist.StartPlaying();
+  }
+
+  Future<void> pause() async {
+    await Playlist.PausePlaying();
+  }
+
+  Future<void> stop() async {
+    await Playlist.StopPlaying();
+  }
+
+  Future<void> seek(Duration position) async {
+    await Playlist.player.seek(position);
+  }
+
+  Future<void> skipToQueueItem(int i) async {
+    Playlist.JumpToSong(Playlist.songs[i]);
   }
 }

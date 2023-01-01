@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import "package:permission_handler/permission_handler.dart";
+import "package:audio_service/audio_service.dart";
 import "sites/components/drawer.dart" as Side;
 import "settings.dart" as CFG;
 import "sites/playlist.dart" as PlaylistSide;
@@ -8,6 +9,10 @@ import "sites/allsongs.dart" as AllSongs;
 import "sites/song.dart" as SongSite;
 import "classes/playlist.dart";
 import "classes/tag.dart";
+
+// You might want to provide this using dependency injection rather than a
+// global variable.
+late AudioHandler _audioHandler;
 
 void checkpermissions() async {
   PermissionStatus status = await Permission.storage.status;
@@ -20,7 +25,16 @@ void checkpermissions() async {
   }
 }
 
-void main() {
+Future<void> main() async {
+  // store this in a singleton
+  _audioHandler = await AudioService.init(
+    builder: () => MyAudioHandler(),
+    config: AudioServiceConfig(
+      androidNotificationChannelId: 'com.ibimsnicesyolo.musicplayer',
+      androidNotificationChannelName: 'Music Player',
+      androidNotificationOngoing: true,
+    ),
+  );
   runApp(MaterialApp(theme: ThemeData.dark(), home: MainSite()));
   checkpermissions();
 }
@@ -33,7 +47,6 @@ class MainSite extends StatefulWidget {
 
 class _MainSite extends State<MainSite> {
   int side = 0;
-  CurrentPlayList Playlist = CurrentPlayList();
 
   @override
   void initState() {
