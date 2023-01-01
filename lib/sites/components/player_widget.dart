@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:tagmusicplayer/classes/playlist.dart';
 
 class PlayerWidget extends StatefulWidget {
-  final AudioPlayer player;
+  final CurrentPlayList playlist;
 
   const PlayerWidget({
     Key? key,
-    required this.player,
+    required this.playlist,
   }) : super(key: key);
 
   @override
@@ -28,7 +29,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   String get _durationText => _duration?.toString().split('.').first ?? '';
   String get _positionText => _position?.toString().split('.').first ?? '';
 
-  AudioPlayer get player => widget.player;
+  AudioPlayer get player => widget.playlist.player;
 
   @override
   void initState() {
@@ -63,6 +64,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
           onChanged: (v) {
             final duration = _duration;
             if (duration == null) {
+              widget.playlist.LoadNextToPlayer();
               return;
             }
             final position = v * duration.inMilliseconds;
@@ -80,7 +82,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
               ? '$_positionText / $_durationText'
               : _duration != null
                   ? _durationText
-                  : '',
+                  : 'No Song Loaded',
           style: const TextStyle(fontSize: 16.0),
         ),
       ],
