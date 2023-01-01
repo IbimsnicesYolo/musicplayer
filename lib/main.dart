@@ -8,10 +8,7 @@ import "sites/tagsite.dart" as TagSite;
 import "sites/allsongs.dart" as AllSongs;
 import "sites/song.dart" as SongSite;
 import "classes/playlist.dart";
-import "classes/tag.dart";
 
-// You might want to provide this using dependency injection rather than a
-// global variable.
 late AudioHandler _audioHandler;
 
 void checkpermissions() async {
@@ -26,7 +23,6 @@ void checkpermissions() async {
 }
 
 Future<void> main() async {
-  // store this in a singleton
   _audioHandler = await AudioService.init(
     builder: () => MyAudioHandler(),
     config: AudioServiceConfig(
@@ -98,9 +94,7 @@ class _MainSite extends State<MainSite> {
             : FloatingActionButton(
                 child: Icon(Icons.downloading),
                 onPressed: () {
-                  setState(() {
-                    if (side == 2) UpdateAllTags();
-                  });
+                  setState(() {});
                 },
               )),
         bottomNavigationBar: BottomNavigationBar(
