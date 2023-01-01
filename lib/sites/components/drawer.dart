@@ -116,8 +116,8 @@ class SongDrawer extends Drawer {
                             .then((value) => c(() {}));
                       },
                     ),
-                    Text("Version:", style: TextStyle(fontSize: 10)),
-                    Text("Dev 1.1", style: TextStyle(fontSize: 10)),
+                    Text("Version:", style: TextStyle(fontSize: 20)),
+                    Text("Dev 1.1", style: TextStyle(fontSize: 20)),
                   ],
                 ),
               ),
@@ -512,6 +512,14 @@ class ShowBlacklist extends StatefulWidget {
 }
 
 class _ShowBlacklist extends State<ShowBlacklist> {
+  void update(void Function() c) {
+    setState(
+      () {
+        c();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -526,33 +534,35 @@ class _ShowBlacklist extends State<ShowBlacklist> {
           title: Text("Blacklist"),
           actions: [
             IconButton(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => SearchPage(
-                      (search, update) => Container(
-                            child: ListView(
-                              children: [
-                                for (String key in Songs.keys)
-                                  if (ShouldShowSong(key, search))
-                                    SongTile(context, Songs[key], widget.c,
-                                        widget.Playlist, true, {
-                                      0: true,
-                                      1: true,
-                                      2: true,
-                                      3: false,
-                                      4: false,
-                                      5: false,
-                                      6: false,
-                                      7: false,
-                                      8: true,
-                                      9: false,
-                                    }),
-                              ],
-                            ),
-                          ),
-                      ""),
-                ),
-              ),
+              onPressed: () => Navigator.of(context)
+                  .push(
+                    MaterialPageRoute(
+                      builder: (_) => SearchPage(
+                          (search, update) => Container(
+                                child: ListView(
+                                  children: [
+                                    for (String key in Songs.keys)
+                                      if (ShouldShowSong(key, search))
+                                        SongTile(context, Songs[key], update,
+                                            widget.Playlist, true, {
+                                          0: true,
+                                          1: true,
+                                          2: true,
+                                          3: false,
+                                          4: false,
+                                          5: false,
+                                          6: false,
+                                          7: false,
+                                          8: true,
+                                          9: false,
+                                        }),
+                                  ],
+                                ),
+                              ),
+                          ""),
+                    ),
+                  )
+                  .then((value) => update(() {})),
               icon: const Icon(Icons.search),
             ),
           ],
@@ -568,7 +578,7 @@ class _ShowBlacklist extends State<ShowBlacklist> {
           children: [
             for (String key in Songs.keys)
               if (Songs[key].blacklisted)
-                SongTile(context, Songs[key], widget.c, widget.Playlist, true, {
+                SongTile(context, Songs[key], update, widget.Playlist, true, {
                   0: true,
                   1: true,
                   2: true,

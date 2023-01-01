@@ -141,7 +141,7 @@ PopupMenuButton SongTile(
       if (activated[6] == true)
         PopupMenuItem(child: Text('Add to Playlist'), value: 6),
       if (activated[7] == true)
-        PopupMenuItem(child: Text('Add to Play Next Stack'), value: 7),
+        PopupMenuItem(child: Text('Add to Stack'), value: 7),
       if (activated[8] == true)
         PopupMenuItem(
             child: Text(s.blacklisted ? 'Un Blacklist Song' : "Blacklist Song"),
