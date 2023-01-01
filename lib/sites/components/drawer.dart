@@ -116,6 +116,8 @@ class SongDrawer extends Drawer {
                             .then((value) => c(() {}));
                       },
                     ),
+                    Text("Version:", style: TextStyle(fontSize: 10)),
+                    Text("Dev 1.1", style: TextStyle(fontSize: 10)),
                   ],
                 ),
               ),
