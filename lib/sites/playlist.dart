@@ -34,7 +34,7 @@ bool ShouldShowSong(String key, String search) {
 }
 
 IconButton buildActions(BuildContext context, void Function(void Function()) c,
-    CurrentPlayList Playlist) {
+    MyAudioHandler Playlist) {
   return IconButton(
     onPressed: () => Navigator.of(context).push(
       MaterialPageRoute(
@@ -56,7 +56,7 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
 }
 
 Container buildContent(BuildContext context, void Function(void Function()) c,
-    CurrentPlayList Playlist) {
+    MyAudioHandler Playlist) {
   return Container(
     child: ListView(
       reverse: true,

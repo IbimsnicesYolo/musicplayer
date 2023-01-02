@@ -5,7 +5,7 @@ class ControlTile extends StatefulWidget {
   ControlTile({Key? key, required this.Playlist, required this.c})
       : super(key: key);
 
-  CurrentPlayList Playlist;
+  MyAudioHandler Playlist;
   final c;
 
   @override

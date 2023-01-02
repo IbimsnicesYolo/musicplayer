@@ -14,7 +14,7 @@ class SongDrawer extends Drawer {
   const SongDrawer({Key? key, required this.c, required this.Playlist})
       : super(key: key);
 
-  final CurrentPlayList Playlist;
+  final MyAudioHandler Playlist;
   final void Function(void Function()) c;
   @override
   Widget build(BuildContext context) {
@@ -117,7 +117,7 @@ class SongDrawer extends Drawer {
                       },
                     ),
                     Text("Version:", style: TextStyle(fontSize: 20)),
-                    Text("Dev 1.1", style: TextStyle(fontSize: 20)),
+                    Text("Dev 1.2", style: TextStyle(fontSize: 20)),
                   ],
                 ),
               ),
@@ -645,7 +645,7 @@ class _ShowTagDeletion extends State<ShowTagDeletion> {
 class ShowSongDeletion extends StatefulWidget {
   ShowSongDeletion({Key? key, required this.Pl}) : super(key: key);
 
-  final CurrentPlayList Pl;
+  final MyAudioHandler Pl;
   @override
   State<ShowSongDeletion> createState() => _ShowSongDeletion();
 }

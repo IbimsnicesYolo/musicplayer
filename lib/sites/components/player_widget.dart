@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:tagmusicplayer/classes/playlist.dart';
 
 class PlayerWidget extends StatefulWidget {
-  final CurrentPlayList playlist;
+  final MyAudioHandler playlist;
 
   const PlayerWidget({
     Key? key,

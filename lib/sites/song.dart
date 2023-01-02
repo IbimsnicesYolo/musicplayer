@@ -6,12 +6,12 @@ import "allsongs.dart" as AllSongs;
 import 'package:flutter/material.dart';
 
 IconButton buildActions(BuildContext context, void Function(void Function()) c,
-    CurrentPlayList Playlist) {
+    MyAudioHandler Playlist) {
   return AllSongs.buildActions(context, c, Playlist);
 }
 
 Container buildContent(BuildContext context, void Function(void Function()) c,
-    CurrentPlayList Playlist) {
+    MyAudioHandler Playlist) {
   return Container(
     child: Center(
       child: Column(

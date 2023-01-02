@@ -9,7 +9,7 @@ import "sites/allsongs.dart" as AllSongs;
 import "sites/song.dart" as SongSite;
 import "classes/playlist.dart";
 
-late AudioHandler _audioHandler;
+late MyAudioHandler _audioHandler;
 
 void checkpermissions() async {
   PermissionStatus status = await Permission.storage.status;
@@ -67,7 +67,7 @@ class _MainSite extends State<MainSite> {
   @override
   Widget build(BuildContext context) {
     CFG.LoadData(update);
-    Playlist.LoadPlaylist(update);
+    _audioHandler.LoadPlaylist(update);
     return buildSafeArea(context, side);
   }
 
@@ -76,19 +76,22 @@ class _MainSite extends State<MainSite> {
       child: Scaffold(
         appBar: AppBar(
           actions: [
-            if (side == 0) SongSite.buildActions(context, update, Playlist),
-            if (side == 1) PlaylistSide.buildActions(context, update, Playlist),
-            if (side == 2) TagSite.buildActions(context, update, Playlist),
-            if (side == 3) AllSongs.buildActions(context, update, Playlist),
+            if (side == 0)
+              SongSite.buildActions(context, update, _audioHandler),
+            if (side == 1)
+              PlaylistSide.buildActions(context, update, _audioHandler),
+            if (side == 2) TagSite.buildActions(context, update, _audioHandler),
+            if (side == 3)
+              AllSongs.buildActions(context, update, _audioHandler),
           ],
         ),
         body: (side == 0
-            ? SongSite.buildContent(context, update, Playlist)
+            ? SongSite.buildContent(context, update, _audioHandler)
             : (side == 1
-                ? PlaylistSide.buildContent(context, update, Playlist)
+                ? PlaylistSide.buildContent(context, update, _audioHandler)
                 : (side == 2
-                    ? TagSite.buildContent(context, update, Playlist)
-                    : AllSongs.buildContent(context, update, Playlist)))),
+                    ? TagSite.buildContent(context, update, _audioHandler)
+                    : AllSongs.buildContent(context, update, _audioHandler)))),
         floatingActionButton: (side == 1
             ? null
             : FloatingActionButton(
@@ -127,7 +130,7 @@ class _MainSite extends State<MainSite> {
             ),
           ],
         ),
-        drawer: Side.SongDrawer(c: update, Playlist: Playlist),
+        drawer: Side.SongDrawer(c: update, Playlist: _audioHandler),
       ),
     );
   }

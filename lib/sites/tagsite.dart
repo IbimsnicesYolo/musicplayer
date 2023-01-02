@@ -23,7 +23,7 @@ bool ShouldShowTag(int key, String search) {
 }
 
 IconButton buildActions(BuildContext context, void Function(void Function()) c,
-    CurrentPlayList Playlist) {
+    MyAudioHandler Playlist) {
   return IconButton(
     onPressed: () => Navigator.of(context).push(
       MaterialPageRoute(
@@ -80,7 +80,7 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
 }
 
 Container buildContent(BuildContext context, void Function(void Function()) c,
-    CurrentPlayList Playlist) {
+    MyAudioHandler Playlist) {
   UpdateAllTags();
   List sortedtags = Tags.values.toList();
   sortedtags.sort((a, b) {
@@ -117,7 +117,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
 }
 
 ListTile TagTile(void Function(void Function()) c, BuildContext context,
-    CurrentPlayList Playlist, int key) {
+    MyAudioHandler Playlist, int key) {
   return ListTile(
     onLongPress: () => {
       Navigator.of(context).push(

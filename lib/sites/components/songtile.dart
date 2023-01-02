@@ -8,7 +8,7 @@ PopupMenuButton SongTile(
     BuildContext context,
     Song s,
     void Function(void Function()) c,
-    CurrentPlayList Playlist,
+    MyAudioHandler Playlist,
     bool showchild,
     Map<int, bool> activated) {
   return PopupMenuButton(
@@ -152,7 +152,7 @@ PopupMenuButton SongTile(
 }
 
 Dismissible DismissibleSongTile(BuildContext context, Song s,
-    void Function(void Function()) c, CurrentPlayList Playlist) {
+    void Function(void Function()) c, MyAudioHandler Playlist) {
   return Dismissible(
     key: Key(s.filename + s.hash),
     onDismissed: (DismissDirection direction) {

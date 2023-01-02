@@ -4,19 +4,17 @@ import "../settings.dart";
 import 'package:just_audio/just_audio.dart';
 import 'package:audio_service/audio_service.dart';
 
-class CurrentPlayList {
+class MyAudioHandler extends BaseAudioHandler
+    with
+        QueueHandler, // mix in default queue callback implementations
+        SeekHandler {
   List<Song> songs = [];
   int last_added_pos = 0;
   bool start = false;
   bool paused = false;
   AudioPlayer player = AudioPlayer();
 
-  CurrentPlayList() {
-    player.setAudioSource(ConcatenatingAudioSource(
-      children: songs.map((song) {
-        return AudioSource.uri(Uri.parse(song.path));
-      }).toList(),
-    ));
+  MyAudioHandler() {
     player.setSkipSilenceEnabled(true);
     player.playerStateStream.listen((event) {
       if (event.processingState == ProcessingState.completed) {
@@ -24,6 +22,11 @@ class CurrentPlayList {
         PlayNextSong();
       }
     });
+
+    // So that our clients (the Flutter UI and the system notification) know
+    // what state to display, here we set up our audio handler to broadcast all
+    // playback state changes as they happen via playbackState...
+    player.playbackEventStream.map(_transformEvent).pipe(playbackState);
   }
 
   void AddToPlaylist(Song song) {
@@ -118,6 +121,13 @@ class CurrentPlayList {
       await player.setUrl('file://storage/' + songs[0].path);
       player.play();
       paused = false;
+      var item = MediaItem(
+        id: 'file://storage/' + songs[0].path,
+        album: 'ajjdkansdukkanshgabds',
+        title: songs[0].title,
+        artist: songs[0].interpret,
+      );
+      mediaItem.add(item);
     }
   }
 
@@ -183,58 +193,38 @@ class CurrentPlayList {
     last_added_pos = 0;
     Save();
   }
-}
-
-CurrentPlayList Playlist = CurrentPlayList();
-
-class MyAudioHandler extends BaseAudioHandler
-    with
-        QueueHandler, // mix in default queue callback implementations
-        SeekHandler {
-  CurrentPlayList playlist = Playlist;
-
-  MyAudioHandler() {
-    // So that our clients (the Flutter UI and the system notification) know
-    // what state to display, here we set up our audio handler to broadcast all
-    // playback state changes as they happen via playbackState...
-    playlist.player.playbackEventStream
-        .map(_transformEvent)
-        .pipe(playbackState);
-  }
-
-  // mix in default seek callback implementations
 
   // The most common callbacks:
   Future<void> play() async {
-    await Playlist.PausePlaying();
+    await PausePlaying();
   }
 
   Future<void> pause() async {
-    await Playlist.PausePlaying();
+    await PausePlaying();
   }
 
   Future<void> stop() async {
-    await Playlist.StopPlaying();
+    await StopPlaying();
   }
 
   Future<void> shuffle() async {
-    Playlist.Shuffle();
+    Shuffle();
   }
 
   Future<void> skipToNext() async {
-    Playlist.PlayNextSong();
+    PlayNextSong();
   }
 
   Future<void> skipToPrevious() async {
-    Playlist.PlayPreviousSong();
+    PlayPreviousSong();
   }
 
   Future<void> seek(Duration position) async {
-    await Playlist.player.seek(position);
+    await player.seek(position);
   }
 
   Future<void> skipToQueueItem(int i) async {
-    Playlist.JumpToSong(Playlist.songs[i]);
+    JumpToSong(songs[i]);
   }
 
   /// Transform a just_audio event into an audio_service state.
@@ -246,7 +236,7 @@ class MyAudioHandler extends BaseAudioHandler
     return PlaybackState(
       controls: [
         MediaControl.skipToPrevious,
-        if (Playlist.player.playing) MediaControl.pause else MediaControl.play,
+        if (player.playing) MediaControl.pause else MediaControl.play,
         MediaControl.stop,
         MediaControl.skipToNext,
       ],
@@ -259,11 +249,11 @@ class MyAudioHandler extends BaseAudioHandler
         ProcessingState.buffering: AudioProcessingState.buffering,
         ProcessingState.ready: AudioProcessingState.ready,
         ProcessingState.completed: AudioProcessingState.completed,
-      }[playlist.player.processingState]!,
-      playing: playlist.player.playing,
-      updatePosition: playlist.player.position,
-      bufferedPosition: playlist.player.bufferedPosition,
-      speed: playlist.player.speed,
+      }[player.processingState]!,
+      playing: player.playing,
+      updatePosition: player.position,
+      bufferedPosition: player.bufferedPosition,
+      speed: player.speed,
       queueIndex: event.currentIndex,
     );
   }
