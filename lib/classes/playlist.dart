@@ -246,7 +246,7 @@ class MyAudioHandler extends BaseAudioHandler
     return PlaybackState(
       controls: [
         MediaControl.skipToPrevious,
-        MediaControl.play,
+        if (Playlist.player.playing) MediaControl.pause else MediaControl.play,
         MediaControl.stop,
         MediaControl.skipToNext,
       ],
