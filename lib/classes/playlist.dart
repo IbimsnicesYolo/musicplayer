@@ -1,7 +1,7 @@
 import 'song.dart';
 import "tag.dart";
 import "../settings.dart";
-import 'package:audioplayers/audioplayers.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:audio_service/audio_service.dart';
 
 class CurrentPlayList {
@@ -11,11 +11,12 @@ class CurrentPlayList {
   AudioPlayer player = AudioPlayer();
 
   CurrentPlayList() {
-    player.setReleaseMode(ReleaseMode.stop);
+    /*
     player.onPlayerComplete.listen((event) {
       start = true;
       PlayNextSong();
     });
+    */
   }
 
   void AddToPlaylist(Song song) {
@@ -64,7 +65,7 @@ class CurrentPlayList {
     for (int i = 0; i < index; i++) {
       songs.add(songs.removeAt(0));
     }
-    if (player.state == PlayerState.playing) {
+    if (player.playing) {
       StartPlaying();
     } else {
       LoadNextToPlayer();
@@ -74,7 +75,7 @@ class CurrentPlayList {
   void PlayNextSong() {
     if (songs.length > 0) {
       songs.add(songs.removeAt(0));
-      if (player.state == PlayerState.playing || start) {
+      if (player.playing || start) {
         start = false;
         StartPlaying();
       } else {
@@ -86,7 +87,7 @@ class CurrentPlayList {
   void PlayPreviousSong() {
     if (songs.length > 0) {
       songs.insert(0, songs.removeAt(songs.length - 1));
-      if (player.state == PlayerState.playing) {
+      if (player.playing) {
         StartPlaying();
       } else {
         LoadNextToPlayer();
@@ -103,9 +104,9 @@ class CurrentPlayList {
 
   Future<void> StartPlaying() async {
     if (songs.length > 0) {
-      await player.setSource(DeviceFileSource(songs[0].path));
+      await player.setUrl('file://' + songs[0].path);
       await player.stop();
-      await player.play(DeviceFileSource(songs[0].path));
+      player.play();
       player.seek(Duration(seconds: 0));
     }
   }
@@ -116,10 +117,10 @@ class CurrentPlayList {
   }
 
   Future<void> PausePlaying() async {
-    if (player.state == PlayerState.playing) {
+    if (player.playing) {
       await player.pause();
     } else {
-      await player.resume();
+      player.play();
     }
   }
 
@@ -177,6 +178,16 @@ class MyAudioHandler extends BaseAudioHandler
         SeekHandler {
   CurrentPlayList playlist = Playlist;
 
+  static final _item = MediaItem(
+    id: 'https://s3.amazonaws.com/scifri-episodes/scifri20181123-episode.mp3',
+    album: "Science Friday",
+    title: "A Salute To Head-Scratching Science",
+    artist: "Science Friday and WNYC Studios",
+    duration: const Duration(milliseconds: 5739820),
+    artUri: Uri.parse(
+        'https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg'),
+  );
+
   MyAudioHandler() {
     // So that our clients (the Flutter UI and the system notification) know
     // what state to display, here we set up our audio handler to broadcast all
@@ -223,7 +234,7 @@ class MyAudioHandler extends BaseAudioHandler
     return PlaybackState(
       controls: [
         MediaControl.rewind,
-        if (_player.playing) MediaControl.pause else MediaControl.play,
+        if (playlist.player.playing) MediaControl.pause else MediaControl.play,
         MediaControl.stop,
         MediaControl.fastForward,
       ],
@@ -239,11 +250,11 @@ class MyAudioHandler extends BaseAudioHandler
         ProcessingState.buffering: AudioProcessingState.buffering,
         ProcessingState.ready: AudioProcessingState.ready,
         ProcessingState.completed: AudioProcessingState.completed,
-      }[_player.processingState]!,
-      playing: _player.playing,
-      updatePosition: _player.position,
-      bufferedPosition: _player.bufferedPosition,
-      speed: _player.speed,
+      }[playlist.player.processingState]!,
+      playing: playlist.player.playing,
+      updatePosition: playlist.player.position,
+      bufferedPosition: playlist.player.bufferedPosition,
+      speed: playlist.player.speed,
       queueIndex: event.currentIndex,
     );
   }

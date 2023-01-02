@@ -1,4 +1,3 @@
-import "package:audioplayers/audioplayers.dart";
 import 'package:flutter/material.dart';
 import '../../../classes/playlist.dart';
 
@@ -42,18 +41,16 @@ class _ControlTile extends State<ControlTile> {
                 IconButton(
                   onPressed: () {
                     widget.c(() {
-                      if (widget.Playlist.player.state == PlayerState.playing ||
-                          widget.Playlist.player.state == PlayerState.paused) {
+                      if (widget.Playlist.player.playing) {
                         widget.Playlist.PausePlaying();
                       } else {
                         widget.Playlist.StartPlaying();
                       }
                     });
                   },
-                  icon: Icon(
-                      (widget.Playlist.player.state == PlayerState.playing)
-                          ? Icons.pause
-                          : Icons.play_arrow),
+                  icon: Icon((widget.Playlist.player.playing)
+                      ? Icons.pause
+                      : Icons.play_arrow),
                 ),
                 IconButton(
                   onPressed: () {

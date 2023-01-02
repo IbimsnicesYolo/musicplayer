@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:tagmusicplayer/classes/playlist.dart';
 
@@ -90,11 +90,11 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   }
 
   void _initStreams() {
-    _durationSubscription = player.onDurationChanged.listen((duration) {
+    _durationSubscription = player.durationStream.listen((duration) {
       setState(() => _duration = duration);
     });
 
-    _positionSubscription = player.onPositionChanged.listen(
+    _positionSubscription = player.positionStream.listen(
       (p) => setState(() => _position = p),
     );
   }
@@ -144,7 +144,7 @@ class _VolumeWidget extends State<VolumeWidget> {
 
 /*
  Currently not implemented in the plugin
- Cant Change That...
+ -> Check Again later TODO
 
 class BalanceWidget extends StatefulWidget {
   final AudioPlayer player;
