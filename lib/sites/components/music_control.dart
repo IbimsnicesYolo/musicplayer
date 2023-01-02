@@ -41,11 +41,7 @@ class _ControlTile extends State<ControlTile> {
                 IconButton(
                   onPressed: () {
                     widget.c(() {
-                      if (widget.Playlist.player.playing) {
-                        widget.Playlist.PausePlaying();
-                      } else {
-                        widget.Playlist.StartPlaying();
-                      }
+                      widget.Playlist.PausePlaying();
                     });
                   },
                   icon: Icon((widget.Playlist.player.playing)

@@ -64,7 +64,6 @@ class _PlayerWidgetState extends State<PlayerWidget> {
           onChanged: (v) {
             final duration = _duration;
             if (duration == null) {
-              widget.playlist.LoadNextToPlayer();
               return;
             }
             final position = v * duration.inMilliseconds;
@@ -116,7 +115,6 @@ class VolumeWidget extends StatefulWidget {
 
 class _VolumeWidget extends State<VolumeWidget> {
   AudioPlayer get player => widget.player;
-  double volume = 1.0;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -127,14 +125,13 @@ class _VolumeWidget extends State<VolumeWidget> {
           divisions: 20,
           max: 1.0,
           onChanged: (v) {
-            volume = v;
             setState(() {});
             player.setVolume(v);
           },
-          value: volume,
+          value: player.volume,
         ),
         Text(
-          volume.toString(),
+          player.volume.toString(),
           style: const TextStyle(fontSize: 16.0),
         ),
       ],

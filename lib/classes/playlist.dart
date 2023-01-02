@@ -8,15 +8,22 @@ class CurrentPlayList {
   List<Song> songs = [];
   int last_added_pos = 0;
   bool start = false;
+  bool paused = false;
   AudioPlayer player = AudioPlayer();
 
   CurrentPlayList() {
-    /*
-    player.onPlayerComplete.listen((event) {
-      start = true;
-      PlayNextSong();
+    player.setAudioSource(ConcatenatingAudioSource(
+      children: songs.map((song) {
+        return AudioSource.uri(Uri.parse(song.path));
+      }).toList(),
+    ));
+    player.setSkipSilenceEnabled(true);
+    player.playerStateStream.listen((event) {
+      if (event.processingState == ProcessingState.completed) {
+        start = true;
+        PlayNextSong();
+      }
     });
-    */
   }
 
   void AddToPlaylist(Song song) {
@@ -77,6 +84,7 @@ class CurrentPlayList {
       songs.add(songs.removeAt(0));
       if (player.playing || start) {
         start = false;
+        player.seek(Duration(seconds: 0));
         StartPlaying();
       } else {
         LoadNextToPlayer();
@@ -88,6 +96,7 @@ class CurrentPlayList {
     if (songs.length > 0) {
       songs.insert(0, songs.removeAt(songs.length - 1));
       if (player.playing) {
+        player.seek(Duration(seconds: 0));
         StartPlaying();
       } else {
         LoadNextToPlayer();
@@ -97,6 +106,7 @@ class CurrentPlayList {
 
   void LoadNextToPlayer() async {
     if (songs.length > 0) {
+      player.seek(Duration(seconds: 0));
       await StartPlaying();
       await player.pause();
     }
@@ -104,23 +114,28 @@ class CurrentPlayList {
 
   Future<void> StartPlaying() async {
     if (songs.length > 0) {
-      await player.setUrl('file://' + songs[0].path);
       await player.stop();
+      await player.setUrl('file://storage/' + songs[0].path);
       player.play();
-      player.seek(Duration(seconds: 0));
+      paused = false;
     }
   }
 
   Future<void> StopPlaying() async {
     await player.stop();
+    paused = false;
     player.seek(Duration(seconds: 0));
   }
 
   Future<void> PausePlaying() async {
     if (player.playing) {
       await player.pause();
-    } else {
+      paused = true;
+    } else if (paused) {
       player.play();
+      paused = false;
+    } else {
+      StartPlaying();
     }
   }
 
@@ -178,16 +193,6 @@ class MyAudioHandler extends BaseAudioHandler
         SeekHandler {
   CurrentPlayList playlist = Playlist;
 
-  static final _item = MediaItem(
-    id: 'https://s3.amazonaws.com/scifri-episodes/scifri20181123-episode.mp3',
-    album: "Science Friday",
-    title: "A Salute To Head-Scratching Science",
-    artist: "Science Friday and WNYC Studios",
-    duration: const Duration(milliseconds: 5739820),
-    artUri: Uri.parse(
-        'https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg'),
-  );
-
   MyAudioHandler() {
     // So that our clients (the Flutter UI and the system notification) know
     // what state to display, here we set up our audio handler to broadcast all
@@ -195,18 +200,13 @@ class MyAudioHandler extends BaseAudioHandler
     playlist.player.playbackEventStream
         .map(_transformEvent)
         .pipe(playbackState);
-    // ... and also the current media item via mediaItem.
-    mediaItem.add(_item);
-
-    // Load the player.
-    playlist.player.setAudioSource(AudioSource.uri(Uri.parse(_item.id)));
   }
 
   // mix in default seek callback implementations
 
   // The most common callbacks:
   Future<void> play() async {
-    await Playlist.StartPlaying();
+    await Playlist.PausePlaying();
   }
 
   Future<void> pause() async {
@@ -215,6 +215,18 @@ class MyAudioHandler extends BaseAudioHandler
 
   Future<void> stop() async {
     await Playlist.StopPlaying();
+  }
+
+  Future<void> shuffle() async {
+    Playlist.Shuffle();
+  }
+
+  Future<void> skipToNext() async {
+    Playlist.PlayNextSong();
+  }
+
+  Future<void> skipToPrevious() async {
+    Playlist.PlayPreviousSong();
   }
 
   Future<void> seek(Duration position) async {
@@ -233,16 +245,13 @@ class MyAudioHandler extends BaseAudioHandler
   PlaybackState _transformEvent(PlaybackEvent event) {
     return PlaybackState(
       controls: [
-        MediaControl.rewind,
-        if (playlist.player.playing) MediaControl.pause else MediaControl.play,
+        MediaControl.skipToPrevious,
+        MediaControl.play,
         MediaControl.stop,
-        MediaControl.fastForward,
+        MediaControl.skipToNext,
       ],
-      systemActions: const {
-        MediaAction.seek,
-        MediaAction.seekForward,
-        MediaAction.seekBackward,
-      },
+      // Which other actions should be enabled in the notification
+      systemActions: const {},
       androidCompactActionIndices: const [0, 1, 3],
       processingState: const {
         ProcessingState.idle: AudioProcessingState.idle,
