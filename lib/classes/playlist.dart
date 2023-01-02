@@ -175,6 +175,22 @@ class MyAudioHandler extends BaseAudioHandler
     with
         QueueHandler, // mix in default queue callback implementations
         SeekHandler {
+  CurrentPlayList playlist = Playlist;
+
+  MyAudioHandler() {
+    // So that our clients (the Flutter UI and the system notification) know
+    // what state to display, here we set up our audio handler to broadcast all
+    // playback state changes as they happen via playbackState...
+    playlist.player.playbackEventStream
+        .map(_transformEvent)
+        .pipe(playbackState);
+    // ... and also the current media item via mediaItem.
+    mediaItem.add(_item);
+
+    // Load the player.
+    playlist.player.setAudioSource(AudioSource.uri(Uri.parse(_item.id)));
+  }
+
   // mix in default seek callback implementations
 
   // The most common callbacks:
@@ -196,5 +212,39 @@ class MyAudioHandler extends BaseAudioHandler
 
   Future<void> skipToQueueItem(int i) async {
     Playlist.JumpToSong(Playlist.songs[i]);
+  }
+
+  /// Transform a just_audio event into an audio_service state.
+  ///
+  /// This method is used from the constructor. Every event received from the
+  /// just_audio player will be transformed into an audio_service state so that
+  /// it can be broadcast to audio_service clients.
+  PlaybackState _transformEvent(PlaybackEvent event) {
+    return PlaybackState(
+      controls: [
+        MediaControl.rewind,
+        if (_player.playing) MediaControl.pause else MediaControl.play,
+        MediaControl.stop,
+        MediaControl.fastForward,
+      ],
+      systemActions: const {
+        MediaAction.seek,
+        MediaAction.seekForward,
+        MediaAction.seekBackward,
+      },
+      androidCompactActionIndices: const [0, 1, 3],
+      processingState: const {
+        ProcessingState.idle: AudioProcessingState.idle,
+        ProcessingState.loading: AudioProcessingState.loading,
+        ProcessingState.buffering: AudioProcessingState.buffering,
+        ProcessingState.ready: AudioProcessingState.ready,
+        ProcessingState.completed: AudioProcessingState.completed,
+      }[_player.processingState]!,
+      playing: _player.playing,
+      updatePosition: _player.position,
+      bufferedPosition: _player.bufferedPosition,
+      speed: _player.speed,
+      queueIndex: event.currentIndex,
+    );
   }
 }
