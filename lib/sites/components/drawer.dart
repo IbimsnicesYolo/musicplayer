@@ -117,7 +117,7 @@ class SongDrawer extends Drawer {
                       },
                     ),
                     Text("Version:", style: TextStyle(fontSize: 20)),
-                    Text("Dev 1.2", style: TextStyle(fontSize: 20)),
+                    Text(CFG.Version, style: TextStyle(fontSize: 20)),
                   ],
                 ),
               ),
