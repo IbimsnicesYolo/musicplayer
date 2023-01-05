@@ -488,6 +488,14 @@ class _ShowConfig extends State<ShowConfig> {
               for (var key in CFG.Config.keys)
                 Text("$key: " + CFG.Config["$key"].toString()),
               TextButton(
+                onPressed: () => {
+                  CFG.Config["Version"] = CFG.Version,
+                  CFG.SaveConfig(),
+                  setState(() {}),
+                },
+                child: const Text("Update Version"),
+              ),
+              TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                     CFG.SaveConfig();

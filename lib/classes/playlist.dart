@@ -17,7 +17,7 @@ class MyAudioHandler extends BaseAudioHandler
   MyAudioHandler() {
     player.setSkipSilenceEnabled(true);
     player.playerStateStream.listen((event) {
-      if (event.processingState == ProcessingState.completed) {
+      if (event.processingState == ProcessingState.completed && event.playing) {
         start = true;
         PlayNextSong();
       }
