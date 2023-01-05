@@ -144,6 +144,7 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
                                     // Left
                                     Songs[songkey].hash += "1";
                                     Playlist.AddToPlaylist(Songs[songkey]);
+                                    Playlist.Stack(Songs[songkey]);
                                     Playlist.Save();
                                   } else {
                                     // Right
