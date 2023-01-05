@@ -57,15 +57,6 @@ class SongDrawer extends Drawer {
                               .then((value) => c(() {}));
                         }),
                     StyledElevatedButton(
-                        child: const Text("Add All To Edit"),
-                        onPressed: () {
-                          Songs.forEach((key, value) {
-                            value.edited = false;
-                          });
-                          ShouldSaveSongs = true;
-                          SaveSongs();
-                        }),
-                    StyledElevatedButton(
                       child: const Text("Open Settings"),
                       onPressed: () {
                         Navigator.of(context)
@@ -91,26 +82,12 @@ class SongDrawer extends Drawer {
                       },
                     ),
                     StyledElevatedButton(
-                      child: const Text("Delete All Tags"),
+                      child: const Text("Critical Buttons"),
                       onPressed: () {
                         Navigator.of(context)
                             .push(
                               MaterialPageRoute(
-                                builder: (_) => ShowTagDeletion(),
-                              ),
-                            )
-                            .then((value) => c(() {}));
-                      },
-                    ),
-                    StyledElevatedButton(
-                      child: const Text("Delete All Songs"),
-                      onPressed: () {
-                        Navigator.of(context)
-                            .push(
-                              MaterialPageRoute(
-                                builder: (_) => ShowSongDeletion(
-                                  Pl: Playlist,
-                                ),
+                                builder: (_) => CriticalButtons(Pl: Playlist),
                               ),
                             )
                             .then((value) => c(() {}));
@@ -605,14 +582,15 @@ class _ShowBlacklist extends State<ShowBlacklist> {
   }
 }
 
-class ShowTagDeletion extends StatefulWidget {
-  ShowTagDeletion({Key? key}) : super(key: key);
+class CriticalButtons extends StatefulWidget {
+  CriticalButtons({Key? key, required this.Pl}) : super(key: key);
 
+  final MyAudioHandler Pl;
   @override
-  State<ShowTagDeletion> createState() => _ShowTagDeletion();
+  State<CriticalButtons> createState() => _ShowTagDeletion();
 }
 
-class _ShowTagDeletion extends State<ShowTagDeletion> {
+class _ShowTagDeletion extends State<CriticalButtons> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -627,66 +605,52 @@ class _ShowTagDeletion extends State<ShowTagDeletion> {
           title: Text("Tag Deletion"),
         ),
         body: Center(
-          child: TextButton(
-              style: TextButton.styleFrom(
-                primary: Colors.white,
-                backgroundColor: Colors.red,
-              ),
-              onPressed: () {
-                Tags = {};
-                ShouldSaveTags = true;
-                SaveTags();
-                UpdateAllTags();
-                Songs.forEach((key, value) {
-                  value.tags = [];
-                });
-                SaveSongs();
-                Navigator.pop(context);
-              },
-              child: Text("Delete All Tags", style: TextStyle(fontSize: 30))),
-        ),
-      ),
-    );
-  }
-}
-
-class ShowSongDeletion extends StatefulWidget {
-  ShowSongDeletion({Key? key, required this.Pl}) : super(key: key);
-
-  final MyAudioHandler Pl;
-  @override
-  State<ShowSongDeletion> createState() => _ShowSongDeletion();
-}
-
-class _ShowSongDeletion extends State<ShowSongDeletion> {
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: CFG.ContrastColor,
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Icon(Icons.arrow_back),
-        ),
-        appBar: AppBar(
-          title: Text("Song Deletion"),
-        ),
-        body: Center(
-          child: TextButton(
-              style: TextButton.styleFrom(
-                primary: Colors.white,
-                backgroundColor: Colors.red,
-              ),
-              onPressed: () {
-                widget.Pl.Clear();
-                Songs = {};
-                ShouldSaveSongs = true;
-                UpdateAllTags();
-                SaveSongs();
-                Navigator.pop(context);
-              },
-              child: Text("Delete All Songs", style: TextStyle(fontSize: 30))),
+          child: Column(
+            children: [
+              StyledElevatedButton(
+                  child: const Text("Add All To Edit"),
+                  onPressed: () {
+                    Songs.forEach((key, value) {
+                      value.edited = false;
+                    });
+                    ShouldSaveSongs = true;
+                    SaveSongs();
+                  }),
+              TextButton(
+                  style: TextButton.styleFrom(
+                    primary: Colors.white,
+                    backgroundColor: Colors.red,
+                  ),
+                  onPressed: () {
+                    Tags = {};
+                    ShouldSaveTags = true;
+                    SaveTags();
+                    UpdateAllTags();
+                    Songs.forEach((key, value) {
+                      value.tags = [];
+                    });
+                    SaveSongs();
+                    Navigator.pop(context);
+                  },
+                  child:
+                      Text("Delete All Tags", style: TextStyle(fontSize: 30))),
+              TextButton(
+                  style: TextButton.styleFrom(
+                    primary: Colors.white,
+                    backgroundColor: Colors.red,
+                  ),
+                  onPressed: () {
+                    widget.Pl.Clear();
+                    Songs = {};
+                    ShouldSaveSongs = true;
+                    UpdateAllTags();
+                    SaveSongs();
+                    Navigator.pop(context);
+                  },
+                  child:
+                      Text("Delete All Songs", style: TextStyle(fontSize: 30))),
+            ],
+          ),
         ),
       ),
     );
