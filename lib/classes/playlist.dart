@@ -67,6 +67,14 @@ class MyAudioHandler extends BaseAudioHandler
     Song current = songs.removeAt(0);
     songs.shuffle();
     songs.insert(0, current);
+    var item = MediaItem(
+      id: 'file://storage/' + songs[0].path,
+      album: songs[1] != null ? "Next: " + songs[1].title : "No Next Song",
+      title: songs[0].title,
+      artist: songs[0].interpret,
+      duration: player.position,
+    );
+    mediaItem.add(item);
     Save();
   }
 
@@ -123,9 +131,10 @@ class MyAudioHandler extends BaseAudioHandler
       paused = false;
       var item = MediaItem(
         id: 'file://storage/' + songs[0].path,
-        album: 'ajjdkansdukkanshgabds',
+        album: songs[1] != null ? "Next: " + songs[1].title : "No Next Song",
         title: songs[0].title,
         artist: songs[0].interpret,
+        duration: player.position,
       );
       mediaItem.add(item);
     }
@@ -207,7 +216,11 @@ class MyAudioHandler extends BaseAudioHandler
     await StopPlaying();
   }
 
-  Future<void> shuffle() async {
+  Future<void> setShuffleMode(var a) async {
+    Shuffle();
+  }
+
+  Future<void> setRepeatMode(var a) async {
     Shuffle();
   }
 
@@ -241,7 +254,13 @@ class MyAudioHandler extends BaseAudioHandler
         MediaControl.skipToNext,
       ],
       // Which other actions should be enabled in the notification
-      systemActions: const {},
+      systemActions: {
+        MediaAction.skipToPrevious,
+        if (player.playing) MediaAction.pause else MediaAction.play,
+        MediaAction.stop,
+        MediaAction.skipToNext,
+        MediaAction.setShuffleMode,
+      },
       androidCompactActionIndices: const [0, 1, 3],
       processingState: const {
         ProcessingState.idle: AudioProcessingState.idle,
