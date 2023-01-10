@@ -4,10 +4,7 @@ import "../settings.dart";
 import 'package:just_audio/just_audio.dart';
 import 'package:audio_service/audio_service.dart';
 
-class MyAudioHandler extends BaseAudioHandler
-    with
-        QueueHandler, // mix in default queue callback implementations
-        SeekHandler {
+class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   List<Song> songs = [];
   int last_added_pos = 0;
   bool start = false;
@@ -72,7 +69,7 @@ class MyAudioHandler extends BaseAudioHandler
       album: songs[1] != null ? "Next: " + songs[1].title : "No Next Song",
       title: songs[0].title,
       artist: songs[0].interpret,
-      duration: player.position,
+      duration: player.duration,
     );
     mediaItem.add(item);
     Save();
@@ -134,7 +131,7 @@ class MyAudioHandler extends BaseAudioHandler
         album: songs[1] != null ? "Next: " + songs[1].title : "No Next Song",
         title: songs[0].title,
         artist: songs[0].interpret,
-        duration: player.position,
+        duration: player.duration,
       );
       mediaItem.add(item);
     }
@@ -144,6 +141,7 @@ class MyAudioHandler extends BaseAudioHandler
     await player.stop();
     paused = false;
     player.seek(Duration(seconds: 0));
+    Save();
   }
 
   Future<void> PausePlaying() async {
@@ -204,40 +202,53 @@ class MyAudioHandler extends BaseAudioHandler
   }
 
   // The most common callbacks:
+  @override
   Future<void> play() async {
     await PausePlaying();
   }
 
+  @override
   Future<void> pause() async {
     await PausePlaying();
   }
 
+  @override
   Future<void> stop() async {
     await StopPlaying();
   }
 
-  Future<void> setShuffleMode(var a) async {
+  Future<void> _setShuffleModeEnable(var b) async {
     Shuffle();
   }
 
-  Future<void> setRepeatMode(var a) async {
+  @override
+  Future<void> setShuffleMode(AudioServiceShuffleMode shuffleMode) async {
     Shuffle();
   }
 
+  @override
+  Future<void> onSetShuffleMode(AudioServiceShuffleMode shuffleMode) async {
+    Shuffle();
+  }
+
+  @override
+  Future<void> setRepeatMode(AudioServiceRepeatMode repeatMode) async {
+    Shuffle();
+  }
+
+  @override
   Future<void> skipToNext() async {
     PlayNextSong();
   }
 
+  @override
   Future<void> skipToPrevious() async {
     PlayPreviousSong();
   }
 
+  @override
   Future<void> seek(Duration position) async {
     await player.seek(position);
-  }
-
-  Future<void> skipToQueueItem(int i) async {
-    JumpToSong(songs[i]);
   }
 
   /// Transform a just_audio event into an audio_service state.
@@ -260,6 +271,7 @@ class MyAudioHandler extends BaseAudioHandler
         MediaAction.stop,
         MediaAction.skipToNext,
         MediaAction.setShuffleMode,
+        MediaAction.setRepeatMode,
       },
       androidCompactActionIndices: const [0, 1, 3],
       processingState: const {
