@@ -12,6 +12,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   AudioPlayer player = AudioPlayer();
 
   MyAudioHandler() {
+    player.setClip();
     player.setSkipSilenceEnabled(true);
     player.playerStateStream.listen((event) {
       if (event.processingState == ProcessingState.completed && event.playing) {
@@ -126,7 +127,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       await player.setUrl('file://storage/' + songs[0].path);
       player.play();
       paused = false;
-      var item = MediaItem(
+      MediaItem item = MediaItem(
         id: 'file://storage/' + songs[0].path,
         album: songs[1] != null ? "Next: " + songs[1].title : "No Next Song",
         title: songs[0].title,
@@ -217,7 +218,8 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     await StopPlaying();
   }
 
-  Future<void> _setShuffleModeEnable(var b) async {
+  @override
+  Future<void> setShuffleModeEnabled(bool b) async {
     Shuffle();
   }
 
