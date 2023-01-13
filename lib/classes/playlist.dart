@@ -13,7 +13,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
 
   MyAudioHandler() {
     player.setClip();
-    player.setSkipSilenceEnabled(true);
     player.playerStateStream.listen((event) {
       if (event.processingState == ProcessingState.completed && event.playing) {
         start = true;
