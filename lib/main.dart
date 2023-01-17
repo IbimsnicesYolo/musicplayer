@@ -64,6 +64,27 @@ class _MainSite extends State<MainSite> {
     );
   }
 
+  void CheckForUpdate(BuildContext context) async {
+    await Future.delayed(Duration(seconds: 1));
+    if (CFG.NewVersionAvailable) {
+      final snackBar = SnackBar(
+        backgroundColor: Colors.green,
+        content: const Text('New Version Available, Update Config!'),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            CFG.NewVersionAvailable = false;
+            // Some code to undo the change.
+          },
+        ),
+      );
+
+      // Find the ScaffoldMessenger in the widget tree
+      // and use it to show a SnackBar.
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     CFG.LoadData(update);
@@ -72,6 +93,7 @@ class _MainSite extends State<MainSite> {
   }
 
   SafeArea buildSafeArea(BuildContext context, side) {
+    CheckForUpdate(context);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(

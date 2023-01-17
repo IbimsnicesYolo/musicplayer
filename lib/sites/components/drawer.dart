@@ -5,6 +5,7 @@ import "../../classes/song.dart";
 import "../../classes/tag.dart";
 import "../allsongs.dart";
 import 'dart:io';
+import "dart:async";
 import "search.dart";
 import "string_input.dart";
 import "elevatedbutton.dart";
@@ -446,8 +447,27 @@ class ShowConfig extends StatefulWidget {
 }
 
 class _ShowConfig extends State<ShowConfig> {
+  void CheckForUpdate(BuildContext context) async {
+    if (CFG.NewVersionAvailable) {
+      CFG.NewVersionAvailable = false;
+      await Future.delayed(Duration(seconds: 1));
+      final snackBar = SnackBar(
+        backgroundColor: Colors.green,
+        content: const Text('New Version Available, Update Config!'),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {},
+        ),
+      );
+
+      // To much spam for now, it displays it multiple times for no reason
+      // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    CheckForUpdate(context);
     return SafeArea(
       child: Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -655,102 +675,4 @@ class _ShowTagDeletion extends State<CriticalButtons> {
       ),
     );
   }
-}
-
-PopupMenuButton BlackListTile(BuildContext context, Song s, bool isSearch) {
-  return PopupMenuButton(
-    onSelected: (result) {
-      if (result == 0) {
-        // Change Title
-        Navigator.of(context)
-            .push(
-              MaterialPageRoute(
-                builder: (_) => StringInputExpanded(
-                    Title: "Song Title Edit",
-                    Text: s.title,
-                    additionalinfos: s.filename,
-                    OnSaved: (String si) {
-                      s.title = si;
-                      UpdateSongTitle(s.filename, si);
-                    }),
-              ),
-            )
-            .then((value) => {
-                  s.title = value,
-                  UpdateSongTitle(s.filename, value),
-                });
-      }
-      if (result == 1) {
-        // Change Interpret
-        Navigator.of(context)
-            .push(
-              MaterialPageRoute(
-                builder: (_) => StringInputExpanded(
-                    Title: "Song Artist Edit",
-                    Text: s.interpret,
-                    additionalinfos: s.filename,
-                    OnSaved: (String si) {
-                      s.interpret = si;
-                      UpdateSongInterpret(s.filename, si);
-                    }),
-              ),
-            )
-            .then((value) => {
-                  s.interpret = value,
-                  UpdateSongInterpret(s.filename, value),
-                });
-      }
-      if (result == 2) {
-        // Change Featuring
-        Navigator.of(context)
-            .push(
-              MaterialPageRoute(
-                builder: (_) => StringInputExpanded(
-                    Title: "Song Featuring Edit",
-                    Text: s.featuring,
-                    additionalinfos: s.filename,
-                    OnSaved: (String si) {
-                      s.featuring = si;
-                      UpdateSongFeaturing(s.filename, si);
-                    }),
-              ),
-            )
-            .then((value) => {
-                  s.featuring = value,
-                  UpdateSongFeaturing(s.filename, value),
-                });
-      }
-      if (result == 3) {
-        if (isSearch) {
-          s.blacklisted = true;
-        } else {
-          s.blacklisted = false;
-        }
-        ShouldSaveSongs = true;
-        SaveSongs();
-      }
-    },
-    child: ListTile(
-      title: Text(s.title),
-      subtitle: Text(s.filename),
-    ),
-    itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-      PopupMenuItem(
-        child: Text(s.title),
-        value: 0,
-      ),
-      PopupMenuItem(
-        child: Text(s.interpret),
-        value: 1,
-      ),
-      PopupMenuItem(
-        child: Text(s.featuring),
-        value: 2,
-      ),
-      const PopupMenuDivider(),
-      PopupMenuItem(
-          child: Text(isSearch ? 'Blacklist Song' : "Un Blacklist Song"),
-          value: 3),
-    ],
-  );
 }
