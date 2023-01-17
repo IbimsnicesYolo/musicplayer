@@ -65,22 +65,22 @@ class _TagEdit extends State<TagEdit> {
               children: [
                 Column(
                   children: [
-                    for (var i = 0; i < Tags.length; i += 2)
-                      if (Tags.containsKey(i))
-                        CoolerCheckBox(Songs[s.filename].tags.contains(i),
+                    for (Tag t in Tags.values)
+                      if ((t.id % 2 == 0))
+                        CoolerCheckBox(Songs[s.filename].tags.contains(t.id),
                             (bool? b) {
-                          ToUpdate[s.filename] = [i, b];
-                        }, Tags[i].name),
+                          ToUpdate[s.filename] = [t.id, b];
+                        }, t.name),
                   ],
                 ),
                 Column(
                   children: [
-                    for (var i = 1; i < Tags.length; i += 2)
-                      if (Tags.containsKey(i))
-                        CoolerCheckBox(Songs[s.filename].tags.contains(i),
+                    for (Tag t in Tags.values)
+                      if ((t.id % 2 == 1))
+                        CoolerCheckBox(Songs[s.filename].tags.contains(t.id),
                             (bool? b) {
-                          ToUpdate[s.filename] = [i, b];
-                        }, Tags[i].name),
+                          ToUpdate[s.filename] = [t.id, b];
+                        }, t.name),
                   ],
                 ),
               ],
@@ -131,25 +131,25 @@ class _TagChoose extends State<TagChoose> {
               children: [
                 Column(
                   children: [
-                    for (var i = 0; i < Tags.length; i += 2)
-                      if (Tags.containsKey(i))
+                    for (Tag t in Tags.values)
+                      if ((t.id % 2 == 0))
                         StyledElevatedButton(
                           onPressed: () {
-                            Navigator.of(context).pop(i);
+                            Navigator.of(context).pop(t.id);
                           },
-                          child: Text(Tags[i].name),
+                          child: Text(t.name),
                         ),
                   ],
                 ),
                 Column(
                   children: [
-                    for (var i = 1; i < Tags.length; i += 2)
-                      if (Tags.containsKey(i))
+                    for (Tag t in Tags.values)
+                      if ((t.id % 2 == 1))
                         StyledElevatedButton(
                           onPressed: () {
-                            Navigator.of(context).pop(i);
+                            Navigator.of(context).pop(t.id);
                           },
-                          child: Text(Tags[i].name),
+                          child: Text(t.name),
                         ),
                   ],
                 ),
