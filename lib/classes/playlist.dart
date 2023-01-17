@@ -19,10 +19,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
         PlayNextSong();
       }
     });
-
-    // So that our clients (the Flutter UI and the system notification) know
-    // what state to display, here we set up our audio handler to broadcast all
-    // playback state changes as they happen via playbackState...
     player.playbackEventStream.map(_transformEvent).pipe(playbackState);
   }
 
@@ -31,6 +27,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       return;
     }
     songs.add(song);
+    UpDateMediaItem();
   }
 
   void InsertAsNext(Song song) {
@@ -41,6 +38,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       songs.remove(song);
       songs.insert(1, song);
     }
+    UpDateMediaItem();
   }
 
   void Stack(Song song) {
@@ -51,10 +49,31 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       songs.remove(song);
       songs.insert(last_added_pos, song);
     }
+    UpDateMediaItem();
+  }
+
+  void UpDateMediaItem() {
+    if (songs.length > 0) {
+      mediaItem.add(MediaItem(
+        id: 'file://storage/' + songs[0].path,
+        album: songs[1] != null ? "Next: " + songs[1].title : "No Next Song",
+        title: songs[0].title,
+        artist: songs[0].interpret,
+        duration: player.duration,
+      ));
+    } else {
+      mediaItem.add(MediaItem(
+          id: "",
+          album: "",
+          title: "No songs in playlist",
+          artist: "",
+          duration: Duration(seconds: 0)));
+    }
   }
 
   void RemoveSong(Song song) {
     songs.remove(song);
+    UpDateMediaItem();
   }
 
   void Shuffle() {
@@ -64,14 +83,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     Song current = songs.removeAt(0);
     songs.shuffle();
     songs.insert(0, current);
-    var item = MediaItem(
-      id: 'file://storage/' + songs[0].path,
-      album: songs[1] != null ? "Next: " + songs[1].title : "No Next Song",
-      title: songs[0].title,
-      artist: songs[0].interpret,
-      duration: player.duration,
-    );
-    mediaItem.add(item);
+    UpDateMediaItem();
     Save();
   }
 
@@ -126,14 +138,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       await player.setUrl('file://storage/' + songs[0].path);
       player.play();
       paused = false;
-      MediaItem item = MediaItem(
-        id: 'file://storage/' + songs[0].path,
-        album: songs[1] != null ? "Next: " + songs[1].title : "No Next Song",
-        title: songs[0].title,
-        artist: songs[0].interpret,
-        duration: player.duration,
-      );
-      mediaItem.add(item);
+      UpDateMediaItem();
     }
   }
 
@@ -141,6 +146,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     await player.stop();
     paused = false;
     player.seek(Duration(seconds: 0));
+    UpDateMediaItem();
     Save();
   }
 
@@ -165,15 +171,24 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     SaveConfig();
   }
 
-  void SaveToTag(id) {
+  void AddTagToAll(Tag t) {
+    songs.forEach((element) {
+      UpdateSongTags(element.filename, t.id, true);
+    });
+  }
+
+  void SaveToTag(id, void Function(void Function()) reload) {
     List<String> names = [];
     songs.forEach((element) {
       UpdateSongTags(element.filename, id, true);
     });
+    Clear();
+    UpDateMediaItem();
     ShouldSaveTags = true;
     ShouldSaveSongs = true;
     SaveTags();
-    SaveSongs();
+    SaveConfig();
+    reload(() {});
   }
 
   void LoadPlaylist(void Function(void Function()) reload) {
@@ -186,12 +201,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       });
     }
     reload(() {});
-  }
-
-  void AddTagToAll(Tag t) {
-    songs.forEach((element) {
-      UpdateSongTags(element.filename, t.id, true);
-    });
   }
 
   void Clear() {

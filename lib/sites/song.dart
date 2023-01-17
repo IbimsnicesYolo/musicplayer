@@ -51,8 +51,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
                         .push(MaterialPageRoute(builder: (_) => TagChoose()))
                         .then((value) {
                       if (value != -1) {
-                        Playlist.SaveToTag(value);
-                        Playlist.Clear();
+                        Playlist.SaveToTag(value, c);
                       }
                     });
                   });
@@ -65,7 +64,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
                       .push(MaterialPageRoute(builder: (_) => TagChoose()))
                       .then((value) {
                     if (value != -1) {
-                      Playlist.SaveToTag(value);
+                      Playlist.AddTagToAll(value);
                     }
                   });
                 },
