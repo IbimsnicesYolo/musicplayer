@@ -3,6 +3,7 @@ import "components/music_control.dart";
 import "components/player_widget.dart";
 import "components/tagedit.dart";
 import "allsongs.dart" as AllSongs;
+import "../settings.dart" as CFG;
 import 'package:flutter/material.dart';
 
 IconButton buildActions(BuildContext context, void Function(void Function()) c,
@@ -12,6 +13,23 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
 
 Container buildContent(BuildContext context, void Function(void Function()) c,
     MyAudioHandler Playlist) {
+  if (CFG.NewVersionAvailable) {
+    final snackBar = SnackBar(
+      content: const Text('New Version Available, Update Config!'),
+      action: SnackBarAction(
+        label: 'Undo',
+        onPressed: () {
+          CFG.NewVersionAvailable = false;
+          // Some code to undo the change.
+        },
+      ),
+    );
+
+    // Find the ScaffoldMessenger in the widget tree
+    // and use it to show a SnackBar.
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
   return Container(
     child: Center(
       child: Column(
