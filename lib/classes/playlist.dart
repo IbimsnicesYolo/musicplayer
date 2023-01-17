@@ -53,10 +53,18 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void UpDateMediaItem() {
-    if (songs.length > 0) {
+    if (songs.length > 1) {
       mediaItem.add(MediaItem(
         id: 'file://storage/' + songs[0].path,
         album: songs[1] != null ? "Next: " + songs[1].title : "No Next Song",
+        title: songs[0].title,
+        artist: songs[0].interpret,
+        duration: player.duration,
+      ));
+    } else if (songs.length > 0) {
+      mediaItem.add(MediaItem(
+        id: 'file://storage/' + songs[0].path,
+        album: "No Next Song",
         title: songs[0].title,
         artist: songs[0].interpret,
         duration: player.duration,
@@ -69,6 +77,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
           artist: "",
           duration: Duration(seconds: 0)));
     }
+    Save();
   }
 
   void RemoveSong(Song song) {
@@ -84,7 +93,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     songs.shuffle();
     songs.insert(0, current);
     UpDateMediaItem();
-    Save();
   }
 
   void JumpToSong(Song song) {
@@ -97,6 +105,17 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     } else {
       LoadNextToPlayer();
     }
+  }
+
+  void DragNDropUpdate(int oldIndex, int newIndex) {
+    Song song = songs.removeAt(oldIndex);
+    songs.insert(newIndex, song);
+    if (player.playing) {
+      StartPlaying();
+    } else {
+      LoadNextToPlayer();
+    }
+    last_added_pos = 0;
   }
 
   void PlayNextSong() {
@@ -147,7 +166,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     paused = false;
     player.seek(Duration(seconds: 0));
     UpDateMediaItem();
-    Save();
   }
 
   Future<void> PausePlaying() async {
