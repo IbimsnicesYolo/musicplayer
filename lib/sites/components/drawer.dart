@@ -460,8 +460,7 @@ class _ShowConfig extends State<ShowConfig> {
         ),
       );
 
-      // To much spam for now, it displays it multiple times for no reason
-      // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 
