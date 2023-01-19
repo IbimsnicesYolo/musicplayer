@@ -64,36 +64,20 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
         if (!Playlist.songs.isEmpty) ...[
           ControlTile(Playlist: Playlist, c: c),
           for (int i = 0; i < Playlist.songs.length; i++)
-            Draggable<int>(
-              // Data is the value this Draggable stores.
-              data: i,
-              feedback: Material(
-                child: Container(
-                  child: Text(
-                    Playlist.songs[i].title,
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-              ),
-              childWhenDragging: ListTile(
-                title: const Text(''),
-                subtitle: const Text(''),
-              ),
-              child: DragTarget<int>(
-                builder: (
-                  BuildContext context,
-                  List<dynamic> accepted,
-                  List<dynamic> rejected,
-                ) {
-                  return DismissibleSongTile(
-                      context, Playlist.songs[i], c, Playlist);
-                },
-                onAccept: (int data) {
-                  if (data == i) return;
-                  if (i == 0 || data == 0) return;
-                  Playlist.DragNDropUpdate(data, i);
-                },
-              ),
+            DragTarget<int>(
+              builder: (
+                BuildContext context,
+                List<dynamic> accepted,
+                List<dynamic> rejected,
+              ) {
+                return DismissibleSongTile(
+                    context, Playlist.songs[i], c, Playlist);
+              },
+              onAccept: (int data) {
+                if (data == i) return;
+                if (i == 0 || data == 0) return;
+                Playlist.DragNDropUpdate(data, i);
+              },
             ),
         ] else ...[
           const Align(

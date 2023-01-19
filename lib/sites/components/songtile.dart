@@ -158,6 +158,7 @@ PopupMenuButton SongTile(
 
 Dismissible DismissibleSongTile(BuildContext context, Song s,
     void Function(void Function()) c, MyAudioHandler Playlist) {
+  int i = Playlist.songs.indexOf(s);
   return Dismissible(
     key: Key(s.filename + s.hash),
     onDismissed: (DismissDirection direction) {
@@ -198,24 +199,57 @@ Dismissible DismissibleSongTile(BuildContext context, Song s,
       ),
     ),
     child: ListTile(
-      title: Text(s.title),
-      subtitle: Text(s.interpret),
-      onLongPress: () => {
-        Playlist.JumpToSong(s),
-      },
-      trailing: SongTile(context, s, c, Playlist, false, {
-        0: true,
-        1: false,
-        2: false,
-        3: true,
-        4: false,
-        5: true,
-        6: false,
-        7: true,
-        8: false,
-        9: true,
-        10: true,
-      }),
-    ),
+        title: Text(s.title),
+        subtitle: Text(s.interpret),
+        onLongPress: () => {
+              Playlist.JumpToSong(s),
+            },
+        trailing: Draggable<int>(
+          // Data is the value this Draggable stores.
+          data: i,
+          feedback: Material(
+            child: Container(
+              child: Text(
+                Playlist.songs[i].title,
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
+          ),
+          childWhenDragging: PopupMenuButton(
+            onSelected: (result) {},
+            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+              PopupMenuItem(
+                child: Text(''),
+                value: 0,
+              ),
+            ],
+          ),
+          child: DragTarget<int>(
+            builder: (
+              BuildContext context,
+              List<dynamic> accepted,
+              List<dynamic> rejected,
+            ) {
+              return SongTile(context, s, c, Playlist, false, {
+                0: true,
+                1: false,
+                2: false,
+                3: true,
+                4: false,
+                5: true,
+                6: false,
+                7: true,
+                8: false,
+                9: true,
+                10: true,
+              });
+            },
+            onAccept: (int data) {
+              if (data == i) return;
+              if (i == 0 || data == 0) return;
+              Playlist.DragNDropUpdate(data, i);
+            },
+          ),
+        )),
   );
 }
