@@ -91,16 +91,18 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     }
     Song current = songs.removeAt(0);
     songs.shuffle();
+    songs.shuffle();
     songs.insert(0, current);
     UpDateMediaItem();
   }
 
-  void JumpToSong(Song song) {
+  void JumpToSong(Song song) async {
     int index = songs.indexOf(song);
     for (int i = 0; i < index; i++) {
       songs.add(songs.removeAt(0));
     }
     if (player.playing) {
+      await player.seek(Duration(seconds: 0));
       StartPlaying();
     } else {
       LoadNextToPlayer();
@@ -110,20 +112,16 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   void DragNDropUpdate(int oldIndex, int newIndex) {
     Song song = songs.removeAt(oldIndex);
     songs.insert(newIndex, song);
-    if (player.playing) {
-      StartPlaying();
-    } else {
-      LoadNextToPlayer();
-    }
     last_added_pos = 0;
+    UpDateMediaItem();
   }
 
-  void PlayNextSong() {
+  void PlayNextSong() async {
     if (songs.length > 0) {
       songs.add(songs.removeAt(0));
       if (player.playing || start) {
         start = false;
-        player.seek(Duration(seconds: 0));
+        await player.seek(Duration(seconds: 0));
         StartPlaying();
       } else {
         LoadNextToPlayer();
@@ -131,11 +129,11 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     }
   }
 
-  void PlayPreviousSong() {
+  void PlayPreviousSong() async {
     if (songs.length > 0) {
       songs.insert(0, songs.removeAt(songs.length - 1));
       if (player.playing) {
-        player.seek(Duration(seconds: 0));
+        await player.seek(Duration(seconds: 0));
         StartPlaying();
       } else {
         LoadNextToPlayer();
@@ -145,7 +143,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
 
   void LoadNextToPlayer() async {
     if (songs.length > 0) {
-      player.seek(Duration(seconds: 0));
+      await player.seek(Duration(seconds: 0));
       await StartPlaying();
       await player.pause();
     }
@@ -164,7 +162,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   Future<void> StopPlaying() async {
     await player.stop();
     paused = false;
-    player.seek(Duration(seconds: 0));
+    await player.seek(Duration(seconds: 0));
     UpDateMediaItem();
   }
 
@@ -298,8 +296,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
         if (player.playing) MediaAction.pause else MediaAction.play,
         MediaAction.stop,
         MediaAction.skipToNext,
-        MediaAction.setShuffleMode,
-        MediaAction.setRepeatMode,
       },
       androidCompactActionIndices: const [0, 1, 3],
       processingState: const {
