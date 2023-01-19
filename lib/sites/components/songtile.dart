@@ -106,7 +106,10 @@ PopupMenuButton SongTile(
       if (result == 9) {
         Playlist.JumpToSong(s);
       }
-      Playlist.Save();
+      if (result == 10) {
+        Playlist.RemoveSong(s);
+        Playlist.AddToPlaylist(s);
+      }
     },
     child: (showchild)
         ? ListTile(
@@ -147,6 +150,8 @@ PopupMenuButton SongTile(
             child: Text(s.blacklisted ? 'Un Blacklist Song' : "Blacklist Song"),
             value: 8),
       if (activated[9] == true) PopupMenuItem(child: Text("Jump To"), value: 9),
+      if (activated[10] == true)
+        PopupMenuItem(child: Text("Move to End"), value: 10),
     ],
   );
 }
@@ -209,6 +214,7 @@ Dismissible DismissibleSongTile(BuildContext context, Song s,
         7: true,
         8: false,
         9: true,
+        10: true,
       }),
     ),
   );
