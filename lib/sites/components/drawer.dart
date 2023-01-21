@@ -347,6 +347,11 @@ class _ShowSongEdit extends State<ShowSongEdit> {
                   child: const Text("Blacklist")),
               StyledElevatedButton(
                   onPressed: () {
+                    widget.Playlist.AddToPlaylist(csong);
+                  },
+                  child: const Text("Add to Playlist")),
+              StyledElevatedButton(
+                  onPressed: () {
                     int id = CreateTag(csong.interpret);
                     UpdateSongTags(csong.filename, id, true);
                     if (csong.featuring != "") {
