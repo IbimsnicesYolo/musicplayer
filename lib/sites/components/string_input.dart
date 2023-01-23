@@ -155,23 +155,21 @@ class _StringInputExpanded extends State<StringInputExpanded> {
                   ),
                 ),
                 ListTile(
-                  title: widget.additionalinfos,
+                  title: Text(widget.additionalinfos),
                   onTap: () {
-                    _textFieldController.text += " " + s;
+                    _textFieldController.text += " " + widget.additionalinfos;
                   },
                 ),
-                for (int i = 0; possibleinputs.length; i = i + 2) {
+                for (int i = 0; i <= possibleinputs.length; i = i + 2) {
                   Row(
                     children: <Widget>[
-                      if possibleinputs[i] {
-                        StyledElevatedButton(
-                          child: Text(possibleinputs[i]),
-                          onPressed: () {
-                            _textFieldController.text += " " + possibleinputs[i];
-                          },
-                        )
-                      },
-                      if possibleinputs[i + 1] {
+                      StyledElevatedButton(
+                        child: Text(possibleinputs[i]),
+                        onPressed: () {
+                          _textFieldController.text += " " + possibleinputs[i];
+                        },
+                      )
+                      if (possibleinputs[i + 1]) {
                           StyledElevatedButton(
                           child: Text(possibleinputs[i + 1]),
                           onPressed: () {
