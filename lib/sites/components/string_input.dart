@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import "../../settings.dart" as CFG;
+import "elevatedbutton.dart";
 // Possible Overflow because _textFieldController never gets disposed
 // Hint Text is constantly Tag Name
 
@@ -97,7 +98,7 @@ class _StringInputExpanded extends State<StringInputExpanded> {
     TextEditingController _textFieldController =
         TextEditingController(text: widget.Text);
 
-    List<String> possibleinputs = [widget.additionalinfos];
+    List<String> possibleinputs = [];
 
     widget.Text.split(" ").forEach((element) {
       if (element.length > 2) {
@@ -153,13 +154,34 @@ class _StringInputExpanded extends State<StringInputExpanded> {
                         labelText: 'New Name'),
                   ),
                 ),
-                for (String s in possibleinputs)
-                  ListTile(
-                    title: Text(s),
-                    onTap: () {
-                      _textFieldController.text += " " + s;
-                    },
+                ListTile(
+                  title: widget.additionalinfos,
+                  onTap: () {
+                    _textFieldController.text += " " + s;
+                  },
+                ),
+                for (int i = 0; possibleinputs.length; i = i + 2) {
+                  Row(
+                    children: <Widget>[
+                      if possibleinputs[i] {
+                        StyledElevatedButton(
+                          child: Text(possibleinputs[i]),
+                          onPressed: () {
+                            _textFieldController.text += " " + possibleinputs[i];
+                          },
+                        )
+                      },
+                      if possibleinputs[i + 1] {
+                          StyledElevatedButton(
+                          child: Text(possibleinputs[i + 1]),
+                          onPressed: () {
+                            _textFieldController.text += " " + possibleinputs[i + 1];
+                          },
+                        ),
+                      },
+                    ],
                   ),
+                }
               ],
             ),
           ),
