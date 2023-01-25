@@ -8,7 +8,7 @@ PopupMenuButton SongTile(
     BuildContext context,
     Song s,
     void Function(void Function()) c,
-    CurrentPlayList Playlist,
+    MyAudioHandler Playlist,
     bool showchild,
     Map<int, bool> activated) {
   return PopupMenuButton(
@@ -94,15 +94,22 @@ PopupMenuButton SongTile(
         // Add Song to End of Playlist
       }
       if (result == 7) {
-        Playlist.InsertAfterLastAdded(s);
+        Playlist.Stack(s);
         // Add Song to End of Added Songs
       }
       if (result == 8) {
         s.blacklisted = !s.blacklisted;
+        c(() {});
         ShouldSaveSongs = true;
         SaveSongs();
       }
-      Playlist.Save();
+      if (result == 9) {
+        Playlist.JumpToSong(s);
+      }
+      if (result == 10) {
+        Playlist.RemoveSong(s);
+        Playlist.AddToPlaylist(s);
+      }
     },
     child: (showchild)
         ? ListTile(
@@ -137,17 +144,21 @@ PopupMenuButton SongTile(
       if (activated[6] == true)
         PopupMenuItem(child: Text('Add to Playlist'), value: 6),
       if (activated[7] == true)
-        PopupMenuItem(child: Text('Add to Play Next Stack'), value: 7),
-      if (activated[8] == true) const PopupMenuDivider(),
-      PopupMenuItem(
-          child: Text(s.blacklisted ? 'Un Blacklist Song' : "Blacklist Song"),
-          value: 8),
+        PopupMenuItem(child: Text('Add to Stack'), value: 7),
+      if (activated[8] == true)
+        PopupMenuItem(
+            child: Text(s.blacklisted ? 'Un Blacklist Song' : "Blacklist Song"),
+            value: 8),
+      if (activated[9] == true) PopupMenuItem(child: Text("Jump To"), value: 9),
+      if (activated[10] == true)
+        PopupMenuItem(child: Text("Move to End"), value: 10),
     ],
   );
 }
 
 Dismissible DismissibleSongTile(BuildContext context, Song s,
-    void Function(void Function()) c, CurrentPlayList Playlist) {
+    void Function(void Function()) c, MyAudioHandler Playlist) {
+  int i = Playlist.songs.indexOf(s);
   return Dismissible(
     key: Key(s.filename + s.hash),
     onDismissed: (DismissDirection direction) {
@@ -158,7 +169,7 @@ Dismissible DismissibleSongTile(BuildContext context, Song s,
       } else {
         // secondary background
         s.hash += "2";
-        Playlist.InsertAfterLastAdded(s);
+        Playlist.Stack(s);
       }
       Playlist.Save();
     },
@@ -191,20 +202,55 @@ Dismissible DismissibleSongTile(BuildContext context, Song s,
       title: Text(s.title),
       subtitle: Text(s.interpret),
       onLongPress: () => {
-        Playlist.InsertAsNext(s),
-        Playlist.PlayNextSong(),
+        Playlist.JumpToSong(s),
       },
-      trailing: SongTile(context, s, c, Playlist, false, {
-        0: true,
-        1: false,
-        2: false,
-        3: true,
-        4: false,
-        5: true,
-        6: false,
-        7: true,
-        8: false,
-      }),
+      trailing: Draggable<int>(
+        // Data is the value this Draggable stores.
+        data: i,
+        feedback: Material(
+          child: Container(
+            child: Text(
+              Playlist.songs[i].title,
+              style: TextStyle(fontSize: 18),
+            ),
+          ),
+        ),
+        childWhenDragging: PopupMenuButton(
+          onSelected: (result) {},
+          itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+            PopupMenuItem(
+              child: Text(''),
+              value: 0,
+            ),
+          ],
+        ),
+        child: DragTarget<int>(
+          builder: (
+            BuildContext context,
+            List<dynamic> accepted,
+            List<dynamic> rejected,
+          ) {
+            return SongTile(context, s, c, Playlist, false, {
+              0: true,
+              1: false,
+              2: false,
+              3: true,
+              4: false,
+              5: true,
+              6: false,
+              7: true,
+              8: false,
+              9: true,
+              10: true,
+            });
+          },
+          onAccept: (int data) {
+            if (data == i) return;
+            if (i == 0 || data == 0) return;
+            Playlist.DragNDropUpdate(data, i);
+          },
+        ),
+      ),
     ),
   );
 }

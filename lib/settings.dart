@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'classes/song.dart';
 import "classes/tag.dart";
 
+final String Version = "Dev 1.6";
+bool NewVersionAvailable =
+    false; // Bool which shows that the config saved on the phone is older than the Apps Version
 Color HomeColor = Color.fromRGBO(61, 61, 61, 255);
 Color ContrastColor = Color.fromRGBO(0, 255, 75, 255);
 
@@ -26,8 +29,7 @@ Map Config = {
     "Library"
   ],
   "Playlist": [],
-  "SwipeAction1": 1,
-  "SwipeAction2": 0,
+  "Version": Version,
 };
 
 /* Config */
@@ -74,6 +76,11 @@ void LoadData(void Function(void Function()) reload) {
       if (contents.isNotEmpty) {
         jsonDecode(contents).forEach((key, value) {
           Config[key] = value;
+          if (key == "Version") {
+            if (value != Version) {
+              NewVersionAvailable = true;
+            }
+          }
         });
       }
       reload(() {});

@@ -23,7 +23,7 @@ bool ShouldShowTag(int key, String search) {
 }
 
 IconButton buildActions(BuildContext context, void Function(void Function()) c,
-    CurrentPlayList Playlist) {
+    MyAudioHandler Playlist) {
   return IconButton(
     onPressed: () => Navigator.of(context).push(
       MaterialPageRoute(
@@ -67,7 +67,7 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
                                 ),
                               ),
                             ),
-                            child: TagTile(c, context, Playlist, key),
+                            child: TagTile(update, context, Playlist, key),
                           ),
                     ],
                   ),
@@ -80,12 +80,17 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
 }
 
 Container buildContent(BuildContext context, void Function(void Function()) c,
-    CurrentPlayList Playlist) {
+    MyAudioHandler Playlist) {
   UpdateAllTags();
+  List sortedtags = Tags.values.toList();
+  sortedtags.sort((a, b) {
+    return a.used.compareTo(b.used);
+  });
+  sortedtags = sortedtags.reversed.toList();
   return Container(
     child: ListView(
       children: [
-        for (int key in Tags.keys) TagTile(c, context, Playlist, key),
+        for (Tag t in sortedtags) TagTile(c, context, Playlist, t.id),
         Align(
           alignment: AlignmentDirectional.bottomCenter,
           child: ElevatedButton(
@@ -112,7 +117,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
 }
 
 ListTile TagTile(void Function(void Function()) c, BuildContext context,
-    CurrentPlayList Playlist, int key) {
+    MyAudioHandler Playlist, int key) {
   return ListTile(
     onLongPress: () => {
       Navigator.of(context).push(
@@ -139,6 +144,7 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
                                     // Left
                                     Songs[songkey].hash += "1";
                                     Playlist.AddToPlaylist(Songs[songkey]);
+                                    Playlist.Stack(Songs[songkey]);
                                     Playlist.Save();
                                   } else {
                                     // Right
@@ -175,8 +181,8 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
                                   ),
                                 ),
                               ),
-                              child: SongTile(
-                                  context, Songs[songkey], c, Playlist, true, {
+                              child: SongTile(context, Songs[songkey], update,
+                                  Playlist, true, {
                                 0: true,
                                 1: false,
                                 2: false,
@@ -186,6 +192,8 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
                                 6: true,
                                 7: true,
                                 8: true,
+                                9: false,
+                                10: false,
                               }),
                             ),
                       ],
@@ -292,6 +300,8 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
                                       6: true,
                                       7: true,
                                       8: true,
+                                      9: false,
+                                      10: false,
                                     }),
                                   ),
                             ],

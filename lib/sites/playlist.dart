@@ -34,7 +34,7 @@ bool ShouldShowSong(String key, String search) {
 }
 
 IconButton buildActions(BuildContext context, void Function(void Function()) c,
-    CurrentPlayList Playlist) {
+    MyAudioHandler Playlist) {
   return IconButton(
     onPressed: () => Navigator.of(context).push(
       MaterialPageRoute(
@@ -56,7 +56,7 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
 }
 
 Container buildContent(BuildContext context, void Function(void Function()) c,
-    CurrentPlayList Playlist) {
+    MyAudioHandler Playlist) {
   return Container(
     child: ListView(
       reverse: true,
@@ -64,7 +64,21 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
         if (!Playlist.songs.isEmpty) ...[
           ControlTile(Playlist: Playlist, c: c),
           for (int i = 0; i < Playlist.songs.length; i++)
-            DismissibleSongTile(context, Playlist.songs[i], c, Playlist),
+            DragTarget<int>(
+              builder: (
+                BuildContext context,
+                List<dynamic> accepted,
+                List<dynamic> rejected,
+              ) {
+                return DismissibleSongTile(
+                    context, Playlist.songs[i], c, Playlist);
+              },
+              onAccept: (int data) {
+                if (data == i) return;
+                if (i == 0 || data == 0) return;
+                Playlist.DragNDropUpdate(data, i);
+              },
+            ),
         ] else ...[
           const Align(
             alignment: Alignment.center,

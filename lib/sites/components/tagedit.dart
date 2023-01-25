@@ -19,6 +19,7 @@ class _TagEdit extends State<TagEdit> {
   _TagEdit({required this.s});
   Song s;
 
+  TextEditingController create = TextEditingController();
   Map<String, List> ToUpdate = {};
 
   void update(void Function() c) {
@@ -31,6 +32,14 @@ class _TagEdit extends State<TagEdit> {
 
   @override
   Widget build(BuildContext context) {
+    List<Tag> InSong = [];
+
+    for (int i = 0; i < Tags.length; i++) {
+      if (Tags.containsKey(i) && s.tags.contains(i)) {
+        InSong.add(Tags[i]);
+      }
+    }
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -60,31 +69,51 @@ class _TagEdit extends State<TagEdit> {
         ),
         body: ListView(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Column(
-                  children: [
-                    for (var i = 0; i < Tags.length; i += 2)
-                      if (Tags.containsKey(i))
-                        CoolerCheckBox(Songs[s.filename].tags.contains(i),
-                            (bool? b) {
-                          ToUpdate[s.filename] = [i, b];
-                        }, Tags[i].name),
-                  ],
-                ),
-                Column(
-                  children: [
-                    for (var i = 1; i < Tags.length; i += 2)
-                      if (Tags.containsKey(i))
-                        CoolerCheckBox(Songs[s.filename].tags.contains(i),
-                            (bool? b) {
-                          ToUpdate[s.filename] = [i, b];
-                        }, Tags[i].name),
-                  ],
-                ),
-              ],
+            for (int i = 0; i < InSong.length; i = i + 2)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  CoolerCheckBox(s.tags.contains(InSong[i].id), (bool? b) {
+                    ToUpdate[s.filename] = [InSong[i].id, b];
+                  }, InSong[i].name),
+                  if (i + 1 < InSong.length)
+                    CoolerCheckBox(s.tags.contains(InSong[i + 1].id),
+                        (bool? b) {
+                      ToUpdate[s.filename] = [InSong[i + 1].id, b];
+                    }, InSong[i + 1].name),
+                ],
+              ),
+            TextField(
+              controller: create,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Tag Name',
+              ),
+              onChanged: (String value) {
+                setState(() {});
+              },
             ),
+            StyledElevatedButton(
+                onPressed: () {
+                  if (create.text != "") {
+                    int id = CreateTag(create.text.trim());
+                    Navigator.of(context);
+                    ToUpdate.forEach((key, value) {
+                      UpdateSongTags(key, value[0], value[1]);
+                    });
+                  }
+                },
+                child: const Text("Create Tag")),
+            for (int i = 0; i < Tags.length; i++)
+              if (Tags.containsKey(i) && !s.tags.contains(i))
+                if (create.text == "" ||
+                    Tags[i]
+                        .name
+                        .toLowerCase()
+                        .contains(create.text.toLowerCase()))
+                  CoolerCheckBox(s.tags.contains(i), (bool? b) {
+                    ToUpdate[s.filename] = [i, b];
+                  }, Tags[i].name),
           ],
         ),
       ),
@@ -126,41 +155,15 @@ class _TagChoose extends State<TagChoose> {
         ),
         body: ListView(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Column(
-                  children: [
-                    for (var i = 0; i < Tags.length; i += 2)
-                      if (Tags.containsKey(i))
-                        StyledElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(i);
-                          },
-                          child: Text(Tags[i].name),
-                        ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    for (var i = 1; i < Tags.length; i += 2)
-                      if (Tags.containsKey(i))
-                        StyledElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(i);
-                          },
-                          child: Text(Tags[i].name),
-                        ),
-                  ],
-                ),
-              ],
-            ),
             TextField(
               controller: create,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Tag Name',
               ),
+              onChanged: (String value) {
+                setState(() {});
+              },
             ),
             StyledElevatedButton(
                 onPressed: () {
@@ -169,10 +172,65 @@ class _TagChoose extends State<TagChoose> {
                     Navigator.of(context).pop(id);
                   }
                 },
-                child: const Text("Create Tag"))
+                child: const Text("Create Tag")),
+            if (create.text == "")
+              for (int i = 0; i <= Tags.length; i = i + 2)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    StyledElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(i);
+                      },
+                      child: Text(Tags[i].name),
+                    ),
+                    if (Tags.length > i + 1)
+                      StyledElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(i + 1);
+                        },
+                        child: Text(Tags[i + 1].name),
+                      ),
+                  ],
+                ),
+            if (create.text != "")
+              for (int i = 0; i < Tags.length; i++)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    if (Tags[i]
+                        .name
+                        .toLowerCase()
+                        .contains(create.text.toLowerCase()))
+                      StyledElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(i);
+                        },
+                        child: Text(Tags[i].name),
+                      ),
+                  ],
+                ),
           ],
         ),
       ),
     );
   }
 }
+/*
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                for (Tag t in Tags.values)
+                  if ((t.id % 2 == 1))
+                    StyledElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(t.id);
+                      },
+                      child: Text(t.name),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+ */

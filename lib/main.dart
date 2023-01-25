@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import "package:permission_handler/permission_handler.dart";
+import "package:audio_service/audio_service.dart";
 import "sites/components/drawer.dart" as Side;
 import "settings.dart" as CFG;
 import "sites/playlist.dart" as PlaylistSide;
@@ -7,7 +8,8 @@ import "sites/tagsite.dart" as TagSite;
 import "sites/allsongs.dart" as AllSongs;
 import "sites/song.dart" as SongSite;
 import "classes/playlist.dart";
-import "classes/tag.dart";
+
+late MyAudioHandler _audioHandler;
 
 void checkpermissions() async {
   PermissionStatus status = await Permission.storage.status;
@@ -20,7 +22,17 @@ void checkpermissions() async {
   }
 }
 
-void main() {
+Future<void> main() async {
+  _audioHandler = await AudioService.init(
+    builder: () => MyAudioHandler(),
+    config: AudioServiceConfig(
+      androidNotificationChannelId: 'com.ibimsnicesyolo.musicplayer',
+      androidNotificationChannelName: 'Music Player',
+      androidNotificationOngoing: true,
+      notificationColor: Color.fromARGB(255, 69, 194, 150),
+      androidNotificationClickStartsActivity: true,
+    ),
+  );
   runApp(MaterialApp(theme: ThemeData.dark(), home: MainSite()));
   checkpermissions();
 }
@@ -33,7 +45,6 @@ class MainSite extends StatefulWidget {
 
 class _MainSite extends State<MainSite> {
   int side = 0;
-  CurrentPlayList Playlist = CurrentPlayList();
 
   @override
   void initState() {
@@ -55,39 +66,55 @@ class _MainSite extends State<MainSite> {
     );
   }
 
+  void CheckForUpdate(BuildContext context) async {
+    if (CFG.NewVersionAvailable) {
+      CFG.NewVersionAvailable = false;
+      await Future.delayed(Duration(seconds: 1));
+      final snackBar = SnackBar(
+        backgroundColor: Colors.green,
+        content: const Text('New Version Available, Update Config!'),
+      );
+      // Find the ScaffoldMessenger in the widget tree
+      // and use it to show a SnackBar.
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     CFG.LoadData(update);
-    Playlist.LoadPlaylist(update);
+    _audioHandler.LoadPlaylist(update);
     return buildSafeArea(context, side);
   }
 
   SafeArea buildSafeArea(BuildContext context, side) {
+    CheckForUpdate(context);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           actions: [
-            if (side == 0) SongSite.buildActions(context, update, Playlist),
-            if (side == 1) PlaylistSide.buildActions(context, update, Playlist),
-            if (side == 2) TagSite.buildActions(context, update, Playlist),
-            if (side == 3) AllSongs.buildActions(context, update, Playlist),
+            if (side == 0)
+              SongSite.buildActions(context, update, _audioHandler),
+            if (side == 1)
+              PlaylistSide.buildActions(context, update, _audioHandler),
+            if (side == 2) TagSite.buildActions(context, update, _audioHandler),
+            if (side == 3)
+              AllSongs.buildActions(context, update, _audioHandler),
           ],
         ),
         body: (side == 0
-            ? SongSite.buildContent(context, update, Playlist)
+            ? SongSite.buildContent(context, update, _audioHandler)
             : (side == 1
-                ? PlaylistSide.buildContent(context, update, Playlist)
+                ? PlaylistSide.buildContent(context, update, _audioHandler)
                 : (side == 2
-                    ? TagSite.buildContent(context, update, Playlist)
-                    : AllSongs.buildContent(context, update, Playlist)))),
+                    ? TagSite.buildContent(context, update, _audioHandler)
+                    : AllSongs.buildContent(context, update, _audioHandler)))),
         floatingActionButton: (side == 1
             ? null
             : FloatingActionButton(
                 child: Icon(Icons.downloading),
                 onPressed: () {
-                  setState(() {
-                    if (side == 2) UpdateAllTags();
-                  });
+                  setState(() {});
                 },
               )),
         bottomNavigationBar: BottomNavigationBar(
@@ -120,7 +147,7 @@ class _MainSite extends State<MainSite> {
             ),
           ],
         ),
-        drawer: Side.SongDrawer(c: update, Playlist: Playlist),
+        drawer: Side.SongDrawer(c: update, Playlist: _audioHandler),
       ),
     );
   }

@@ -1,19 +1,18 @@
-import "../classes/tag.dart";
 import "../classes/playlist.dart";
-import 'components/string_input.dart';
 import "components/music_control.dart";
 import "components/player_widget.dart";
 import "components/tagedit.dart";
+import "components/songtile.dart";
 import "allsongs.dart" as AllSongs;
 import 'package:flutter/material.dart';
 
 IconButton buildActions(BuildContext context, void Function(void Function()) c,
-    CurrentPlayList Playlist) {
+    MyAudioHandler Playlist) {
   return AllSongs.buildActions(context, c, Playlist);
 }
 
 Container buildContent(BuildContext context, void Function(void Function()) c,
-    CurrentPlayList Playlist) {
+    MyAudioHandler Playlist) {
   return Container(
     child: Center(
       child: Column(
@@ -28,14 +27,9 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
             ),
           ),
           ControlTile(Playlist: Playlist, c: c),
-          PlayerWidget(player: Playlist.player),
+          PlayerWidget(playlist: Playlist),
           Text("Lautstärke:"),
           VolumeWidget(player: Playlist.player),
-          /*
-          Not implemented in plugin yet
-          Text("Balance:"),
-          BalanceWidget(player: Playlist.player),
-          */
           Row(
             children: [
               TextButton(
@@ -53,8 +47,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
                         .push(MaterialPageRoute(builder: (_) => TagChoose()))
                         .then((value) {
                       if (value != -1) {
-                        Playlist.SaveToTag(value);
-                        Playlist.Clear();
+                        Playlist.SaveToTag(value, c);
                       }
                     });
                   });
@@ -67,7 +60,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
                       .push(MaterialPageRoute(builder: (_) => TagChoose()))
                       .then((value) {
                     if (value != -1) {
-                      Playlist.SaveToTag(value);
+                      Playlist.AddTagToAll(value);
                     }
                   });
                 },
@@ -75,6 +68,33 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
               ),
             ],
           ),
+          // Place for Equializer
+          // Place for Visualizer
+          Padding(
+              padding:
+                  EdgeInsets.only(top: 30, left: 30, right: 30, bottom: 10),
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  for (int i = 1; i < 5; i++)
+                    if (i < Playlist.songs.length)
+                      DragTarget<int>(
+                        builder: (
+                          BuildContext context,
+                          List<dynamic> accepted,
+                          List<dynamic> rejected,
+                        ) {
+                          return DismissibleSongTile(
+                              context, Playlist.songs[i], c, Playlist);
+                        },
+                        onAccept: (int data) {
+                          if (data == i) return;
+                          if (i == 0 || data == 0) return;
+                          Playlist.DragNDropUpdate(data, i);
+                        },
+                      ),
+                ],
+              )),
         ],
       ),
     ),

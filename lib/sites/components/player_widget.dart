@@ -1,13 +1,14 @@
 import 'dart:async';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:flutter/material.dart';
+import 'package:tagmusicplayer/classes/playlist.dart';
 
 class PlayerWidget extends StatefulWidget {
-  final AudioPlayer player;
+  final MyAudioHandler playlist;
 
   const PlayerWidget({
     Key? key,
-    required this.player,
+    required this.playlist,
   }) : super(key: key);
 
   @override
@@ -28,7 +29,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   String get _durationText => _duration?.toString().split('.').first ?? '';
   String get _positionText => _position?.toString().split('.').first ?? '';
 
-  AudioPlayer get player => widget.player;
+  AudioPlayer get player => widget.playlist.player;
 
   @override
   void initState() {
@@ -80,7 +81,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
               ? '$_positionText / $_durationText'
               : _duration != null
                   ? _durationText
-                  : '',
+                  : 'No Song Loaded',
           style: const TextStyle(fontSize: 16.0),
         ),
       ],
@@ -88,11 +89,11 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   }
 
   void _initStreams() {
-    _durationSubscription = player.onDurationChanged.listen((duration) {
+    _durationSubscription = player.durationStream.listen((duration) {
       setState(() => _duration = duration);
     });
 
-    _positionSubscription = player.onPositionChanged.listen(
+    _positionSubscription = player.positionStream.listen(
       (p) => setState(() => _position = p),
     );
   }
@@ -114,7 +115,6 @@ class VolumeWidget extends StatefulWidget {
 
 class _VolumeWidget extends State<VolumeWidget> {
   AudioPlayer get player => widget.player;
-  double volume = 1.0;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -122,16 +122,16 @@ class _VolumeWidget extends State<VolumeWidget> {
       children: <Widget>[
         Slider(
           min: 0.0,
+          divisions: 20,
           max: 1.0,
           onChanged: (v) {
-            volume = v;
             setState(() {});
             player.setVolume(v);
           },
-          value: volume,
+          value: player.volume,
         ),
         Text(
-          volume.toString(),
+          player.volume.toString(),
           style: const TextStyle(fontSize: 16.0),
         ),
       ],
@@ -141,7 +141,7 @@ class _VolumeWidget extends State<VolumeWidget> {
 
 /*
  Currently not implemented in the plugin
- Cant Change That...
+ -> Check Again later TODO
 
 class BalanceWidget extends StatefulWidget {
   final AudioPlayer player;

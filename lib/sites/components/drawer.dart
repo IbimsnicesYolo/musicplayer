@@ -5,6 +5,8 @@ import "../../classes/song.dart";
 import "../../classes/tag.dart";
 import "../allsongs.dart";
 import 'dart:io';
+import "dart:async";
+import "dart:math";
 import "search.dart";
 import "string_input.dart";
 import "elevatedbutton.dart";
@@ -14,8 +16,9 @@ class SongDrawer extends Drawer {
   const SongDrawer({Key? key, required this.c, required this.Playlist})
       : super(key: key);
 
-  final CurrentPlayList Playlist;
+  final MyAudioHandler Playlist;
   final void Function(void Function()) c;
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -57,15 +60,6 @@ class SongDrawer extends Drawer {
                               .then((value) => c(() {}));
                         }),
                     StyledElevatedButton(
-                        child: const Text("Add All To Edit"),
-                        onPressed: () {
-                          Songs.forEach((key, value) {
-                            value.edited = false;
-                          });
-                          ShouldSaveSongs = true;
-                          SaveSongs();
-                        }),
-                    StyledElevatedButton(
                       child: const Text("Open Settings"),
                       onPressed: () {
                         Navigator.of(context)
@@ -91,31 +85,38 @@ class SongDrawer extends Drawer {
                       },
                     ),
                     StyledElevatedButton(
-                      child: const Text("Delete All Tags"),
+                      child: const Text("Critical Buttons"),
                       onPressed: () {
                         Navigator.of(context)
                             .push(
                               MaterialPageRoute(
-                                builder: (_) => ShowTagDeletion(),
+                                builder: (_) => CriticalButtons(Pl: Playlist),
                               ),
                             )
                             .then((value) => c(() {}));
                       },
                     ),
                     StyledElevatedButton(
-                      child: const Text("Delete All Songs"),
+                      child: const Text("Add Random Song to Playlist"),
                       onPressed: () {
-                        Navigator.of(context)
-                            .push(
-                              MaterialPageRoute(
-                                builder: (_) => ShowSongDeletion(
-                                  Pl: Playlist,
-                                ),
-                              ),
-                            )
-                            .then((value) => c(() {}));
+                        final _random = new Random();
+                        List keys = Songs.keys.toList();
+                        String element = keys[_random.nextInt(keys.length)];
+                        Song s = Songs[element];
+                        Playlist.AddToPlaylist(s);
+                        final snackBar = SnackBar(
+                          backgroundColor: Colors.green,
+                          content: Text('Added ' + s.title + ' to Playlist'),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       },
                     ),
+                    Text("Version:", style: TextStyle(fontSize: 20)),
+                    Text(CFG.Version, style: TextStyle(fontSize: 20)),
+                    Text("\nTags:" + Tags.length.toString(),
+                        style: TextStyle(fontSize: 20)),
+                    Text("\nSongs:" + Songs.length.toString(),
+                        style: TextStyle(fontSize: 20)),
                   ],
                 ),
               ),
@@ -361,9 +362,15 @@ class _ShowSongEdit extends State<ShowSongEdit> {
                     csong.blacklisted = true;
                     ShouldSaveSongs = true;
                     SaveSongs();
+                    widget.c(() {});
                     setState(() {});
                   },
                   child: const Text("Blacklist")),
+              StyledElevatedButton(
+                  onPressed: () {
+                    widget.Playlist.AddToPlaylist(csong);
+                  },
+                  child: const Text("Add to Playlist")),
               StyledElevatedButton(
                   onPressed: () {
                     int id = CreateTag(csong.interpret);
@@ -427,6 +434,8 @@ class _ShowSongEdit extends State<ShowSongEdit> {
                                       6: false,
                                       7: false,
                                       8: true,
+                                      9: false,
+                                      10: false,
                                     }),
                               ],
                             ),
@@ -465,8 +474,26 @@ class ShowConfig extends StatefulWidget {
 }
 
 class _ShowConfig extends State<ShowConfig> {
+  void CheckForUpdate(BuildContext context) async {
+    if (CFG.NewVersionAvailable) {
+      CFG.NewVersionAvailable = false;
+      await Future.delayed(Duration(seconds: 1));
+      final snackBar = SnackBar(
+        backgroundColor: Colors.green,
+        content: const Text('New Version Available, Update Config!'),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {},
+        ),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    CheckForUpdate(context);
     return SafeArea(
       child: Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -483,6 +510,14 @@ class _ShowConfig extends State<ShowConfig> {
             children: <Widget>[
               for (var key in CFG.Config.keys)
                 Text("$key: " + CFG.Config["$key"].toString()),
+              TextButton(
+                onPressed: () => {
+                  CFG.Config["Version"] = CFG.Version,
+                  CFG.SaveConfig(),
+                  setState(() {}),
+                },
+                child: const Text("Update Version"),
+              ),
               TextButton(
                   onPressed: () {
                     Navigator.pop(context);
@@ -508,6 +543,14 @@ class ShowBlacklist extends StatefulWidget {
 }
 
 class _ShowBlacklist extends State<ShowBlacklist> {
+  void update(void Function() c) {
+    setState(
+      () {
+        c();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -522,32 +565,36 @@ class _ShowBlacklist extends State<ShowBlacklist> {
           title: Text("Blacklist"),
           actions: [
             IconButton(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => SearchPage(
-                      (search, update) => Container(
-                            child: ListView(
-                              children: [
-                                for (String key in Songs.keys)
-                                  if (ShouldShowSong(key, search))
-                                    SongTile(context, Songs[key], widget.c,
-                                        widget.Playlist, true, {
-                                      0: true,
-                                      1: true,
-                                      2: true,
-                                      3: false,
-                                      4: false,
-                                      5: false,
-                                      6: false,
-                                      7: false,
-                                      8: true,
-                                    }),
-                              ],
-                            ),
-                          ),
-                      ""),
-                ),
-              ),
+              onPressed: () => Navigator.of(context)
+                  .push(
+                    MaterialPageRoute(
+                      builder: (_) => SearchPage(
+                          (search, update) => Container(
+                                child: ListView(
+                                  children: [
+                                    for (String key in Songs.keys)
+                                      if (ShouldShowSong(key, search))
+                                        SongTile(context, Songs[key], update,
+                                            widget.Playlist, true, {
+                                          0: true,
+                                          1: true,
+                                          2: true,
+                                          3: false,
+                                          4: false,
+                                          5: false,
+                                          6: false,
+                                          7: false,
+                                          8: true,
+                                          9: false,
+                                          10: false,
+                                        }),
+                                  ],
+                                ),
+                              ),
+                          ""),
+                    ),
+                  )
+                  .then((value) => update(() {})),
               icon: const Icon(Icons.search),
             ),
           ],
@@ -563,7 +610,19 @@ class _ShowBlacklist extends State<ShowBlacklist> {
           children: [
             for (String key in Songs.keys)
               if (Songs[key].blacklisted)
-                BlackListTile(context, Songs[key], false),
+                SongTile(context, Songs[key], update, widget.Playlist, true, {
+                  0: true,
+                  1: true,
+                  2: true,
+                  3: false,
+                  4: false,
+                  5: false,
+                  6: false,
+                  7: false,
+                  8: true,
+                  9: false,
+                  10: false,
+                }),
           ],
         ),
       ),
@@ -571,14 +630,15 @@ class _ShowBlacklist extends State<ShowBlacklist> {
   }
 }
 
-class ShowTagDeletion extends StatefulWidget {
-  ShowTagDeletion({Key? key}) : super(key: key);
+class CriticalButtons extends StatefulWidget {
+  CriticalButtons({Key? key, required this.Pl}) : super(key: key);
 
+  final MyAudioHandler Pl;
   @override
-  State<ShowTagDeletion> createState() => _ShowTagDeletion();
+  State<CriticalButtons> createState() => _ShowTagDeletion();
 }
 
-class _ShowTagDeletion extends State<ShowTagDeletion> {
+class _ShowTagDeletion extends State<CriticalButtons> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -593,166 +653,54 @@ class _ShowTagDeletion extends State<ShowTagDeletion> {
           title: Text("Tag Deletion"),
         ),
         body: Center(
-          child: TextButton(
-              style: TextButton.styleFrom(
-                primary: Colors.white,
-                backgroundColor: Colors.red,
-              ),
-              onPressed: () {
-                Tags = {};
-                ShouldSaveTags = true;
-                SaveTags();
-                UpdateAllTags();
-                Songs.forEach((key, value) {
-                  value.tags = [];
-                });
-                SaveSongs();
-                Navigator.pop(context);
-              },
-              child: Text("Delete All Tags", style: TextStyle(fontSize: 30))),
+          child: Column(
+            children: [
+              StyledElevatedButton(
+                  child: const Text("Add All To Edit"),
+                  onPressed: () {
+                    Songs.forEach((key, value) {
+                      value.edited = false;
+                    });
+                    ShouldSaveSongs = true;
+                    SaveSongs();
+                  }),
+              TextButton(
+                  style: TextButton.styleFrom(
+                    primary: Colors.white,
+                    backgroundColor: Colors.red,
+                  ),
+                  onPressed: () {
+                    Tags = {};
+                    ShouldSaveTags = true;
+                    SaveTags();
+                    UpdateAllTags();
+                    Songs.forEach((key, value) {
+                      value.tags = [];
+                    });
+                    SaveSongs();
+                    Navigator.pop(context);
+                  },
+                  child:
+                      Text("Delete All Tags", style: TextStyle(fontSize: 30))),
+              TextButton(
+                  style: TextButton.styleFrom(
+                    primary: Colors.white,
+                    backgroundColor: Colors.red,
+                  ),
+                  onPressed: () {
+                    widget.Pl.Clear();
+                    Songs = {};
+                    ShouldSaveSongs = true;
+                    UpdateAllTags();
+                    SaveSongs();
+                    Navigator.pop(context);
+                  },
+                  child:
+                      Text("Delete All Songs", style: TextStyle(fontSize: 30))),
+            ],
+          ),
         ),
       ),
     );
   }
-}
-
-class ShowSongDeletion extends StatefulWidget {
-  ShowSongDeletion({Key? key, required this.Pl}) : super(key: key);
-
-  final CurrentPlayList Pl;
-  @override
-  State<ShowSongDeletion> createState() => _ShowSongDeletion();
-}
-
-class _ShowSongDeletion extends State<ShowSongDeletion> {
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: CFG.ContrastColor,
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Icon(Icons.arrow_back),
-        ),
-        appBar: AppBar(
-          title: Text("Song Deletion"),
-        ),
-        body: Center(
-          child: TextButton(
-              style: TextButton.styleFrom(
-                primary: Colors.white,
-                backgroundColor: Colors.red,
-              ),
-              onPressed: () {
-                widget.Pl.Clear();
-                Songs = {};
-                ShouldSaveSongs = true;
-                UpdateAllTags();
-                SaveSongs();
-                Navigator.pop(context);
-              },
-              child: Text("Delete All Songs", style: TextStyle(fontSize: 30))),
-        ),
-      ),
-    );
-  }
-}
-
-PopupMenuButton BlackListTile(BuildContext context, Song s, bool isSearch) {
-  return PopupMenuButton(
-    onSelected: (result) {
-      if (result == 0) {
-        // Change Title
-        Navigator.of(context)
-            .push(
-              MaterialPageRoute(
-                builder: (_) => StringInputExpanded(
-                    Title: "Song Title Edit",
-                    Text: s.title,
-                    additionalinfos: s.filename,
-                    OnSaved: (String si) {
-                      s.title = si;
-                      UpdateSongTitle(s.filename, si);
-                    }),
-              ),
-            )
-            .then((value) => {
-                  s.title = value,
-                  UpdateSongTitle(s.filename, value),
-                });
-      }
-      if (result == 1) {
-        // Change Interpret
-        Navigator.of(context)
-            .push(
-              MaterialPageRoute(
-                builder: (_) => StringInputExpanded(
-                    Title: "Song Artist Edit",
-                    Text: s.interpret,
-                    additionalinfos: s.filename,
-                    OnSaved: (String si) {
-                      s.interpret = si;
-                      UpdateSongInterpret(s.filename, si);
-                    }),
-              ),
-            )
-            .then((value) => {
-                  s.interpret = value,
-                  UpdateSongInterpret(s.filename, value),
-                });
-      }
-      if (result == 2) {
-        // Change Featuring
-        Navigator.of(context)
-            .push(
-              MaterialPageRoute(
-                builder: (_) => StringInputExpanded(
-                    Title: "Song Featuring Edit",
-                    Text: s.featuring,
-                    additionalinfos: s.filename,
-                    OnSaved: (String si) {
-                      s.featuring = si;
-                      UpdateSongFeaturing(s.filename, si);
-                    }),
-              ),
-            )
-            .then((value) => {
-                  s.featuring = value,
-                  UpdateSongFeaturing(s.filename, value),
-                });
-      }
-      if (result == 3) {
-        if (isSearch) {
-          s.blacklisted = true;
-        } else {
-          s.blacklisted = false;
-        }
-        ShouldSaveSongs = true;
-        SaveSongs();
-      }
-    },
-    child: ListTile(
-      title: Text(s.title),
-      subtitle: Text(s.filename),
-    ),
-    itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-      PopupMenuItem(
-        child: Text(s.title),
-        value: 0,
-      ),
-      PopupMenuItem(
-        child: Text(s.interpret),
-        value: 1,
-      ),
-      PopupMenuItem(
-        child: Text(s.featuring),
-        value: 2,
-      ),
-      const PopupMenuDivider(),
-      PopupMenuItem(
-          child: Text(isSearch ? 'Blacklist Song' : "Un Blacklist Song"),
-          value: 3),
-    ],
-  );
 }
