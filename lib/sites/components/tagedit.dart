@@ -104,7 +104,7 @@ class _TagEdit extends State<TagEdit> {
                   }
                 },
                 child: const Text("Create Tag")),
-            for (int i = 0; i < Tags.length; i++)
+            for (int i = 1; i < Tags.length; i++)
               if (Tags.containsKey(i) && !s.tags.contains(i))
                 if (create.text == "" ||
                     Tags[i]
@@ -174,17 +174,18 @@ class _TagChoose extends State<TagChoose> {
                 },
                 child: const Text("Create Tag")),
             if (create.text == "")
-              for (int i = 0; i <= Tags.length; i = i + 2)
+              for (int i = 0; i < Tags.length; i = i + 2)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                    StyledElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(i);
-                      },
-                      child: Text(Tags[i].name),
-                    ),
-                    if (Tags.length > i + 1)
+                    if (Tags.containsKey(i))
+                      StyledElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(i);
+                        },
+                        child: Text(Tags[i].name),
+                      ),
+                    if (Tags.length > i + 1 && Tags.containsKey(i + 1))
                       StyledElevatedButton(
                         onPressed: () {
                           Navigator.of(context).pop(i + 1);
@@ -198,10 +199,11 @@ class _TagChoose extends State<TagChoose> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                    if (Tags[i]
-                        .name
-                        .toLowerCase()
-                        .contains(create.text.toLowerCase()))
+                    if (Tags.containsKey(i) &&
+                        Tags[i]
+                            .name
+                            .toLowerCase()
+                            .contains(create.text.toLowerCase()))
                       StyledElevatedButton(
                         onPressed: () {
                           Navigator.of(context).pop(i);
@@ -216,21 +218,3 @@ class _TagChoose extends State<TagChoose> {
     );
   }
 }
-/*
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                for (Tag t in Tags.values)
-                  if ((t.id % 2 == 1))
-                    StyledElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(t.id);
-                      },
-                      child: Text(t.name),
-                    ),
-                  ],
-                ),
-              ],
-            ),
- */

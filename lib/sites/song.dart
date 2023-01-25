@@ -31,6 +31,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
           Text("Lautstärke:"),
           VolumeWidget(player: Playlist.player),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               TextButton(
                 onPressed: () {
@@ -52,7 +53,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
                     });
                   });
                 },
-                child: Text("Save Playlist To Tag"),
+                child: Text("Save To Tag"),
               ),
               TextButton(
                 onPressed: () {
@@ -64,7 +65,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
                     }
                   });
                 },
-                child: Text("Add all Songs To Tag"),
+                child: Text("Add all To Tag"),
               ),
             ],
           ),

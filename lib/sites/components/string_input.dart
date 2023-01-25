@@ -160,17 +160,19 @@ class _StringInputExpanded extends State<StringInputExpanded> {
                     _textFieldController.text += " " + widget.additionalinfos;
                   },
                 ),
-                for (int i = 0; i <= possibleinputs.length; i = i + 2)
+                for (int i = 0; i < possibleinputs.length; i = i + 2)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      StyledElevatedButton(
-                        child: Text(possibleinputs[i]),
-                        onPressed: () {
-                          _textFieldController.text += " " + possibleinputs[i];
-                        },
-                      ),
-                      if (possibleinputs.length > i + 1)
+                      if (possibleinputs[i] != null)
+                        StyledElevatedButton(
+                          child: Text(possibleinputs[i]),
+                          onPressed: () {
+                            _textFieldController.text +=
+                                " " + possibleinputs[i];
+                          },
+                        ),
+                      if (possibleinputs[i + 1] != null)
                         StyledElevatedButton(
                           child: Text(possibleinputs[i + 1]),
                           onPressed: () {
