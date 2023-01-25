@@ -6,6 +6,7 @@ import "../../classes/tag.dart";
 import "../allsongs.dart";
 import 'dart:io';
 import "dart:async";
+import "dart:math";
 import "search.dart";
 import "string_input.dart";
 import "elevatedbutton.dart";
@@ -93,6 +94,21 @@ class SongDrawer extends Drawer {
                               ),
                             )
                             .then((value) => c(() {}));
+                      },
+                    ),
+                    StyledElevatedButton(
+                      child: const Text("Add Random Song to Playlist"),
+                      onPressed: () {
+                        final _random = new Random();
+                        List keys = Songs.keys.toList();
+                        String element = keys[_random.nextInt(keys.length)];
+                        Song s = Songs[element];
+                        Playlist.AddToPlaylist(s);
+                        final snackBar = SnackBar(
+                          backgroundColor: Colors.green,
+                          content: Text('Added ' + s.title + ' to Playlist'),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       },
                     ),
                     Text("Version:", style: TextStyle(fontSize: 20)),
