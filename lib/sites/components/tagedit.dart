@@ -19,6 +19,7 @@ class _TagEdit extends State<TagEdit> {
   _TagEdit({required this.s});
   Song s;
 
+  TextEditingController create = TextEditingController();
   Map<String, List> ToUpdate = {};
 
   void update(void Function() c) {
@@ -31,6 +32,14 @@ class _TagEdit extends State<TagEdit> {
 
   @override
   Widget build(BuildContext context) {
+    List<Tag> InSong = [];
+
+    for (int i = 0; i < Tags.length; i++) {
+      if (Tags.containsKey(i) && s.tags.contains(i)) {
+        InSong.add(Tags[i]);
+      }
+    }
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -60,31 +69,40 @@ class _TagEdit extends State<TagEdit> {
         ),
         body: ListView(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Column(
-                  children: [
-                    for (Tag t in Tags.values)
-                      if ((t.id % 2 == 0))
-                        CoolerCheckBox(Songs[s.filename].tags.contains(t.id),
-                            (bool? b) {
-                          ToUpdate[s.filename] = [t.id, b];
-                        }, t.name),
-                  ],
-                ),
-                Column(
-                  children: [
-                    for (Tag t in Tags.values)
-                      if ((t.id % 2 == 1))
-                        CoolerCheckBox(Songs[s.filename].tags.contains(t.id),
-                            (bool? b) {
-                          ToUpdate[s.filename] = [t.id, b];
-                        }, t.name),
-                  ],
-                ),
-              ],
+            for (int i = 0; i < InSong.length; i = i + 2)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  CoolerCheckBox(s.tags.contains(InSong[i].id), (bool? b) {
+                    ToUpdate[s.filename] = [InSong[i].id, b];
+                  }, InSong[i].name),
+                  if (i + 1 < InSong.length)
+                    CoolerCheckBox(s.tags.contains(InSong[i + 1].id),
+                        (bool? b) {
+                      ToUpdate[s.filename] = [InSong[i + 1].id, b];
+                    }, InSong[i + 1].name),
+                ],
+              ),
+            TextField(
+              controller: create,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Tag Name',
+              ),
+              onChanged: (String value) {
+                setState(() {});
+              },
             ),
+            for (int i = 0; i < Tags.length; i++)
+              if (Tags.containsKey(i) && !s.tags.contains(i))
+                if (create.text == "" ||
+                    Tags[i]
+                        .name
+                        .toLowerCase()
+                        .contains(create.text.toLowerCase()))
+                  CoolerCheckBox(s.tags.contains(i), (bool? b) {
+                    ToUpdate[s.filename] = [i, b];
+                  }, Tags[i].name),
           ],
         ),
       ),
