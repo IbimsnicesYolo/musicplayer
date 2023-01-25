@@ -172,7 +172,8 @@ class _StringInputExpanded extends State<StringInputExpanded> {
                                 " " + possibleinputs[i];
                           },
                         ),
-                      if (possibleinputs[i + 1] != null)
+                      if (possibleinputs.length > i + 1 &&
+                          possibleinputs[i + 1] != null)
                         StyledElevatedButton(
                           child: Text(possibleinputs[i + 1]),
                           onPressed: () {
