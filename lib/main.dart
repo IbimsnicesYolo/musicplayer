@@ -29,6 +29,8 @@ Future<void> main() async {
       androidNotificationChannelId: 'com.ibimsnicesyolo.musicplayer',
       androidNotificationChannelName: 'Music Player',
       androidNotificationOngoing: true,
+      notificationColor: Color.fromARGB(255, 69, 194, 150),
+      androidNotificationClickStartsActivity: true,
     ),
   );
   runApp(MaterialApp(theme: ThemeData.dark(), home: MainSite()));
