@@ -126,41 +126,15 @@ class _TagChoose extends State<TagChoose> {
         ),
         body: ListView(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Column(
-                  children: [
-                    for (Tag t in Tags.values)
-                      if ((t.id % 2 == 0))
-                        StyledElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(t.id);
-                          },
-                          child: Text(t.name),
-                        ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    for (Tag t in Tags.values)
-                      if ((t.id % 2 == 1))
-                        StyledElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(t.id);
-                          },
-                          child: Text(t.name),
-                        ),
-                  ],
-                ),
-              ],
-            ),
             TextField(
               controller: create,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Tag Name',
               ),
+              onChanged: (String value) {
+                setState(() {});
+              },
             ),
             StyledElevatedButton(
                 onPressed: () {
@@ -169,10 +143,65 @@ class _TagChoose extends State<TagChoose> {
                     Navigator.of(context).pop(id);
                   }
                 },
-                child: const Text("Create Tag"))
+                child: const Text("Create Tag")),
+            if (create.text == "")
+              for (int i = 0; i <= Tags.length; i = i + 2)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    StyledElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(i);
+                      },
+                      child: Text(Tags[i].name),
+                    ),
+                    if (Tags.length > i + 1)
+                      StyledElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(i + 1);
+                        },
+                        child: Text(Tags[i + 1].name),
+                      ),
+                  ],
+                ),
+            if (create.text != "")
+              for (int i = 0; i < Tags.length; i++)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    if (Tags[i]
+                        .name
+                        .toLowerCase()
+                        .contains(create.text.toLowerCase()))
+                      StyledElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(i);
+                        },
+                        child: Text(Tags[i].name),
+                      ),
+                  ],
+                ),
           ],
         ),
       ),
     );
   }
 }
+/*
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                for (Tag t in Tags.values)
+                  if ((t.id % 2 == 1))
+                    StyledElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(t.id);
+                      },
+                      child: Text(t.name),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+ */
