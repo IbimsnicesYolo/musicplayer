@@ -93,6 +93,17 @@ class _TagEdit extends State<TagEdit> {
                 setState(() {});
               },
             ),
+            StyledElevatedButton(
+                onPressed: () {
+                  if (create.text != "") {
+                    int id = CreateTag(create.text.trim());
+                    Navigator.of(context);
+                    ToUpdate.forEach((key, value) {
+                      UpdateSongTags(key, value[0], value[1]);
+                    });
+                  }
+                },
+                child: const Text("Create Tag")),
             for (int i = 0; i < Tags.length; i++)
               if (Tags.containsKey(i) && !s.tags.contains(i))
                 if (create.text == "" ||
