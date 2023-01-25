@@ -17,6 +17,7 @@ class SongDrawer extends Drawer {
 
   final MyAudioHandler Playlist;
   final void Function(void Function()) c;
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -96,6 +97,10 @@ class SongDrawer extends Drawer {
                     ),
                     Text("Version:", style: TextStyle(fontSize: 20)),
                     Text(CFG.Version, style: TextStyle(fontSize: 20)),
+                    Text("\nTags:" + Tags.length.toString(),
+                        style: TextStyle(fontSize: 20)),
+                    Text("\nSongs:" + Songs.length.toString(),
+                        style: TextStyle(fontSize: 20)),
                   ],
                 ),
               ),
