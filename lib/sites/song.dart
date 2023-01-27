@@ -43,14 +43,14 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
               ),
               TextButton(
                 onPressed: () {
-                  c(() {
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (_) => TagChoose()))
-                        .then((value) {
-                      if (value != -1) {
-                        Playlist.SaveToTag(value, c);
-                      }
-                    });
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (_) => TagChoose()))
+                      .then((value) {
+                    if (value != -1) {
+                      Playlist.SaveToTag(value, c);
+                    }
+                    Playlist.Clear();
+                    c(() {});
                   });
                 },
                 child: Text("Save To Tag"),
