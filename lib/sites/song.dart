@@ -77,7 +77,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
               child: ListView(
                 shrinkWrap: true,
                 children: [
-                  for (int i = 1; i < 5; i++)
+                  for (int i = 1; i < 7; i++)
                     if (i < Playlist.songs.length)
                       DragTarget<int>(
                         builder: (

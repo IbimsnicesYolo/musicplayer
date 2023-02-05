@@ -21,9 +21,17 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     });
     player.playbackEventStream.map(_transformEvent).pipe(playbackState);
   }
+  bool Contains(Song song) {
+    for (int i = 0; i < songs.length; i++) {
+      if (songs[i].filename == song.filename) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   void AddToPlaylist(Song song) {
-    if (songs.contains(song)) {
+    if (Contains(song)) {
       return;
     }
     songs.add(song);
@@ -32,7 +40,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
 
   void InsertAsNext(Song song) {
     last_added_pos = 1;
-    if (!songs.contains(song)) {
+    if (!Contains(song)) {
       songs.insert(1, song);
     } else {
       songs.remove(song);
@@ -43,7 +51,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
 
   void Stack(Song song) {
     last_added_pos += 1;
-    if (!songs.contains(song)) {
+    if (!Contains(song)) {
       songs.insert(last_added_pos, song);
     } else {
       songs.remove(song);
@@ -90,7 +98,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       return;
     }
     Song current = songs.removeAt(0);
-    songs.shuffle();
     songs.shuffle();
     songs.insert(0, current);
     UpDateMediaItem();
