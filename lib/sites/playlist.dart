@@ -62,9 +62,11 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
       reverse: true,
       children: [
         if (!Playlist.songs.isEmpty) ...[
-          Text(
-            Playlist.songs.length.toString() + " Songs",
-            style: const TextStyle(fontSize: 30),
+          Center(
+            child: Text(
+              Playlist.songs.length.toString() + " Songs",
+              style: const TextStyle(fontSize: 30),
+            ),
           ),
           ControlTile(Playlist: Playlist, c: c),
           for (int i = 0; i < Playlist.songs.length; i++)
