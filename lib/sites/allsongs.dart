@@ -66,24 +66,52 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
 }
 
 ListView buildContent(BuildContext context, void Function(void Function()) c,
-    MyAudioHandler Playlist) {
+    MyAudioHandler Playlist, int reverse) {
+  List sorted = Songs.values.toList();
+  sorted.sort((a, b) {
+    return a.tags.length.compareTo(b.tags.length);
+  });
+  if (reverse == 0) {
+    // sorted by used, highest first
+    sorted = sorted.reversed.toList();
+
+    // reversed = 1 sorted by used, lowest first
+  } else if (reverse == 2) {
+    // sorted by name, a-z
+    sorted.sort((a, b) {
+      return a.title.compareTo(b.title);
+    });
+  } else if (reverse == 3) {
+    // sorted by name, z-a
+    sorted.sort((a, b) {
+      return a.title.compareTo(b.title);
+    });
+    sorted = sorted.reversed.toList();
+  }
   return ListView(
     children: [
-      for (String key in Songs.keys)
-        if (ShouldShowSong(key, ""))
-          SongTile(context, Songs[key], c, Playlist, true, {
-            0: true,
-            1: true,
-            2: true,
-            3: true,
-            4: true,
-            5: true,
-            6: true,
-            7: true,
-            8: true,
-            9: false,
-            10: false,
-          }),
+      for (Song s in sorted)
+        if (ShouldShowSong(s.filename, ""))
+          SongTile(
+            context,
+            s,
+            c,
+            Playlist,
+            true,
+            {
+              0: true,
+              1: true,
+              2: true,
+              3: true,
+              4: true,
+              5: true,
+              6: true,
+              7: true,
+              8: true,
+              9: false,
+              10: false,
+            },
+          ),
     ],
   );
 }

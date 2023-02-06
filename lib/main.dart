@@ -45,6 +45,7 @@ class MainSite extends StatefulWidget {
 
 class _MainSite extends State<MainSite> {
   int side = 0;
+  int reverse = 0;
 
   @override
   void initState() {
@@ -107,16 +108,20 @@ class _MainSite extends State<MainSite> {
             : (side == 1
                 ? PlaylistSide.buildContent(context, update, _audioHandler)
                 : (side == 2
-                    ? TagSite.buildContent(context, update, _audioHandler)
-                    : AllSongs.buildContent(context, update, _audioHandler)))),
-        floatingActionButton: (side == 1
-            ? null
-            : FloatingActionButton(
-                child: Icon(Icons.downloading),
-                onPressed: () {
-                  setState(() {});
-                },
-              )),
+                    ? TagSite.buildContent(
+                        context, update, _audioHandler, reverse)
+                    : AllSongs.buildContent(
+                        context, update, _audioHandler, reverse)))),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.downloading),
+          onPressed: () {
+            reverse += 1;
+            if (reverse > 3) {
+              reverse = 0;
+            }
+            setState(() {});
+          },
+        ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: this.side,
           onTap: (int index) {

@@ -80,13 +80,29 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
 }
 
 Container buildContent(BuildContext context, void Function(void Function()) c,
-    MyAudioHandler Playlist) {
+    MyAudioHandler Playlist, int reverse) {
   UpdateAllTags();
   List sortedtags = Tags.values.toList();
   sortedtags.sort((a, b) {
     return a.used.compareTo(b.used);
   });
-  sortedtags = sortedtags.reversed.toList();
+  if (reverse == 0) {
+    // sorted by used, highest first
+    sortedtags = sortedtags.reversed.toList();
+
+    // reversed = 1 sorted by used, lowest first
+  } else if (reverse == 2) {
+    // sorted by name, a-z
+    sortedtags.sort((a, b) {
+      return a.name.compareTo(b.name);
+    });
+  } else if (reverse == 3) {
+    // sorted by name, z-a
+    sortedtags.sort((a, b) {
+      return a.name.compareTo(b.name);
+    });
+    sortedtags = sortedtags.reversed.toList();
+  }
   return Container(
     child: ListView(
       children: [
