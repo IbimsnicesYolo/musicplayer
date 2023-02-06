@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'classes/song.dart';
 import "classes/tag.dart";
 
-final String Version = "Dev 1.6";
+final String Version = "Dev 1.7";
 bool NewVersionAvailable =
     false; // Bool which shows that the config saved on the phone is older than the Apps Version
 Color HomeColor = Color.fromRGBO(61, 61, 61, 255);

@@ -3,6 +3,7 @@ import "components/music_control.dart";
 import "components/player_widget.dart";
 import "components/tagedit.dart";
 import "components/songtile.dart";
+import "../classes/tag.dart";
 import "allsongs.dart" as AllSongs;
 import 'package:flutter/material.dart';
 
@@ -49,8 +50,6 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
                     if (value != -1) {
                       Playlist.SaveToTag(value, c);
                     }
-                    Playlist.Clear();
-                    c(() {});
                   });
                 },
                 child: Text("Save To Tag"),
@@ -61,7 +60,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
                       .push(MaterialPageRoute(builder: (_) => TagChoose()))
                       .then((value) {
                     if (value != -1) {
-                      Playlist.AddTagToAll(value);
+                      Playlist.AddTagToAll(Tags[value]);
                     }
                   });
                 },
@@ -77,7 +76,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
               child: ListView(
                 shrinkWrap: true,
                 children: [
-                  for (int i = 1; i < 7; i++)
+                  for (int i = 1; i < 6; i++)
                     if (i < Playlist.songs.length)
                       DragTarget<int>(
                         builder: (

@@ -12,7 +12,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   AudioPlayer player = AudioPlayer();
 
   MyAudioHandler() {
-    player.setClip();
     player.playerStateStream.listen((event) {
       if (event.processingState == ProcessingState.completed && event.playing) {
         start = true;
@@ -97,9 +96,13 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     if (songs.length < 1) {
       return;
     }
-    Song current = songs.removeAt(0);
-    songs.shuffle();
-    songs.insert(0, current);
+    if (player.playing) {
+      Song current = songs.removeAt(0);
+      songs.shuffle();
+      songs.insert(0, current);
+    } else {
+      songs.shuffle();
+    }
     UpDateMediaItem();
   }
 
