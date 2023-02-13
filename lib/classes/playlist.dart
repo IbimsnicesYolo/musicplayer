@@ -139,6 +139,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     }
   }
 
+  DateTime triggershuffle = DateTime.now();
   void PlayPreviousSong() async {
     if (songs.length > 0) {
       songs.insert(0, songs.removeAt(songs.length - 1));
@@ -146,6 +147,10 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
         await player.seek(Duration(seconds: 0));
         StartPlaying();
       } else {
+        if (DateTime.now().difference(triggershuffle).inSeconds < 1) {
+          Shuffle();
+        }
+        triggershuffle = DateTime.now();
         LoadNextToPlayer();
       }
     }
