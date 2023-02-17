@@ -147,7 +147,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
         await player.seek(Duration(seconds: 0));
         StartPlaying();
       } else {
-        if (DateTime.now().difference(triggershuffle).inSeconds < 1) {
+        if (DateTime.now().difference(triggershuffle).inSeconds < 3) {
           Shuffle();
         }
         triggershuffle = DateTime.now();
