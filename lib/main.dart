@@ -112,7 +112,7 @@ class _MainSite extends State<MainSite> {
                         context, update, _audioHandler, reverse)
                     : AllSongs.buildContent(
                         context, update, _audioHandler, reverse)))),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: (side == 2 || side == 3 ? FloatingActionButton(
           child: Icon(Icons.downloading),
           onPressed: () {
             reverse += 1;
@@ -121,7 +121,7 @@ class _MainSite extends State<MainSite> {
             }
             setState(() {});
           },
-        ),
+        ) : null),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: this.side,
           onTap: (int index) {
