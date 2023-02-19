@@ -9,6 +9,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   int last_added_pos = 0;
   bool start = false;
   bool paused = false;
+  bool deleteifplayed = false;
   AudioPlayer player = AudioPlayer();
 
   MyAudioHandler() {
@@ -128,7 +129,11 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
 
   void PlayNextSong() async {
     if (songs.length > 0) {
-      songs.add(songs.removeAt(0));
+      if (deleteifplayed) {
+        RemoveSong(songs[0]);
+      } else {
+        songs.add(songs.removeAt(0));
+      }
       if (player.playing || start) {
         start = false;
         await player.seek(Duration(seconds: 0));

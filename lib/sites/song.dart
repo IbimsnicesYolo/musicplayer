@@ -22,50 +22,74 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
             padding: EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 10),
             child: Text(
               (Playlist.songs.length > 0)
-                  ? Playlist.songs[0].title
+                  ? Playlist.songs[0].title +
+                      " - " +
+                      Playlist.songs[0].interpret
                   : "No songs in playlist",
               style: TextStyle(fontSize: 16),
             ),
           ),
           ControlTile(Playlist: Playlist, c: c),
           PlayerWidget(playlist: Playlist),
-          Text("Lautstärke:"),
+          Text("Volume:"),
           VolumeWidget(player: Playlist.player),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              TextButton(
-                onPressed: () {
-                  c(() {
-                    Playlist.Clear();
-                  });
-                },
-                child: Text("Clear Playlist"),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (_) => TagChoose()))
-                      .then((value) {
-                    if (value != -1) {
-                      Playlist.SaveToTag(value, c);
+              PopupMenuButton(
+                  onSelected: (result) {
+                    if (result == 0) {
+                      c(() {
+                        Playlist.Clear();
+                      });
                     }
-                  });
-                },
-                child: Text("Save To Tag"),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (_) => TagChoose()))
-                      .then((value) {
-                    if (value != -1) {
-                      Playlist.AddTagToAll(Tags[value]);
+                    if (result == 1) {
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (_) => TagChoose()))
+                          .then((value) {
+                        if (value != -1) {
+                          Playlist.SaveToTag(value, c);
+                        }
+                      });
                     }
-                  });
-                },
-                child: Text("Add all To Tag"),
-              ),
+                    if (result == 2) {
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (_) => TagChoose()))
+                          .then((value) {
+                        if (value != -1) {
+                          Playlist.AddTagToAll(Tags[value]);
+                        }
+                      });
+                    }
+
+                  },
+                  child: Text("Actions"),
+                  itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                      PopupMenuItem(
+                        child: Text("Clear Playlist"),
+                        value: 0,
+                      ),
+                      PopupMenuItem(
+                        child: Text("Save To Tag"),
+                        value: 1,
+                      ),
+                      PopupMenuItem(
+                        child: Text("Add all To Tag"),
+                        value: 2,
+                      ),
+                  ],
+                ),
+                Text("Delete if played:"),
+                Switch(
+                  activeColor: Colors.amber,
+                  activeTrackColor: Colors.cyan,
+                  inactiveThumbColor: Colors.blueGrey.shade600,
+                  inactiveTrackColor: Colors.grey.shade400,
+                  splashRadius: 50.0,
+                  value: Playlist.deleteifplayed,
+                  // changes the state of the switch
+                  onChanged: (value) => c(() => Playlist.deleteifplayed = value),
+                ),
             ],
           ),
           // Place for Equializer
@@ -76,7 +100,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
               child: ListView(
                 shrinkWrap: true,
                 children: [
-                  for (int i = 1; i < 6; i++)
+                  for (int i = 1; i < 5; i++)
                     if (i < Playlist.songs.length)
                       DragTarget<int>(
                         builder: (
