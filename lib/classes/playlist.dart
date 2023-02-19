@@ -139,19 +139,17 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     }
   }
 
-  DateTime triggershuffle = DateTime.now();
+  DateTime lastback = DateTime.now();
   void PlayPreviousSong() async {
     if (songs.length > 0) {
-      songs.insert(0, songs.removeAt(songs.length - 1));
-      if (player.playing) {
+      if (player.playing && DateTime.now().difference(lastback).inSeconds > 3) {
+        lastback = DateTime.now();
         await player.seek(Duration(seconds: 0));
         StartPlaying();
       } else {
-        if (DateTime.now().difference(triggershuffle).inSeconds < 3) {
-          Shuffle();
-        }
-        triggershuffle = DateTime.now();
-        LoadNextToPlayer();
+        await PausePlaying();
+        Shuffle();
+        StartPlaying();
       }
     }
   }
