@@ -1,7 +1,6 @@
 import "../classes/tag.dart";
 import "../classes/playlist.dart";
 import "../classes/song.dart";
-import "../settings.dart";
 import 'package:flutter/material.dart';
 import 'components/search.dart';
 import 'components/string_input.dart';
@@ -107,26 +106,6 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
     child: ListView(
       children: [
         for (Tag t in sortedtags) TagTile(c, context, Playlist, t.id),
-        Align(
-          alignment: AlignmentDirectional.bottomCenter,
-          child: ElevatedButton(
-            style: ButtonStyle(
-              enableFeedback: true,
-              backgroundColor: MaterialStateProperty.resolveWith((states) {
-                return Color(Config["ContrastColor"]);
-              }),
-            ),
-            onPressed: () {
-              StringInput(context, "Create new Tag", "Create", "Cancel",
-                  (String s) {
-                int id = CreateTag(s);
-                SaveTags();
-                c(() {});
-              }, (String s) {}, false, "", "Tag Name");
-            },
-            child: const Text("Create new Tag"),
-          ),
-        )
       ],
     ),
   );

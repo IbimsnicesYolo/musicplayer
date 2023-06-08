@@ -7,7 +7,9 @@ import "sites/playlist.dart" as PlaylistSide;
 import "sites/tagsite.dart" as TagSite;
 import "sites/allsongs.dart" as AllSongs;
 import "sites/song.dart" as SongSite;
+import 'sites/components/string_input.dart';
 import "classes/playlist.dart";
+import "classes/tag.dart";
 
 late MyAudioHandler _audioHandler;
 
@@ -117,6 +119,14 @@ class _MainSite extends State<MainSite> {
           onPressed: () {
             reverse += 1;
             if (reverse > 3) {
+              if (side == 2) {
+                StringInput(context, "Create new Tag", "Create", "Cancel",
+                        (String s) {
+                      int id = CreateTag(s);
+                      SaveTags();
+                      setState(() {});
+                    }, (String s) {}, false, "", "Tag Name");
+              }
               reverse = 0;
             }
             setState(() {});

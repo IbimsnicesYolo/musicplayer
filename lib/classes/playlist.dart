@@ -64,7 +64,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     if (songs.length > 1) {
       mediaItem.add(MediaItem(
         id: 'file://storage/' + songs[0].path,
-        album: songs[1] != null ? "Next: " + songs[1].title : "No Next Song",
+        album: (songs[1] != null) ? "Next: " + songs[1].title : "No Next Song",
         title: songs[0].title,
         artist: songs[0].interpret,
         duration: player.duration,
