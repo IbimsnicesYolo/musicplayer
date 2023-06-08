@@ -676,7 +676,6 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                   }),
               TextButton(
                   style: TextButton.styleFrom(
-                    foregroundColor: Colors.white,
                     backgroundColor: Colors.red,
                   ),
                   onPressed: () {
@@ -694,7 +693,6 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                       Text("Delete All Tags", style: TextStyle(fontSize: 30))),
               TextButton(
                   style: TextButton.styleFrom(
-                    foregroundColor: Colors.white,
                     backgroundColor: Colors.red,
                   ),
                   onPressed: () {
@@ -710,7 +708,6 @@ class _ShowTagDeletion extends State<CriticalButtons> {
               ),
               TextButton(
                 style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
                   backgroundColor: Colors.red,
                 ),
                 onPressed: () {

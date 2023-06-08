@@ -31,6 +31,10 @@ jobs:
    needs: build
    runs-on: ubuntu-latest
    steps:
+     - name: Get the current branch name
+       shell: bash
+       run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
+       id: branchname
      - name: Download APK from build
        uses: actions/download-artifact@v1
        with:
@@ -42,7 +46,7 @@ jobs:
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
        with:
          tag_name: ${{ github.run_number }}
-         release_name: ${{ github.event.repository.name }} v${{ github.run_number }}
+         release_name: ${{ github.event.repository.name }} v${{ github.run_number }} ${{ steps.branchname.outputs.branch }}
      - name: Upload Release APK
        id: upload_release_asset
        uses: actions/upload-release-asset@v1.0.1
