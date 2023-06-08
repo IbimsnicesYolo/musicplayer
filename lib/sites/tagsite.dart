@@ -215,7 +215,6 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
             GetSongsFromTag(Tags[key]).forEach((key, value) {
               Playlist.AddToPlaylist(value);
             });
-            Playlist.Save();
           }
           if (result == 2) {
             Navigator.of(context)

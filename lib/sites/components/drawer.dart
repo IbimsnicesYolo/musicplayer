@@ -99,10 +99,20 @@ class SongDrawer extends Drawer {
                     StyledElevatedButton(
                       child: const Text("Add Random Song to Playlist"),
                       onPressed: () {
+                        int tries = 0;
                         final _random = new Random();
                         List keys = Songs.keys.toList();
-                        String element = keys[_random.nextInt(keys.length)];
-                        Song s = Songs[element];
+                        Song s;
+                        do {
+                          String element = keys[_random.nextInt(keys.length)];
+                          s = Songs[element];
+                          tries++;
+                          if (tries > Songs.length) {
+                            // no unlimited loop if every song is already in the playlist
+                            return;
+                          }
+                        }
+                        while(Playlist.Contains(s));
                         Playlist.AddToPlaylist(s);
                         final snackBar = SnackBar(
                           backgroundColor: Colors.green,

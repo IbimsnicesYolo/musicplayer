@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'classes/song.dart';
 import "classes/tag.dart";
+import 'classes/playlist.dart';
 
 final String Version = "Dev 1.7";
 bool NewVersionAvailable = false; // Bool which shows that the config saved on the phone is older than the Apps Version
@@ -42,7 +43,7 @@ void SaveConfig() {
   });
 }
 
-void LoadData(void Function(void Function()) reload) {
+void LoadData(void Function(void Function()) reload, MyAudioHandler _audioHandler) {
   String appDocDirectory = "storage/emulated/0/Music";
 
   try {
@@ -59,6 +60,7 @@ void LoadData(void Function(void Function()) reload) {
                 NewVersionAvailable = true;
               }
             }
+            _audioHandler.LoadPlaylist(reload);
           });
         }
         reload(() {});
@@ -77,7 +79,7 @@ void LoadData(void Function(void Function()) reload) {
             });
           }
           ValidateSongs();
-          reload(() {});
+          _audioHandler.LoadPlaylist(reload);
         });
       });
     }

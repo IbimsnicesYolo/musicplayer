@@ -6,18 +6,14 @@ Mobile Music Player
 
 W.I.P
 
+ - use new audio framework with visualizer
  - rework backend with sql db
  - add importing of old data
- - improve ui elements
- - find bugs in playlist actions
- - move tag creation button
- - fix search error
  - delete unused settings stuff
  - add option so sort by last played date
  - add fading in of next song
  - fix bug with updating MediaItem
  - add ability to get one song back with back instead of shuffling
- - change names of classes to be more clear
  - only load songs that need to be loaded
 
 

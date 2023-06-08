@@ -31,6 +31,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void AddToPlaylist(Song song) {
+    print("AddToPlaylist");
     if (Contains(song)) {
       return;
     }
@@ -39,6 +40,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void InsertAsNext(Song song) {
+    print("InsertAsNext");
     last_added_pos = 1;
     if (!Contains(song)) {
       songs.insert(1, song);
@@ -50,6 +52,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void Stack(Song song) {
+    print("Stack");
     last_added_pos += 1;
     if (!Contains(song)) {
       songs.insert(last_added_pos, song);
@@ -61,6 +64,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void UpDateMediaItem() {
+    print("UpDateMediaItem");
     if (songs.length > 1) {
       mediaItem.add(MediaItem(
         id: 'file://storage/' + songs[0].path,
@@ -81,19 +85,25 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       mediaItem.add(MediaItem(
           id: "",
           album: "",
-          title: "No songs in playlist",
+          title: "",
           artist: "",
           duration: Duration(seconds: 0)));
     }
     Save();
   }
 
-  void RemoveSong(Song song) {
-    songs.remove(song);
+  void RemoveSong(Song s) {
+    print("RemoveSong");
+    for (int i = 0; i < songs.length; i++) {
+      if (songs[i] == s) {
+        songs.remove(s);
+      }
+    }
     UpDateMediaItem();
   }
 
   void Shuffle() {
+    print("Shuffle");
     if (songs.length < 1) {
       return;
     }
@@ -108,6 +118,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void JumpToSong(Song song) async {
+    print("JumpToSong");
     int index = songs.indexOf(song);
     for (int i = 0; i < index; i++) {
       songs.add(songs.removeAt(0));
@@ -121,6 +132,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void DragNDropUpdate(int oldIndex, int newIndex) {
+    print("DragNDropUpdate");
     Song song = songs.removeAt(oldIndex);
     songs.insert(newIndex, song);
     last_added_pos = 0;
@@ -128,6 +140,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void PlayNextSong() async {
+    print("PlayNextSong");
     if (songs.length > 0) {
       if (deleteifplayed) {
         RemoveSong(songs[0]);
@@ -146,6 +159,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
 
   DateTime lastback = DateTime.now();
   void PlayPreviousSong() async {
+    print("PlayPreviousSong");
     if (songs.length > 0) {
       if (player.playing && DateTime.now().difference(lastback).inSeconds > 3) {
         lastback = DateTime.now();
@@ -160,6 +174,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void LoadNextToPlayer() async {
+    print("LoadNextToPlayer");
     if (songs.length > 0) {
       await player.seek(Duration(seconds: 0));
       await StartPlaying();
@@ -168,6 +183,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   Future<void> StartPlaying() async {
+    print("StartPlaying");
     if (songs.length > 0) {
       await player.stop();
       await player.setUrl('file://storage/' + songs[0].path);
@@ -178,6 +194,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   Future<void> StopPlaying() async {
+    print("StopPlaying");
     await player.stop();
     paused = false;
     await player.seek(Duration(seconds: 0));
@@ -185,6 +202,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   Future<void> PausePlaying() async {
+    print("PausePlaying");
     if (player.playing) {
       await player.pause();
       paused = true;
@@ -197,6 +215,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void Save() {
+    print("Save");
     List<String> names = [];
     songs.forEach((element) {
       names.add(element.filename);
@@ -206,12 +225,14 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void AddTagToAll(Tag t) {
+    print("AddTagToAll");
     songs.forEach((element) {
       UpdateSongTags(element.filename, t.id, true);
     });
   }
 
   void SaveToTag(id, void Function(void Function()) reload) {
+    print("SaveToTag");
     List<String> names = [];
     songs.forEach((element) {
       UpdateSongTags(element.filename, id, true);
@@ -226,6 +247,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void LoadPlaylist(void Function(void Function()) reload) {
+    print("LoadPlaylist");
     List savedsongs = Config["Playlist"];
     if (savedsongs.isNotEmpty) {
       savedsongs.forEach((element) {
@@ -233,11 +255,12 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
           AddToPlaylist(Songs[element]);
         }
       });
+      reload(() {});
     }
-    reload(() {});
   }
 
   void Clear() {
+    print("Clear");
     StopPlaying();
     songs = [];
     last_added_pos = 0;
@@ -282,6 +305,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> seek(Duration position) async {
+    print("seek");
     await player.seek(position);
   }
 

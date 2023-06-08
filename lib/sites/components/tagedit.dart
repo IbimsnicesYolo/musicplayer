@@ -167,13 +167,13 @@ class _TagChoose extends State<TagChoose> {
             ),
             StyledElevatedButton(
                 onPressed: () {
-                  if (create.text != "") {
+                  if (create.text.trim() != "") {
                     int id = CreateTag(create.text.trim());
                     Navigator.of(context).pop(id);
                   }
                 },
                 child: const Text("Create Tag")),
-            if (create.text == "")
+            if (create.text.trim() == "")
               for (int i = 0; i < Tags.length; i = i + 2)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -194,7 +194,7 @@ class _TagChoose extends State<TagChoose> {
                       ),
                   ],
                 ),
-            if (create.text != "")
+            if (create.text.trim() != "")
               for (int i = 0; i < Tags.length; i++)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,

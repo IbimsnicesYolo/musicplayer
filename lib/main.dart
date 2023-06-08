@@ -48,10 +48,11 @@ class MainSite extends StatefulWidget {
 class _MainSite extends State<MainSite> {
   int side = 0;
   int reverse = 0;
+  bool loaded = false;
 
   @override
   void initState() {
-    CFG.LoadData(update);
+    CFG.LoadData(update, _audioHandler);
     super.initState();
   }
 
@@ -85,8 +86,10 @@ class _MainSite extends State<MainSite> {
 
   @override
   Widget build(BuildContext context) {
-    CFG.LoadData(update);
-    _audioHandler.LoadPlaylist(update);
+    if (!loaded) {
+      CFG.LoadData(update, _audioHandler);
+      loaded = true;
+    }
     return buildSafeArea(context, side);
   }
 

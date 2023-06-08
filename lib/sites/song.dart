@@ -39,13 +39,14 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
               PopupMenuButton(
                   onSelected: (result) {
                     if (result == 0) {
+                      Playlist.Clear();
                       c(() {
                         Playlist.Clear();
                       });
                     }
                     if (result == 1) {
                       Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (_) => TagChoose()))
+                          .push(MaterialPageRoute(builder: (_) => const TagChoose()))
                           .then((value) {
                         if (value != -1) {
                           Playlist.SaveToTag(value, c);
@@ -54,7 +55,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
                     }
                     if (result == 2) {
                       Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (_) => TagChoose()))
+                          .push(MaterialPageRoute(builder: (_) => const TagChoose()))
                           .then((value) {
                         if (value != -1) {
                           Playlist.AddTagToAll(Tags[value]);

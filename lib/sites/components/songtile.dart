@@ -82,18 +82,22 @@ PopupMenuButton SongTile(
         );
       }
       if (result == 4) {
+        Playlist.RemoveSong(s);
         DeleteSong(s);
         c(() {});
       }
       if (result == 5) {
+        Playlist.RemoveSong(s);
         Playlist.InsertAsNext(s);
         // Play Song as Next Song
       }
       if (result == 6) {
+        Playlist.RemoveSong(s);
         Playlist.AddToPlaylist(s);
         // Add Song to End of Playlist
       }
       if (result == 7) {
+        Playlist.RemoveSong(s);
         Playlist.Stack(s);
         // Add Song to End of Added Songs
       }
@@ -163,7 +167,7 @@ Dismissible DismissibleSongTile(BuildContext context, Song s,
     key: Key(s.filename + s.hash),
     onDismissed: (DismissDirection direction) {
       if (direction == DismissDirection.startToEnd) {
-        // Dismissed to the left
+        // Dismissed to the right
         // background
         Playlist.RemoveSong(s);
       } else {
@@ -171,7 +175,7 @@ Dismissible DismissibleSongTile(BuildContext context, Song s,
         s.hash += "2";
         Playlist.Stack(s);
       }
-      Playlist.Save();
+      c(() {});
     },
     background: Container(
       color: Colors.red,
