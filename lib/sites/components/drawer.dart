@@ -666,17 +666,17 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                   }),
               TextButton(
                   style: TextButton.styleFrom(
-                    primary: Colors.white,
+                    foregroundColor: Colors.white,
                     backgroundColor: Colors.red,
                   ),
                   onPressed: () {
                     Tags = {};
                     ShouldSaveTags = true;
-                    SaveTags();
-                    UpdateAllTags();
                     Songs.forEach((key, value) {
                       value.tags = [];
                     });
+                    SaveTags();
+                    UpdateAllTags();
                     SaveSongs();
                     Navigator.pop(context);
                   },
@@ -684,7 +684,7 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                       Text("Delete All Tags", style: TextStyle(fontSize: 30))),
               TextButton(
                   style: TextButton.styleFrom(
-                    primary: Colors.white,
+                    foregroundColor: Colors.white,
                     backgroundColor: Colors.red,
                   ),
                   onPressed: () {
@@ -696,7 +696,34 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                     Navigator.pop(context);
                   },
                   child:
-                      Text("Delete All Songs", style: TextStyle(fontSize: 30))),
+                      Text("Delete All Songs", style: TextStyle(fontSize: 30)),
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.red,
+                ),
+                onPressed: () {
+                  widget.Pl.Clear();
+                  CFG.Config = {
+                    "HomeColor": CFG.HomeColor.value,
+                    "ContrastColor": CFG.ContrastColor.value,
+                    "SearchPaths": [
+                      "storage/emulated/0/Music",
+                      "storage/emulated/0/Download",
+                      "C:",
+                      "D:",
+                      "Library"
+                    ],
+                    "Playlist": [],
+                    "Version": CFG.Version,
+                  };
+                  CFG.SaveConfig();
+                  Navigator.pop(context);
+                },
+                child:
+                Text("Reset Config", style: TextStyle(fontSize: 30)),
+              ),
             ],
           ),
         ),

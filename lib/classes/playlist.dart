@@ -261,17 +261,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   @override
-  Future<void> setShuffleModeEnabled(bool b) async {
-    Shuffle();
-  }
-
-  @override
   Future<void> setShuffleMode(AudioServiceShuffleMode shuffleMode) async {
-    Shuffle();
-  }
-
-  @override
-  Future<void> onSetShuffleMode(AudioServiceShuffleMode shuffleMode) async {
     Shuffle();
   }
 

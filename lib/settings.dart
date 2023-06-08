@@ -42,82 +42,64 @@ void SaveConfig() {
   });
 }
 
-/*  Misc  */
-Future<void> ShowSth(String info, context) {
-  return showDialog<void>(
-    context: context,
-    barrierDismissible: true,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text(info),
-        content: const Text(""),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('Ok'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
 void LoadData(void Function(void Function()) reload) {
   String appDocDirectory = "storage/emulated/0/Music";
 
-  // Load Config
-  File(appDocDirectory + '/config.json')
-      .create(recursive: true)
-      .then((File file) {
-    file.readAsString().then((String contents) {
-      if (contents.isNotEmpty) {
-        jsonDecode(contents).forEach((key, value) {
-          Config[key] = value;
-          if (key == "Version") {
-            if (value != Version) {
-              NewVersionAvailable = true;
+  try {
+    // Load Config
+    File(appDocDirectory + '/config.json')
+        .create(recursive: true)
+        .then((File file) {
+      file.readAsString().then((String contents) {
+        if (contents.isNotEmpty) {
+          jsonDecode(contents).forEach((key, value) {
+            Config[key] = value;
+            if (key == "Version") {
+              if (value != Version) {
+                NewVersionAvailable = true;
+              }
             }
+          });
+        }
+        reload(() {});
+      });
+    });
+    if (Songs.isEmpty) {
+      // Load Songs
+      File(appDocDirectory + '/songs.json')
+          .create(recursive: true)
+          .then((File file) {
+        file.readAsString().then((String contents) {
+          if (contents.isNotEmpty) {
+            jsonDecode(contents).forEach((key, value) {
+              Song currentsong = Song.fromJson(value);
+              Songs[key] = currentsong;
+            });
           }
+          ValidateSongs();
+          reload(() {});
         });
-      }
-      reload(() {});
-    });
-  });
-  if (Songs.isEmpty) {
-    // Load Songs
-    File(appDocDirectory + '/songs.json')
-        .create(recursive: true)
-        .then((File file) {
-      file.readAsString().then((String contents) {
-        if (contents.isNotEmpty) {
-          jsonDecode(contents).forEach((key, value) {
-            Song currentsong = Song.fromJson(value);
-            Songs[key] = currentsong;
-          });
-        }
-        ValidateSongs();
-        reload(() {});
       });
-    });
-  }
+    }
 
-  if (Tags.isEmpty) {
-    // Load Tags
-    File(appDocDirectory + '/tags.json')
-        .create(recursive: true)
-        .then((File file) {
-      file.readAsString().then((String contents) {
-        if (contents.isNotEmpty) {
-          jsonDecode(contents).forEach((key, value) {
-            Tag currenttag = Tag.fromJson(value);
-            Tags[currenttag.id] = currenttag;
-          });
-        }
-        reload(() {});
+    if (Tags.isEmpty) {
+      // Load Tags
+      File(appDocDirectory + '/tags.json')
+          .create(recursive: true)
+          .then((File file) {
+        file.readAsString().then((String contents) {
+          if (contents.isNotEmpty) {
+            jsonDecode(contents).forEach((key, value) {
+              Tag currenttag = Tag.fromJson(value);
+              Tags[currenttag.id] = currenttag;
+            });
+          }
+          reload(() {});
+        });
       });
-    });
-    UpdateAllTags();
+      UpdateAllTags();
+    }
+  } catch (e) {
+    print(e);
   }
 }
