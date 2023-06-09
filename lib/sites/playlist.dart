@@ -42,9 +42,9 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
             (search, update) => Container(
                   child: ListView(
                     children: [
-                      for (String key in Config["Playlist"])
-                        if (ShouldShowSong(key, search))
-                          DismissibleSongTile(context, Songs[key], c, Playlist),
+                      for (Song s in Playlist.songs)
+                        if (ShouldShowSong(s.filename, search))
+                          DismissibleSongTile(context, Songs[s.filename], c, Playlist),
                     ],
                   ),
                 ),
@@ -83,6 +83,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
                 if (data == i) return;
                 if (i == 0 || data == 0) return;
                 Playlist.DragNDropUpdate(data, i);
+                c(() {});
               },
             ),
         ] else ...[

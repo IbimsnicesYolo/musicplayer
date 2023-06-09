@@ -82,12 +82,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
         duration: player.duration,
       ));
     } else {
-      mediaItem.add(MediaItem(
-          id: "",
-          album: "",
-          title: "",
-          artist: "",
-          duration: Duration(seconds: 0)));
+      mediaItem.close();
     }
     Save();
   }
@@ -119,7 +114,15 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
 
   void JumpToSong(Song song) async {
     print("JumpToSong");
-    int index = songs.indexOf(song);
+    int index = -1;
+    for (int i = 0; i < songs.length; i++) {
+      if (songs[i].filename == song.filename) {
+        index = i;
+        break;
+      }
+    }
+
+    if (index < 0) return;
     for (int i = 0; i < index; i++) {
       songs.add(songs.removeAt(0));
     }

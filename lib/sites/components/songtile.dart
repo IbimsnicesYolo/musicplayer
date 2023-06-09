@@ -84,7 +84,6 @@ PopupMenuButton SongTile(
       if (result == 4) {
         Playlist.RemoveSong(s);
         DeleteSong(s);
-        c(() {});
       }
       if (result == 5) {
         Playlist.RemoveSong(s);
@@ -103,7 +102,6 @@ PopupMenuButton SongTile(
       }
       if (result == 8) {
         s.blacklisted = !s.blacklisted;
-        c(() {});
         ShouldSaveSongs = true;
         SaveSongs();
       }
@@ -114,6 +112,7 @@ PopupMenuButton SongTile(
         Playlist.RemoveSong(s);
         Playlist.AddToPlaylist(s);
       }
+      c(() {});
     },
     child: (showchild)
         ? ListTile(
@@ -162,7 +161,24 @@ PopupMenuButton SongTile(
 
 Dismissible DismissibleSongTile(BuildContext context, Song s,
     void Function(void Function()) c, MyAudioHandler Playlist) {
-  int i = Playlist.songs.indexOf(s);
+  int i = -1; // Playlist.songs.indexOf(s); doesnt work because of the updated hash so it doesnt find the objects
+  for (int j = 0; j < Playlist.songs.length; j++) {
+    if (Playlist.songs[j].filename == s.filename) {
+      i = j;
+      break;
+    }
+  }
+  if (i < 0 || i >= Playlist.songs.length) {
+    return Dismissible(
+      key: Key(s.filename + s.hash + "weird"),
+      child: ListTile(
+        title: Text("ERROR: " + s.title),
+        trailing: Icon(Icons.drag_handle),
+        onTap: () {
+        },
+      ),
+    );
+  }
   return Dismissible(
     key: Key(s.filename + s.hash),
     onDismissed: (DismissDirection direction) {
@@ -207,6 +223,7 @@ Dismissible DismissibleSongTile(BuildContext context, Song s,
       subtitle: Text(s.interpret),
       onLongPress: () => {
         Playlist.JumpToSong(s),
+        c(() {}),
       },
       trailing: Draggable<int>(
         // Data is the value this Draggable stores.
@@ -214,7 +231,7 @@ Dismissible DismissibleSongTile(BuildContext context, Song s,
         feedback: Material(
           child: Container(
             child: Text(
-              Playlist.songs[i].title,
+              s.title,
               style: TextStyle(fontSize: 18),
             ),
           ),
@@ -252,6 +269,7 @@ Dismissible DismissibleSongTile(BuildContext context, Song s,
             if (data == i) return;
             if (i == 0 || data == 0) return;
             Playlist.DragNDropUpdate(data, i);
+            c(() {});
           },
         ),
       ),
