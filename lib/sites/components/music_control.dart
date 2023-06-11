@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../classes/playlist.dart';
+import 'dart:async';
 
 class ControlTile extends StatefulWidget {
   ControlTile({Key? key, required this.Playlist, required this.c})
@@ -43,6 +44,7 @@ class _ControlTile extends State<ControlTile> {
                     widget.c(() {
                       widget.Playlist.PausePlaying();
                     });
+                    Timer(const Duration(milliseconds: 500), () =>  widget.c(() {}));
                   },
                   icon: Icon((widget.Playlist.player.playing)
                       ? Icons.pause

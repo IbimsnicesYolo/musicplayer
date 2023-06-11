@@ -4,7 +4,7 @@ Mobile Music Player
 - Android 
 - (in future Windows)
 
-W.I.P
+W.I.Pw
 
  - use new audio framework with visualizer
  - rework backend with sql db
@@ -16,7 +16,10 @@ W.I.P
  - add ability to get one song back with back instead of shuffling
  - only load songs that need to be loaded
 
-
+https://pub.dev/packages/flutter_audio_waveforms
+https://pub.dev/packages/assets_audio_player
+https://pub.dev/packages/path_provider
+https://pub.dev/packages/audio_waveforms
 
 Works with giving Tags to the Songs.
 
