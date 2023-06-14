@@ -5,6 +5,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:audio_service/audio_service.dart';
 
 class MyAudioHandler extends BaseAudioHandler with SeekHandler {
+  void Function(void Function()) update = (a) {};
   List<Song> songs = [];
   int last_added_pos = 0;
   bool start = false;
@@ -28,6 +29,10 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       }
     }
     return false;
+  }
+
+  void SetUpdate(void Function(void Function()) c){
+    update = c;
   }
 
   void AddToPlaylist(Song song) {
@@ -84,6 +89,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     } else {
       mediaItem.close();
     }
+    update(() {});
     Save();
   }
 

@@ -53,6 +53,7 @@ class _MainSite extends State<MainSite> {
   @override
   void initState() {
     CFG.LoadData(update, _audioHandler);
+    _audioHandler.SetUpdate(update);
     super.initState();
   }
 

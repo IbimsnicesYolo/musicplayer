@@ -44,7 +44,6 @@ class _ControlTile extends State<ControlTile> {
                     widget.c(() {
                       widget.Playlist.PausePlaying();
                     });
-                    Timer(const Duration(milliseconds: 500), () =>  widget.c(() {}));
                   },
                   icon: Icon((widget.Playlist.player.playing)
                       ? Icons.pause
