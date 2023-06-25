@@ -60,7 +60,7 @@ void LoadData(void Function(void Function()) reload, MyAudioHandler _audioHandle
                 NewVersionAvailable = true;
               }
             }
-            _audioHandler.LoadPlaylist(reload);
+            _audioHandler.LoadPlaylist();
           });
         }
         reload(() {});
@@ -79,7 +79,7 @@ void LoadData(void Function(void Function()) reload, MyAudioHandler _audioHandle
             });
           }
           ValidateSongs();
-          _audioHandler.LoadPlaylist(reload);
+          _audioHandler.LoadPlaylist();
         });
       });
     }

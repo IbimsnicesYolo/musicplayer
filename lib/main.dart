@@ -53,7 +53,10 @@ class _MainSite extends State<MainSite> {
   @override
   void initState() {
     CFG.LoadData(update, _audioHandler);
-    _audioHandler.SetUpdate(update);
+    _audioHandler.update = update;
+    Future.delayed(const Duration(minutes:1), () {
+      CheckForUpdate(context);
+    });
     super.initState();
   }
 
@@ -95,7 +98,6 @@ class _MainSite extends State<MainSite> {
   }
 
   SafeArea buildSafeArea(BuildContext context, side) {
-    CheckForUpdate(context);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(

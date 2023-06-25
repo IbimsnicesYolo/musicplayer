@@ -36,61 +36,39 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              PopupMenuButton(
-                  onSelected: (result) {
-                    if (result == 0) {
-                      Playlist.Clear();
-                      c(() {
-                        Playlist.Clear();
-                      });
+              ElevatedButton(
+                child: const Text("Clear"),
+                onPressed: () {
+                  Playlist.Clear();
+                  c(() {
+                    Playlist.Clear();
+                  });
+                },
+              ),
+              ElevatedButton(
+                child: const Text("Save To Tag"),
+                onPressed: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (_) => const TagChoose()))
+                      .then((value) {
+                    if (value != -1) {
+                      Playlist.SaveToTag(value);
                     }
-                    if (result == 1) {
-                      Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (_) => const TagChoose()))
-                          .then((value) {
-                        if (value != -1) {
-                          Playlist.SaveToTag(value, c);
-                        }
-                      });
+                  });
+                },
+              ),
+              ElevatedButton(
+                child: const Text("Add To Tag"),
+                onPressed: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (_) => const TagChoose()))
+                      .then((value) {
+                    if (value != -1) {
+                      Playlist.AddTagToAll(Tags[value]);
                     }
-                    if (result == 2) {
-                      Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (_) => const TagChoose()))
-                          .then((value) {
-                        if (value != -1) {
-                          Playlist.AddTagToAll(Tags[value]);
-                        }
-                      });
-                    }
-
-                  },
-                  child: Text("Actions"),
-                  itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                      PopupMenuItem(
-                        child: Text("Clear Playlist"),
-                        value: 0,
-                      ),
-                      PopupMenuItem(
-                        child: Text("Save To Tag"),
-                        value: 1,
-                      ),
-                      PopupMenuItem(
-                        child: Text("Add all To Tag"),
-                        value: 2,
-                      ),
-                  ],
-                ),
-                Text("Delete if played:"),
-                Switch(
-                  activeColor: Colors.amber,
-                  activeTrackColor: Colors.cyan,
-                  inactiveThumbColor: Colors.blueGrey.shade600,
-                  inactiveTrackColor: Colors.grey.shade400,
-                  splashRadius: 50.0,
-                  value: Playlist.deleteifplayed,
-                  // changes the state of the switch
-                  onChanged: (value) => c(() => Playlist.deleteifplayed = value),
-                ),
+                  });
+                },
+              ),
             ],
           ),
           // Place for Equializer
@@ -101,7 +79,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
               child: ListView(
                 shrinkWrap: true,
                 children: [
-                  for (int i = 1; i < 5; i++)
+                  for (int i = 1; i < 4; i++)
                     if (i < Playlist.songs.length)
                       DragTarget<int>(
                         builder: (

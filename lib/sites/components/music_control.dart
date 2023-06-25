@@ -26,7 +26,7 @@ class _ControlTile extends State<ControlTile> {
                 IconButton(
                   onPressed: () {
                     widget.c(() {
-                      widget.Playlist.PlayPreviousSong();
+                      widget.Playlist.skipToPrevious();
                     });
                   },
                   icon: Icon(Icons.skip_previous),
@@ -42,7 +42,7 @@ class _ControlTile extends State<ControlTile> {
                 IconButton(
                   onPressed: () {
                     widget.c(() {
-                      widget.Playlist.PausePlaying();
+                      widget.Playlist.pause();
                     });
                   },
                   icon: Icon((widget.Playlist.player.playing)
@@ -52,7 +52,7 @@ class _ControlTile extends State<ControlTile> {
                 IconButton(
                   onPressed: () {
                     widget.c(() {
-                      widget.Playlist.StopPlaying();
+                      widget.Playlist.stop();
                     });
                   },
                   icon: Icon(Icons.stop),
@@ -60,7 +60,7 @@ class _ControlTile extends State<ControlTile> {
                 IconButton(
                   onPressed: () {
                     widget.c(() {
-                      widget.Playlist.PlayNextSong();
+                      widget.Playlist.skipToNext();
                     });
                   },
                   icon: Icon(Icons.skip_next),
