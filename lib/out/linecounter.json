@@ -1,0 +1,132 @@
+{
+    "extension": "linecounter",
+    "version": "0.2.7",
+    "workspace": "e:\\mobile\\projects\\musicplayer\\lib",
+    "linecount": [
+        {
+            "version": "0.2.7",
+            "counttime": "2023-06-27 21:38:40",
+            "filesum": 18,
+            "codesum": 3099,
+            "commentsum": 135,
+            "blanksum": 199,
+            "statistics": {
+                ".dart": {
+                    "code": 3099,
+                    "comment": 135,
+                    "blank": 199
+                }
+            },
+            "filelist": [
+                {
+                    "blank": 28,
+                    "code": 297,
+                    "comment": 6,
+                    "filename": "classes\\playlist.dart"
+                },
+                {
+                    "blank": 19,
+                    "code": 162,
+                    "comment": 3,
+                    "filename": "classes\\song.dart"
+                },
+                {
+                    "blank": 14,
+                    "code": 103,
+                    "comment": 2,
+                    "filename": "classes\\tag.dart"
+                },
+                {
+                    "blank": 11,
+                    "code": 162,
+                    "comment": 2,
+                    "filename": "main.dart"
+                },
+                {
+                    "blank": 8,
+                    "code": 95,
+                    "comment": 5,
+                    "filename": "settings.dart"
+                },
+                {
+                    "blank": 8,
+                    "code": 97,
+                    "comment": 12,
+                    "filename": "sites\\allsongs.dart"
+                },
+                {
+                    "blank": 7,
+                    "code": 58,
+                    "comment": 0,
+                    "filename": "sites\\components\\checkbox.dart"
+                },
+                {
+                    "blank": 32,
+                    "code": 701,
+                    "comment": 7,
+                    "filename": "sites\\components\\drawer.dart"
+                },
+                {
+                    "blank": 1,
+                    "code": 17,
+                    "comment": 0,
+                    "filename": "sites\\components\\elevatedbutton.dart"
+                },
+                {
+                    "blank": 4,
+                    "code": 69,
+                    "comment": 0,
+                    "filename": "sites\\components\\music_control.dart"
+                },
+                {
+                    "blank": 18,
+                    "code": 117,
+                    "comment": 54,
+                    "filename": "sites\\components\\player_widget.dart"
+                },
+                {
+                    "blank": 8,
+                    "code": 74,
+                    "comment": 3,
+                    "filename": "sites\\components\\search.dart"
+                },
+                {
+                    "blank": 2,
+                    "code": 266,
+                    "comment": 11,
+                    "filename": "sites\\components\\songtile.dart"
+                },
+                {
+                    "blank": 10,
+                    "code": 180,
+                    "comment": 3,
+                    "filename": "sites\\components\\string_input.dart"
+                },
+                {
+                    "blank": 12,
+                    "code": 204,
+                    "comment": 4,
+                    "filename": "sites\\components\\tagedit.dart"
+                },
+                {
+                    "blank": 6,
+                    "code": 87,
+                    "comment": 9,
+                    "filename": "sites\\playlist.dart"
+                },
+                {
+                    "blank": 2,
+                    "code": 101,
+                    "comment": 2,
+                    "filename": "sites\\song.dart"
+                },
+                {
+                    "blank": 9,
+                    "code": 309,
+                    "comment": 12,
+                    "filename": "sites\\tagsite.dart"
+                }
+            ]
+        }
+    ]
+}

@@ -149,8 +149,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     print("LoadNextToPlayer");
     if (songs.length > 0) {
       await player.seek(Duration(seconds: 0));
-      await play();
-      await player.pause();
+      await play(true);
     }
   }
 
@@ -207,7 +206,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     Save();
   }
 
-  Future<void> play() async {
+  Future<void> play([pause = false]) async {
     if (paused) {
       player.play();
       paused = false;
@@ -216,8 +215,12 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
         if (songs.length > 0) {
           await player.stop();
           await player.setUrl('file://storage/' + songs[0].path);
-          await player.play();
-          paused = false;
+          if (pause || paused) {
+            player.pause();
+          } else {
+            paused = false;
+            await player.play();
+          }
           UpDateMediaItem();
         }
     }

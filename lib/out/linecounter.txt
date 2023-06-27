@@ -1,0 +1,35 @@
+===============================================================================
+EXTENSION NAME : linecounter
+EXTENSION VERSION : 0.2.7
+-------------------------------------------------------------------------------
+count time : 2023-06-27 21:38:40
+count workspace : e:\mobile\projects\musicplayer\lib
+total files : 18
+total code lines : 3099
+total comment lines : 135
+total blank lines : 199
+
+    statistics
+   |      extension|     total code|  total comment|    total blank|percent|
+   -------------------------------------------------------------------------
+   |          .dart|           3099|            135|            199| 1.0e+2|
+   -------------------------------------------------------------------------
+classes\playlist.dart, code is 297, comment is 6, blank is 28.
+classes\song.dart, code is 162, comment is 3, blank is 19.
+classes\tag.dart, code is 103, comment is 2, blank is 14.
+main.dart, code is 162, comment is 2, blank is 11.
+settings.dart, code is 95, comment is 5, blank is 8.
+sites\allsongs.dart, code is 97, comment is 12, blank is 8.
+sites\components\checkbox.dart, code is 58, comment is 0, blank is 7.
+sites\components\drawer.dart, code is 701, comment is 7, blank is 32.
+sites\components\elevatedbutton.dart, code is 17, comment is 0, blank is 1.
+sites\components\music_control.dart, code is 69, comment is 0, blank is 4.
+sites\components\player_widget.dart, code is 117, comment is 54, blank is 18.
+sites\components\search.dart, code is 74, comment is 3, blank is 8.
+sites\components\songtile.dart, code is 266, comment is 11, blank is 2.
+sites\components\string_input.dart, code is 180, comment is 3, blank is 10.
+sites\components\tagedit.dart, code is 204, comment is 4, blank is 12.
+sites\playlist.dart, code is 87, comment is 9, blank is 6.
+sites\song.dart, code is 101, comment is 2, blank is 2.
+sites\tagsite.dart, code is 309, comment is 12, blank is 9.
+===============================================================================
