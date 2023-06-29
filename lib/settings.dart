@@ -6,7 +6,7 @@ import 'classes/song.dart';
 import "classes/tag.dart";
 import 'classes/playlist.dart';
 
-final String Version = "Dev 1.7";
+final String Version = "Dev 1.8";
 bool NewVersionAvailable = false; // Bool which shows that the config saved on the phone is older than the Apps Version
 Color HomeColor = Color.fromRGBO(61, 61, 61, 0);
 Color ContrastColor = Color.fromRGBO(0, 255, 76, 0);
