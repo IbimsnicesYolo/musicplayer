@@ -1,9 +1,9 @@
+import 'package:flutter/material.dart';
+
 import "../classes/playlist.dart";
 import "../classes/song.dart";
-import "../settings.dart";
-import 'package:flutter/material.dart';
-import 'components/search.dart';
 import "components/music_control.dart";
+import 'components/search.dart';
 import 'components/songtile.dart';
 
 bool ShouldShowSong(String key, String search) {
@@ -12,15 +12,12 @@ bool ShouldShowSong(String key, String search) {
   }
   if (search == "") return true;
 
-  if (Songs[key].title.toLowerCase().contains(search.toLowerCase()))
-    return true;
+  if (Songs[key].title.toLowerCase().contains(search.toLowerCase())) return true;
 
-  if (Songs[key].interpret.toLowerCase().contains(search.toLowerCase()))
-    return true;
+  if (Songs[key].interpret.toLowerCase().contains(search.toLowerCase())) return true;
 
   if (Songs[key].featuring != "" &&
-      Songs[key].featuring.toLowerCase().contains(search.toLowerCase()))
-    return true;
+      Songs[key].featuring.toLowerCase().contains(search.toLowerCase())) return true;
 /*
   List<String> searchname = search.toLowerCase().split(" ");
 
@@ -33,8 +30,8 @@ bool ShouldShowSong(String key, String search) {
   return false;
 }
 
-IconButton buildActions(BuildContext context, void Function(void Function()) c,
-    MyAudioHandler Playlist) {
+IconButton buildActions(
+    BuildContext context, void Function(void Function()) c, MyAudioHandler Playlist) {
   return IconButton(
     onPressed: () => Navigator.of(context).push(
       MaterialPageRoute(
@@ -55,8 +52,8 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
   );
 }
 
-Container buildContent(BuildContext context, void Function(void Function()) c,
-    MyAudioHandler Playlist) {
+Container buildContent(
+    BuildContext context, void Function(void Function()) c, MyAudioHandler Playlist) {
   return Container(
     child: ListView(
       reverse: true,
@@ -76,8 +73,7 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
                 List<dynamic> accepted,
                 List<dynamic> rejected,
               ) {
-                return DismissibleSongTile(
-                    context, Playlist.songs[i], c, Playlist);
+                return DismissibleSongTile(context, Playlist.songs[i], c, Playlist);
               },
               onAccept: (int data) {
                 if (data == i) return;

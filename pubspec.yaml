@@ -30,8 +30,6 @@ dependencies:
   audio_service: ^0.18.9
   flutter:
     sdk: flutter
-
-
   just_audio: ^0.9.31
   permission_handler: ^10.0.2
 
