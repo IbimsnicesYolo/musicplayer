@@ -38,59 +38,56 @@ void SaveConfig() {
   });
 }
 
-void LoadData(void Function(void Function()) reload, MyAudioHandler _audioHandler) {
+void LoadData(reload, MyAudioHandler _audioHandler) {
   print("Loading Data");
   String appDocDirectory = "storage/emulated/0/Music";
 
-  try {
-    // Load Config
-    File(appDocDirectory + '/config.json').create(recursive: true).then((File file) {
-      file.readAsString().then((String contents) {
-        if (contents.isNotEmpty) {
-          jsonDecode(contents).forEach((key, value) {
-            Config[key] = value;
-            if (key == "Version") {
-              if (value != Version) {
-                NewVersionAvailable = true;
+  Future.delayed(Duration(seconds: 2), () {
+    try {
+      // Load Config
+      File(appDocDirectory + '/config.json').create(recursive: true).then((File file) {
+        file.readAsString().then((String contents) {
+          if (contents.isNotEmpty) {
+            jsonDecode(contents).forEach((key, value) {
+              Config[key] = value;
+              if (key == "Version") {
+                if (value != Version) {
+                  NewVersionAvailable = true;
+                }
               }
-            }
+            });
+          }
+          // Load Songs
+          File(appDocDirectory + '/songs.json').create(recursive: true).then((File file) {
+            file.readAsString().then((String contents) {
+              if (contents.isNotEmpty) {
+                jsonDecode(contents).forEach((key, value) {
+                  Song currentsong = Song.fromJson(value);
+                  Songs[key] = currentsong;
+                });
+                ValidateSongs();
+              }
+              // Load Tags
+              File(appDocDirectory + '/tags.json').create(recursive: true).then((File file) {
+                file.readAsString().then((String contents) {
+                  if (contents.isNotEmpty) {
+                    jsonDecode(contents).forEach((key, value) {
+                      Tag currenttag = Tag.fromJson(value);
+                      Tags[currenttag.id] = currenttag;
+                    });
+                    UpdateAllTags();
+                  }
+                  Future.delayed(Duration(seconds: 1), () {
+                    _audioHandler.LoadPlaylist(reload);
+                  });
+                });
+              });
+            });
           });
-        }
-        reload(() {});
+        });
       });
-    });
-
-    // Load Songs
-    File(appDocDirectory + '/songs.json').create(recursive: true).then((File file) {
-      file.readAsString().then((String contents) {
-        if (contents.isNotEmpty || contents != "") {
-          print("jsonDecode LoadData");
-          jsonDecode(contents).forEach((key, value) {
-            Song currentsong = Song.fromJson(value);
-            Songs[key] = currentsong;
-          });
-        } else {
-          print("No Songs found in LoadData");
-        }
-        ValidateSongs();
-        _audioHandler.LoadPlaylist();
-      });
-    });
-
-    // Load Tags
-    File(appDocDirectory + '/tags.json').create(recursive: true).then((File file) {
-      file.readAsString().then((String contents) {
-        if (contents.isNotEmpty) {
-          jsonDecode(contents).forEach((key, value) {
-            Tag currenttag = Tag.fromJson(value);
-            Tags[currenttag.id] = currenttag;
-          });
-        }
-        reload(() {});
-      });
-    });
-    UpdateAllTags();
-  } catch (e) {
-    print(e);
-  }
+    } catch (e) {
+      print(e);
+    }
+  });
 }

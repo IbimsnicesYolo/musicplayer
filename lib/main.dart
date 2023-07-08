@@ -51,6 +51,20 @@ class _MainSite extends State<MainSite> {
   int reverse = 0;
   bool loaded = false;
 
+  void CheckForUpdate(BuildContext context) async {
+    if (CFG.NewVersionAvailable) {
+      CFG.NewVersionAvailable = false;
+      await Future.delayed(Duration(seconds: 1));
+      final snackBar = SnackBar(
+        backgroundColor: Colors.green,
+        content: const Text('New Version Available, Update Config!'),
+      );
+      // Find the ScaffoldMessenger in the widget tree
+      // and use it to show a SnackBar.
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
   @override
   void initState() {
     _audioHandler.update = update;
@@ -74,26 +88,30 @@ class _MainSite extends State<MainSite> {
     );
   }
 
-  void CheckForUpdate(BuildContext context) async {
-    if (CFG.NewVersionAvailable) {
-      CFG.NewVersionAvailable = false;
-      await Future.delayed(Duration(seconds: 1));
-      final snackBar = SnackBar(
-        backgroundColor: Colors.green,
-        content: const Text('New Version Available, Update Config!'),
-      );
-      // Find the ScaffoldMessenger in the widget tree
-      // and use it to show a SnackBar.
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
+  void doneloading() {
+    setState(() {
+      loaded = true;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     if (!loaded) {
-      CFG.LoadData(update, _audioHandler);
-      loaded = true;
+      CFG.LoadData(doneloading, _audioHandler);
+
+      return Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset("assets/loading.gif"),
+            ],
+          ),
+        ),
+      );
     }
+
     return buildSafeArea(context, side);
   }
 

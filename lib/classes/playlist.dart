@@ -1,8 +1,9 @@
+import 'package:audio_service/audio_service.dart';
+import 'package:just_audio/just_audio.dart';
+
+import "../settings.dart";
 import 'song.dart';
 import "tag.dart";
-import "../settings.dart";
-import 'package:just_audio/just_audio.dart';
-import 'package:audio_service/audio_service.dart';
 
 class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   late void Function(void Function()) update;
@@ -28,17 +29,20 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     return false;
   }
 
-  void SetUpdate(void Function(void Function()) c){
+  void SetUpdate(void Function(void Function()) c) {
     update = c;
   }
 
-  void AddToPlaylist(Song song) {
+  void AddToPlaylist(Song song, {bool update = true}) {
     print("AddToPlaylist");
     if (Contains(song)) {
       return;
     }
     songs.add(song);
-    UpDateMediaItem();
+
+    if (update) {
+      UpDateMediaItem();
+    }
   }
 
   void InsertAsNext(Song song) {
@@ -65,7 +69,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     UpDateMediaItem();
   }
 
-  void UpDateMediaItem() {
+  void UpDateMediaItem({bool shouldupdate = true}) {
     print("UpDateMediaItem");
     if (songs.length > 1) {
       mediaItem.add(MediaItem(
@@ -86,8 +90,10 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     } else {
       mediaItem.close();
     }
-    update(() {});
-    Save();
+    if (shouldupdate) {
+      update(() {});
+      Save();
+    }
   }
 
   void RemoveSong(Song s) {
@@ -185,17 +191,21 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     update(() {});
   }
 
-  void LoadPlaylist() {
+  Future<void> LoadPlaylist(done) async {
     print("LoadPlaylist");
     List savedsongs = Config["Playlist"];
     if (savedsongs.isNotEmpty) {
-      savedsongs.forEach((element) {
+      savedsongs.forEach((element) async {
+        await Future.delayed(Duration(milliseconds: 100));
         if (Songs.containsKey(element)) {
-          AddToPlaylist(Songs[element]);
+          AddToPlaylist(Songs[element], update: false);
         }
       });
-      update(() {});
+      UpDateMediaItem(shouldupdate: false);
     }
+    Future.delayed(Duration(seconds: 1)).then((value) {
+      done();
+    });
   }
 
   void Clear() {
@@ -211,40 +221,40 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       player.play();
       paused = false;
     } else {
-        print("StartPlaying");
-        if (songs.length > 0) {
-          await player.stop();
-          await player.setUrl('file://storage/' + songs[0].path);
-          if (pause || paused) {
-            player.pause();
-          } else {
-            paused = false;
-            await player.play();
-          }
-          UpDateMediaItem();
+      print("StartPlaying");
+      if (songs.length > 0) {
+        await player.stop();
+        await player.setUrl('file://storage/' + songs[0].path);
+        if (pause || paused) {
+          player.pause();
+        } else {
+          paused = false;
+          await player.play();
         }
+        UpDateMediaItem();
+      }
     }
   }
 
   Future<void> pause() async {
-      print("PausePlaying");
-      if (player.playing) {
-        await player.pause();
-        paused = true;
-      } else if (paused) {
-        player.play();
-        paused = false;
-      } else {
-        play();
-      }
+    print("PausePlaying");
+    if (player.playing) {
+      await player.pause();
+      paused = true;
+    } else if (paused) {
+      player.play();
+      paused = false;
+    } else {
+      play();
+    }
   }
 
   Future<void> stop() async {
-      print("StopPlaying");
-      await player.stop();
-      paused = false;
-      await player.seek(Duration(seconds: 0));
-      UpDateMediaItem();
+    print("StopPlaying");
+    await player.stop();
+    paused = false;
+    await player.seek(Duration(seconds: 0));
+    UpDateMediaItem();
   }
 
   @override
@@ -258,33 +268,32 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   Future<void> skipToNext([next = false]) async {
-      print("PlayNextSong");
-      if (songs.length > 0) {
-        songs.add(songs.removeAt(0));
-        if (player.playing || next) {
-          await player.seek(Duration(seconds: 0));
-          play();
-        } else {
-          LoadNextToPlayer();
-        }
+    print("PlayNextSong");
+    if (songs.length > 0) {
+      songs.add(songs.removeAt(0));
+      if (player.playing || next) {
+        await player.seek(Duration(seconds: 0));
+        play();
+      } else {
+        LoadNextToPlayer();
+      }
     }
   }
 
   DateTime lastback = DateTime.now();
   Future<void> skipToPrevious() async {
-      print("PlayPreviousSong");
-      if (songs.length > 0) {
-        if (player.playing && DateTime.now().difference(lastback).inSeconds > 3) {
-          lastback = DateTime.now();
-          await player.seek(Duration(seconds: 0));
-          play();
-        } else {
-          await pause();
-          Shuffle();
-          play();
-        }
+    print("PlayPreviousSong");
+    if (songs.length > 0) {
+      if (player.playing && DateTime.now().difference(lastback).inSeconds > 3) {
+        lastback = DateTime.now();
+        await player.seek(Duration(seconds: 0));
+        play();
+      } else {
+        await pause();
+        Shuffle();
+        play();
       }
-
+    }
   }
 
   @override
