@@ -38,7 +38,7 @@ void SaveConfig() {
   });
 }
 
-void LoadData(reload, MyAudioHandler _audioHandler) {
+void LoadData(reload, MyAudioHandler _audioHandler) async {
   print("Loading Data");
   String appDocDirectory = "storage/emulated/0/Music";
 
@@ -61,7 +61,8 @@ void LoadData(reload, MyAudioHandler _audioHandler) {
           File(appDocDirectory + '/songs.json').create(recursive: true).then((File file) {
             file.readAsString().then((String contents) {
               if (contents.isNotEmpty) {
-                jsonDecode(contents).forEach((key, value) {
+                jsonDecode(contents).forEach((key, value) async {
+                  await Future.delayed(Duration(milliseconds: 1));
                   Song currentsong = Song.fromJson(value);
                   Songs[key] = currentsong;
                 });
@@ -71,7 +72,8 @@ void LoadData(reload, MyAudioHandler _audioHandler) {
               File(appDocDirectory + '/tags.json').create(recursive: true).then((File file) {
                 file.readAsString().then((String contents) {
                   if (contents.isNotEmpty) {
-                    jsonDecode(contents).forEach((key, value) {
+                    jsonDecode(contents).forEach((key, value) async {
+                      await Future.delayed(Duration(milliseconds: 1));
                       Tag currenttag = Tag.fromJson(value);
                       Tags[currenttag.id] = currenttag;
                     });
