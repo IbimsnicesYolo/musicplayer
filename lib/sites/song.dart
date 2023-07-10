@@ -57,7 +57,7 @@ Container buildContent(
                           if (value != -1) {
                             Playlist.SaveToTag(value);
                           }
-                        });
+                        }).then((value) => c(() {}));
                       },
                     ),
                     ElevatedButton(
@@ -69,7 +69,7 @@ Container buildContent(
                           if (value != -1) {
                             Playlist.AddTagToAll(Tags[value]);
                           }
-                        });
+                        }).then((value) => c(() {}));
                       },
                     ),
                   ],

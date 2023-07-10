@@ -1,6 +1,7 @@
-import "../classes/song.dart";
-import "../classes/playlist.dart";
 import 'package:flutter/material.dart';
+
+import "../classes/playlist.dart";
+import "../classes/song.dart";
 import 'components/search.dart';
 import "components/songtile.dart";
 
@@ -10,15 +11,12 @@ bool ShouldShowSong(String key, String search) {
   }
   if (search == "") return true;
 
-  if (Songs[key].title.toLowerCase().contains(search.toLowerCase()))
-    return true;
+  if (Songs[key].title.toLowerCase().contains(search.toLowerCase())) return true;
 
-  if (Songs[key].interpret.toLowerCase().contains(search.toLowerCase()))
-    return true;
+  if (Songs[key].interpret.toLowerCase().contains(search.toLowerCase())) return true;
 
   if (Songs[key].featuring != 0 &&
-      Songs[key].featuring.toLowerCase().contains(search.toLowerCase()))
-    return true;
+      Songs[key].featuring.toLowerCase().contains(search.toLowerCase())) return true;
 
   /*
   List<String> searchname = search.toLowerCase().split(" ");
@@ -31,42 +29,44 @@ bool ShouldShowSong(String key, String search) {
   return false;
 }
 
-IconButton buildActions(BuildContext context, void Function(void Function()) c,
-    MyAudioHandler Playlist) {
+IconButton buildActions(
+    BuildContext context, void Function(void Function()) c, MyAudioHandler Playlist) {
   return IconButton(
-    onPressed: () => Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => SearchPage(
-            (search, update) => Container(
-                  child: ListView(
-                    children: [
-                      for (String key in Songs.keys)
-                        if (ShouldShowSong(key, search))
-                          SongTile(context, Songs[key], c, Playlist, true, {
-                            0: true,
-                            1: true,
-                            2: true,
-                            3: true,
-                            4: true,
-                            5: true,
-                            6: true,
-                            7: true,
-                            8: true,
-                            9: false,
-                            10: false,
-                          }),
-                    ],
-                  ),
-                ),
-            ""),
-      ),
-    ),
+    onPressed: () => Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (_) => SearchPage(
+                (search, update) => Container(
+                      child: ListView(
+                        children: [
+                          for (String key in Songs.keys)
+                            if (ShouldShowSong(key, search))
+                              SongTile(context, Songs[key], c, Playlist, true, {
+                                0: true,
+                                1: true,
+                                2: true,
+                                3: true,
+                                4: true,
+                                5: true,
+                                6: true,
+                                7: true,
+                                8: true,
+                                9: false,
+                                10: false,
+                              }),
+                        ],
+                      ),
+                    ),
+                ""),
+          ),
+        )
+        .then((value) => c(() {})),
     icon: const Icon(Icons.search),
   );
 }
 
-ListView buildContent(BuildContext context, void Function(void Function()) c,
-    MyAudioHandler Playlist, int reverse) {
+ListView buildContent(
+    BuildContext context, void Function(void Function()) c, MyAudioHandler Playlist, int reverse) {
   List sorted = Songs.values.toList();
   sorted.sort((a, b) {
     return a.tags.length.compareTo(b.tags.length);

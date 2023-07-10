@@ -13,7 +13,6 @@ class Song {
   String title = "Song Title";
   String interpret = "Song Interpret";
   String featuring = "";
-  String hash = "";
   bool edited = false;
   bool blacklisted = false;
   bool hastags = false;

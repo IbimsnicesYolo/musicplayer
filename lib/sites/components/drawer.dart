@@ -1,20 +1,21 @@
+import "dart:async";
+import 'dart:io';
+import "dart:math";
+
 import 'package:flutter/material.dart';
-import '../../settings.dart' as CFG;
+
 import "../../classes/playlist.dart";
 import "../../classes/song.dart";
 import "../../classes/tag.dart";
+import '../../settings.dart' as CFG;
 import "../allsongs.dart";
-import 'dart:io';
-import "dart:async";
-import "dart:math";
-import "search.dart";
-import "string_input.dart";
 import "elevatedbutton.dart";
+import "search.dart";
 import "songtile.dart";
+import "string_input.dart";
 
 class SongDrawer extends Drawer {
-  const SongDrawer({Key? key, required this.c, required this.Playlist})
-      : super(key: key);
+  const SongDrawer({Key? key, required this.c, required this.Playlist}) : super(key: key);
 
   final MyAudioHandler Playlist;
   final void Function(void Function()) c;
@@ -53,8 +54,7 @@ class SongDrawer extends Drawer {
                           Navigator.of(context)
                               .push(
                                 MaterialPageRoute(
-                                  builder: (_) =>
-                                      ShowSongEdit(Playlist: Playlist, c: c),
+                                  builder: (_) => ShowSongEdit(Playlist: Playlist, c: c),
                                 ),
                               )
                               .then((value) => c(() {}));
@@ -77,8 +77,7 @@ class SongDrawer extends Drawer {
                         Navigator.of(context)
                             .push(
                               MaterialPageRoute(
-                                builder: (_) =>
-                                    ShowBlacklist(Playlist: Playlist, c: c),
+                                builder: (_) => ShowBlacklist(Playlist: Playlist, c: c),
                               ),
                             )
                             .then((value) => c(() {}));
@@ -111,8 +110,7 @@ class SongDrawer extends Drawer {
                             // no unlimited loop if every song is already in the playlist
                             return;
                           }
-                        }
-                        while(Playlist.Contains(s));
+                        } while (Playlist.Contains(s));
                         Playlist.AddToPlaylist(s);
                         final snackBar = SnackBar(
                           backgroundColor: Colors.green,
@@ -123,10 +121,8 @@ class SongDrawer extends Drawer {
                     ),
                     Text("Version:", style: TextStyle(fontSize: 20)),
                     Text(CFG.Version, style: TextStyle(fontSize: 20)),
-                    Text("\nTags:" + Tags.length.toString(),
-                        style: TextStyle(fontSize: 20)),
-                    Text("\nSongs:" + Songs.length.toString(),
-                        style: TextStyle(fontSize: 20)),
+                    Text("\nTags:" + Tags.length.toString(), style: TextStyle(fontSize: 20)),
+                    Text("\nSongs:" + Songs.length.toString(), style: TextStyle(fontSize: 20)),
                   ],
                 ),
               ),
@@ -254,8 +250,7 @@ class _SearchSongPage extends State<SearchSongPage> {
 }
 
 class ShowSongEdit extends StatefulWidget {
-  ShowSongEdit({Key? key, required this.Playlist, required this.c})
-      : super(key: key);
+  ShowSongEdit({Key? key, required this.Playlist, required this.c}) : super(key: key);
 
   final Playlist;
   final c;
@@ -286,8 +281,7 @@ class _ShowSongEdit extends State<ShowSongEdit> {
         children: [
           Text("Editing Song ${currentsong + 1} of ${FoundSongs.length}\n",
               style: const TextStyle(fontSize: 15)),
-          Text("\n" + csong.filename + "\n",
-              style: const TextStyle(fontSize: 20)),
+          Text("\n" + csong.filename + "\n", style: const TextStyle(fontSize: 20)),
           StyledElevatedButton(
               onPressed: () {
                 Navigator.of(context)
@@ -425,34 +419,36 @@ class _ShowSongEdit extends State<ShowSongEdit> {
           title: Text("Song Edit"),
           actions: [
             IconButton(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => SearchPage(
-                      (search, update) => Container(
-                            child: ListView(
-                              children: [
-                                for (String key in Songs.keys)
-                                  if (ShouldShowSong(key, search))
-                                    SongTile(context, Songs[key], widget.c,
-                                        widget.Playlist, true, {
-                                      0: false,
-                                      1: false,
-                                      2: false,
-                                      3: true,
-                                      4: false,
-                                      5: false,
-                                      6: false,
-                                      7: false,
-                                      8: true,
-                                      9: false,
-                                      10: false,
-                                    }),
-                              ],
-                            ),
-                          ),
-                      ""),
-                ),
-              ),
+              onPressed: () => Navigator.of(context)
+                  .push(
+                    MaterialPageRoute(
+                      builder: (_) => SearchPage(
+                          (search, update) => Container(
+                                child: ListView(
+                                  children: [
+                                    for (String key in Songs.keys)
+                                      if (ShouldShowSong(key, search))
+                                        SongTile(
+                                            context, Songs[key], widget.c, widget.Playlist, true, {
+                                          0: false,
+                                          1: false,
+                                          2: false,
+                                          3: true,
+                                          4: false,
+                                          5: false,
+                                          6: false,
+                                          7: false,
+                                          8: true,
+                                          9: false,
+                                          10: false,
+                                        }),
+                                  ],
+                                ),
+                              ),
+                          ""),
+                    ),
+                  )
+                  .then((value) => widget.c(() {})),
               icon: const Icon(Icons.search),
             ),
           ],
@@ -518,8 +514,7 @@ class _ShowConfig extends State<ShowConfig> {
         body: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
-              for (var key in CFG.Config.keys)
-                Text("$key: " + CFG.Config["$key"].toString()),
+              for (var key in CFG.Config.keys) Text("$key: " + CFG.Config["$key"].toString()),
               TextButton(
                 onPressed: () => {
                   CFG.Config["Version"] = CFG.Version,
@@ -543,8 +538,7 @@ class _ShowConfig extends State<ShowConfig> {
 }
 
 class ShowBlacklist extends StatefulWidget {
-  ShowBlacklist({Key? key, required this.Playlist, required this.c})
-      : super(key: key);
+  ShowBlacklist({Key? key, required this.Playlist, required this.c}) : super(key: key);
 
   final Playlist;
   final c;
@@ -584,8 +578,8 @@ class _ShowBlacklist extends State<ShowBlacklist> {
                                   children: [
                                     for (String key in Songs.keys)
                                       if (ShouldShowSong(key, search))
-                                        SongTile(context, Songs[key], update,
-                                            widget.Playlist, true, {
+                                        SongTile(
+                                            context, Songs[key], update, widget.Playlist, true, {
                                           0: true,
                                           1: true,
                                           2: true,
@@ -689,22 +683,20 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                     SaveSongs();
                     Navigator.pop(context);
                   },
-                  child:
-                      Text("Delete All Tags", style: TextStyle(fontSize: 30))),
+                  child: Text("Delete All Tags", style: TextStyle(fontSize: 30))),
               TextButton(
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.red,
-                  ),
-                  onPressed: () {
-                    widget.Pl.Clear();
-                    Songs = {};
-                    ShouldSaveSongs = true;
-                    UpdateAllTags();
-                    SaveSongs();
-                    Navigator.pop(context);
-                  },
-                  child:
-                      Text("Delete All Songs", style: TextStyle(fontSize: 30)),
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.red,
+                ),
+                onPressed: () {
+                  widget.Pl.Clear();
+                  Songs = {};
+                  ShouldSaveSongs = true;
+                  UpdateAllTags();
+                  SaveSongs();
+                  Navigator.pop(context);
+                },
+                child: Text("Delete All Songs", style: TextStyle(fontSize: 30)),
               ),
               TextButton(
                 style: TextButton.styleFrom(
@@ -728,8 +720,7 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                   CFG.SaveConfig();
                   Navigator.pop(context);
                 },
-                child:
-                Text("Reset Config", style: TextStyle(fontSize: 30)),
+                child: Text("Reset Config", style: TextStyle(fontSize: 30)),
               ),
             ],
           ),

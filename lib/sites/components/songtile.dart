@@ -63,9 +63,11 @@ PopupMenuButton SongTile(BuildContext context, Song s, void Function(void Functi
                 (value) => {s.featuring = value, UpdateSongFeaturing(s.filename, value), c(() {})});
       }
       if (result == 3) {
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => TagEdit(s)),
-        );
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(builder: (_) => TagEdit(s)),
+            )
+            .then((value) => c(() {}));
       }
       if (result == 4) {
         showDialog(
@@ -167,6 +169,11 @@ Dismissible DismissibleSongTile(
       break;
     }
   }
+
+  if (i == Playlist.songs.indexOf(s)) {
+    print("Found Song in Playlist with indexOf");
+  }
+
   if (i < 0 || i >= Playlist.songs.length) {
     return Dismissible(
       key: Key(s.filename + "weird"),

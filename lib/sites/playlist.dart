@@ -33,21 +33,23 @@ bool ShouldShowSong(String key, String search) {
 IconButton buildActions(
     BuildContext context, void Function(void Function()) c, MyAudioHandler Playlist) {
   return IconButton(
-    onPressed: () => Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => SearchPage(
-            (search, update) => Container(
-                  child: ListView(
-                    children: [
-                      for (Song s in Playlist.songs)
-                        if (ShouldShowSong(s.filename, search))
-                          DismissibleSongTile(context, Songs[s.filename], c, Playlist),
-                    ],
-                  ),
-                ),
-            ""),
-      ),
-    ),
+    onPressed: () => Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (_) => SearchPage(
+                (search, update) => Container(
+                      child: ListView(
+                        children: [
+                          for (Song s in Playlist.songs)
+                            if (ShouldShowSong(s.filename, search))
+                              DismissibleSongTile(context, Songs[s.filename], c, Playlist),
+                        ],
+                      ),
+                    ),
+                ""),
+          ),
+        )
+        .then((value) => c(() {})),
     icon: const Icon(Icons.search),
   );
 }
