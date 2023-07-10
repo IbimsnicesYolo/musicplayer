@@ -91,7 +91,6 @@ void DeleteTag(Tag t) {
 }
 
 void UpdateAllTags() {
-  print("Updating all tags");
   Tags.forEach((k, v) {
     v.used = 0;
   });
@@ -101,14 +100,7 @@ void UpdateAllTags() {
         try {
           Tags[element].used += 1;
         } catch (e) {
-          print("Big chungus error, tag doesnt exist:" + element.toString());
           print(e);
-          print("err end");
-          print(element);
-          print(k);
-          print(v.toJson(v));
-          print(Tags);
-          print("Done");
         }
       });
   });

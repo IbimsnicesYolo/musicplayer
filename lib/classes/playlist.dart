@@ -42,7 +42,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void AddToPlaylist(Song song) {
-    print("AddToPlaylist");
     if (Contains(song)) {
       return;
     }
@@ -52,7 +51,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void BulkAdd(Map songstobeadded) {
-    print("BulkAdd");
     songstobeadded.forEach((key, element) {
       if (!Contains(element)) {
         songs.add(element);
@@ -62,7 +60,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void InsertAsNext(Song song) {
-    print("InsertAsNext");
     decreaseStack();
     if (!Contains(song)) {
       songs.insert(1, song);
@@ -74,7 +71,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void Stack(Song song) {
-    print("Stack");
     last_added_pos += 1;
     if (!Contains(song)) {
       songs.insert(last_added_pos, song);
@@ -86,7 +82,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void UpDateMediaItem() {
-    print("UpDateMediaItem");
     if (songs.length > 1) {
       mediaItem.add(MediaItem(
         id: 'file://storage/' + songs[0].path,
@@ -109,7 +104,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void RemoveSong(Song s) {
-    print("RemoveSong");
     for (int i = 0; i < songs.length; i++) {
       if (songs[i] == s) {
         songs.remove(s);
@@ -119,7 +113,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void Shuffle() {
-    print("Shuffle");
     if (songs.length < 1) {
       return;
     }
@@ -135,7 +128,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void JumpToSong(Song song) async {
-    print("JumpToSong");
     int index = -1;
     for (int i = 0; i < songs.length; i++) {
       if (songs[i].filename == song.filename) {
@@ -158,7 +150,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void DragNDropUpdate(int oldIndex, int newIndex) {
-    print("DragNDropUpdate");
     Song song = songs.removeAt(oldIndex);
     songs.insert(newIndex, song);
     last_added_pos = 0;
@@ -167,7 +158,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
 
   void LoadNextToPlayer() async {
     decreaseStack();
-    print("LoadNextToPlayer");
     if (songs.length > 0) {
       await player.seek(Duration(seconds: 0));
       await play(true);
@@ -175,7 +165,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void Save() {
-    print("Save");
     List<String> names = [];
     songs.forEach((element) {
       names.add(element.filename);
@@ -185,14 +174,12 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void AddTagToAll(Tag t) {
-    print("AddTagToAll");
     songs.forEach((element) {
       UpdateSongTags(element.filename, t.id, true);
     });
   }
 
   void SaveToTag(int id) {
-    print("SaveToTag");
     List<String> names = [];
     songs.forEach((element) {
       UpdateSongTags(element.filename, id, true);
@@ -207,7 +194,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   Future<void> LoadPlaylist(done) async {
-    print("LoadPlaylist");
     List savedsongs = Config["Playlist"];
     if (savedsongs.isNotEmpty) {
       savedsongs.forEach((element) async {
@@ -228,7 +214,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void Clear() {
-    print("Clear");
     stop();
     songs = [];
     last_added_pos = 0;
@@ -240,7 +225,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       player.play();
       paused = false;
     } else {
-      print("StartPlaying");
       if (songs.length > 0) {
         await player.stop();
         await player.setUrl('file://storage/' + songs[0].path);
@@ -256,7 +240,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   Future<void> pause() async {
-    print("PausePlaying");
     if (player.playing) {
       await player.pause();
       paused = true;
@@ -269,7 +252,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   Future<void> stop() async {
-    print("StopPlaying");
     await player.stop();
     paused = false;
     await player.seek(Duration(seconds: 0));
@@ -287,7 +269,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   Future<void> skipToNext([next = false]) async {
-    print("PlayNextSong");
     if (songs.length > 0) {
       songs.add(songs.removeAt(0));
       if (player.playing || next) {
@@ -301,7 +282,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
 
   DateTime lastback = DateTime.now();
   Future<void> skipToPrevious() async {
-    print("PlayPreviousSong");
     if (songs.length > 0) {
       if (player.playing && DateTime.now().difference(lastback).inSeconds > 3) {
         lastback = DateTime.now();
@@ -317,7 +297,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> seek(Duration position) async {
-    print("seek");
     await player.seek(position);
   }
 

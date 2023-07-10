@@ -132,10 +132,8 @@ void DeleteSong(Song s) {
 
 void SaveSongs() async {
   if (!ShouldSaveSongs) {
-    print("No Songs to save");
     return;
   }
-  print("Saving Songs");
   ShouldSaveSongs = false;
 
   String appDocDirectory = "storage/emulated/0/Music";

@@ -14,13 +14,6 @@ bool NewVersionAvailable =
 Color HomeColor = Color.fromRGBO(61, 61, 61, 0);
 Color ContrastColor = Color.fromRGBO(0, 255, 76, 0);
 
-const List<String> Actions = [
-  "Remove From Playlist",
-  "Add To Playlist",
-  "Play Next",
-  "Add to Stack",
-];
-
 Map Config = {
   "HomeColor": HomeColor.value,
   "ContrastColor": ContrastColor.value,
@@ -31,7 +24,6 @@ Map Config = {
 
 /* Config */
 void SaveConfig() {
-  print("Saving Config");
   SaveSongs();
   String appDocDirectory = "storage/emulated/0/Music";
   File(appDocDirectory + '/config.json').create(recursive: true).then((File file) {
@@ -40,7 +32,6 @@ void SaveConfig() {
 }
 
 void LoadData(reload, MyAudioHandler _audioHandler) async {
-  print("Loading Data");
   String appDocDirectory = "storage/emulated/0/Music";
 
   Future.delayed(Duration(seconds: 2), () {
@@ -51,7 +42,6 @@ void LoadData(reload, MyAudioHandler _audioHandler) async {
           if (contents.isNotEmpty) {
             jsonDecode(contents).forEach((key, value) {
               Config[key] = value;
-              print("Loaded Config: " + key + " " + value.toString());
               if (key == "Version") {
                 if (value != Version) {
                   NewVersionAvailable = true;
