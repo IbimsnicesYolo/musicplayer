@@ -1,5 +1,6 @@
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
+
 import 'song.dart';
 
 Map Tags = {};
@@ -15,8 +16,7 @@ class Tag {
       : name = json['n'],
         used = json['u'],
         id = json['i'];
-  Map<String, dynamic> toJson(Tag value) =>
-      {'n': value.name, 'u': value.used, 'i': value.id};
+  Map<String, dynamic> toJson(Tag value) => {'n': value.name, 'u': value.used, 'i': value.id};
 }
 
 int CreateTag(name) {
@@ -52,8 +52,10 @@ void UpdateTagName(tag, name) {
 
 void SaveTags() async {
   if (!ShouldSaveTags) {
+    print("No Tags to save");
     return;
   }
+  print("Saving Tags");
   ShouldSaveTags = false;
 
   String appDocDirectory = "storage/emulated/0/Music";
@@ -89,6 +91,7 @@ void DeleteTag(Tag t) {
 }
 
 void UpdateAllTags() {
+  print("Updating all tags");
   Tags.forEach((k, v) {
     v.used = 0;
   });
@@ -99,6 +102,13 @@ void UpdateAllTags() {
           Tags[element].used += 1;
         } catch (e) {
           print("Big chungus error, tag doesnt exist:" + element.toString());
+          print(e);
+          print("err end");
+          print(element);
+          print(k);
+          print(v.toJson(v));
+          print(Tags);
+          print("Done");
         }
       });
   });

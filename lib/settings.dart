@@ -31,6 +31,7 @@ Map Config = {
 
 /* Config */
 void SaveConfig() {
+  print("Saving Config");
   SaveSongs();
   String appDocDirectory = "storage/emulated/0/Music";
   File(appDocDirectory + '/config.json').create(recursive: true).then((File file) {
@@ -50,6 +51,7 @@ void LoadData(reload, MyAudioHandler _audioHandler) async {
           if (contents.isNotEmpty) {
             jsonDecode(contents).forEach((key, value) {
               Config[key] = value;
+              print("Loaded Config: " + key + " " + value.toString());
               if (key == "Version") {
                 if (value != Version) {
                   NewVersionAvailable = true;
@@ -74,12 +76,13 @@ void LoadData(reload, MyAudioHandler _audioHandler) async {
                   if (contents.isNotEmpty) {
                     jsonDecode(contents).forEach((key, value) async {
                       await Future.delayed(Duration(milliseconds: 1));
+
                       Tag currenttag = Tag.fromJson(value);
                       Tags[currenttag.id] = currenttag;
                     });
-                    UpdateAllTags();
                   }
                   Future.delayed(Duration(seconds: 1), () {
+                    UpdateAllTags();
                     _audioHandler.LoadPlaylist(reload);
                   });
                 });

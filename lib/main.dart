@@ -67,16 +67,16 @@ class _MainSite extends State<MainSite> {
 
   @override
   void initState() {
-    _audioHandler.update = update;
+    _audioHandler.SetUpdate(update);
+    super.initState();
+
     Future.delayed(const Duration(minutes: 1), () {
       CheckForUpdate(context);
     });
-    super.initState();
   }
 
   @override
   void dispose() {
-    CFG.SaveConfig();
     super.dispose();
   }
 
@@ -141,7 +141,7 @@ class _MainSite extends State<MainSite> {
                   if (reverse > 3) {
                     if (side == 2) {
                       StringInput(context, "Create new Tag", "Create", "Cancel", (String s) {
-                        int id = CreateTag(s);
+                        CreateTag(s);
                         SaveTags();
                         setState(() {});
                       }, (String s) {}, false, "", "Tag Name");

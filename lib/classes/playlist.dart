@@ -33,16 +33,24 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     update = c;
   }
 
-  void AddToPlaylist(Song song, {bool update = true}) {
+  void AddToPlaylist(Song song) {
     print("AddToPlaylist");
     if (Contains(song)) {
       return;
     }
     songs.add(song);
 
-    if (update) {
-      UpDateMediaItem();
-    }
+    UpDateMediaItem();
+  }
+
+  void BulkAdd(Map songstobeadded) {
+    print("BulkAdd");
+    songstobeadded.forEach((key, element) {
+      if (!Contains(element)) {
+        songs.add(element);
+      }
+    });
+    UpDateMediaItem();
   }
 
   void InsertAsNext(Song song) {
@@ -69,7 +77,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     UpDateMediaItem();
   }
 
-  void UpDateMediaItem({bool shouldupdate = true}) {
+  void UpDateMediaItem() {
     print("UpDateMediaItem");
     if (songs.length > 1) {
       mediaItem.add(MediaItem(
@@ -87,13 +95,9 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
         artist: songs[0].interpret,
         duration: player.duration,
       ));
-    } else {
-      mediaItem.close();
     }
-    if (shouldupdate) {
-      update(() {});
-      Save();
-    }
+    update(() {});
+    Save();
   }
 
   void RemoveSong(Song s) {
@@ -196,15 +200,18 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     List savedsongs = Config["Playlist"];
     if (savedsongs.isNotEmpty) {
       savedsongs.forEach((element) async {
-        await Future.delayed(Duration(milliseconds: 100));
+        await Future.delayed(Duration(milliseconds: 50));
         if (Songs.containsKey(element)) {
-          AddToPlaylist(Songs[element], update: false);
+          if (Contains(Songs[element])) {
+            return;
+          }
+          songs.add(Songs[element]);
         }
       });
-      UpDateMediaItem(shouldupdate: false);
     }
     Future.delayed(Duration(seconds: 1)).then((value) {
       done();
+      UpDateMediaItem();
     });
   }
 
@@ -229,7 +236,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
           player.pause();
         } else {
           paused = false;
-          await player.play();
+          player.play();
         }
         UpDateMediaItem();
       }

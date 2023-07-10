@@ -1,10 +1,11 @@
-import "../classes/tag.dart";
+import 'package:flutter/material.dart';
+
 import "../classes/playlist.dart";
 import "../classes/song.dart";
-import 'package:flutter/material.dart';
+import "../classes/tag.dart";
 import 'components/search.dart';
-import 'components/string_input.dart';
 import 'components/songtile.dart';
+import 'components/string_input.dart';
 import 'components/tagedit.dart';
 
 bool ShouldShowTag(int key, String search) {
@@ -15,14 +16,14 @@ bool ShouldShowTag(int key, String search) {
   //List<String> searchname = search.toLowerCase().split(" ");
 
   //for (String s2 in searchname) {
-    //if (Tags[key].name.contains(s2)) return true;
+  //if (Tags[key].name.contains(s2)) return true;
   //}
 
   return false;
 }
 
-IconButton buildActions(BuildContext context, void Function(void Function()) c,
-    MyAudioHandler Playlist) {
+IconButton buildActions(
+    BuildContext context, void Function(void Function()) c, MyAudioHandler Playlist) {
   return IconButton(
     onPressed: () => Navigator.of(context).push(
       MaterialPageRoute(
@@ -46,8 +47,7 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
                                 child: Row(
                                   children: [
                                     Icon(Icons.delete, color: Colors.white),
-                                    Text('Move to trash',
-                                        style: TextStyle(color: Colors.white)),
+                                    Text('Move to trash', style: TextStyle(color: Colors.white)),
                                   ],
                                 ),
                               ),
@@ -60,8 +60,7 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Icon(Icons.delete, color: Colors.white),
-                                    Text('Move to trash',
-                                        style: TextStyle(color: Colors.white)),
+                                    Text('Move to trash', style: TextStyle(color: Colors.white)),
                                   ],
                                 ),
                               ),
@@ -78,8 +77,8 @@ IconButton buildActions(BuildContext context, void Function(void Function()) c,
   );
 }
 
-Container buildContent(BuildContext context, void Function(void Function()) c,
-    MyAudioHandler Playlist, int reverse) {
+Container buildContent(
+    BuildContext context, void Function(void Function()) c, MyAudioHandler Playlist, int reverse) {
   UpdateAllTags();
   List sortedtags = Tags.values.toList();
   sortedtags.sort((a, b) {
@@ -111,8 +110,8 @@ Container buildContent(BuildContext context, void Function(void Function()) c,
   );
 }
 
-ListTile TagTile(void Function(void Function()) c, BuildContext context,
-    MyAudioHandler Playlist, int key) {
+ListTile TagTile(
+    void Function(void Function()) c, BuildContext context, MyAudioHandler Playlist, int key) {
   return ListTile(
     onLongPress: () => {
       Navigator.of(context).push(
@@ -122,25 +121,17 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
                     child: ListView(
                       children: [
                         for (String songkey in GetSongsFromTag(Tags[key]).keys)
-                          if (Songs[songkey]
-                                  .title
-                                  .toLowerCase()
-                                  .contains(search.toLowerCase()) ||
-                              Songs[songkey]
-                                  .interpret
-                                  .toLowerCase()
-                                  .contains(search.toLowerCase()))
+                          if (Songs[songkey].title.toLowerCase().contains(search.toLowerCase()) ||
+                              Songs[songkey].interpret.toLowerCase().contains(search.toLowerCase()))
                             Dismissible(
                               key: Key(songkey + Songs[songkey].hash),
                               onDismissed: (DismissDirection direction) {
                                 update(() {
-                                  if (direction ==
-                                      DismissDirection.endToStart) {
+                                  if (direction == DismissDirection.endToStart) {
                                     // Left
                                     Songs[songkey].hash += "1";
                                     Playlist.AddToPlaylist(Songs[songkey]);
                                     Playlist.Stack(Songs[songkey]);
-                                    Playlist.Save();
                                   } else {
                                     // Right
                                     UpdateSongTags(songkey, key, false);
@@ -155,8 +146,7 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
                                     children: [
                                       Icon(Icons.delete, color: Colors.white),
                                       Text('Remove from Tag',
-                                          style:
-                                              TextStyle(color: Colors.white)),
+                                          style: TextStyle(color: Colors.white)),
                                     ],
                                   ),
                                 ),
@@ -169,15 +159,12 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       Icon(Icons.add, color: Colors.white),
-                                      Text('Add To Stack',
-                                          style:
-                                              TextStyle(color: Colors.white)),
+                                      Text('Add To Stack', style: TextStyle(color: Colors.white)),
                                     ],
                                   ),
                                 ),
                               ),
-                              child: SongTile(context, Songs[songkey], update,
-                                  Playlist, true, {
+                              child: SongTile(context, Songs[songkey], update, Playlist, true, {
                                 0: true,
                                 1: false,
                                 2: false,
@@ -204,17 +191,13 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
         onSelected: (result) {
           if (result == 0) {
             // Change Name
-            StringInput(
-                context, "Rename Tag: " + key.toString(), "Save", "Cancel",
-                (String s) {
+            StringInput(context, "Rename Tag: " + key.toString(), "Save", "Cancel", (String s) {
               UpdateTagName(Tags[key].id, s);
               c(() {});
             }, (String s) {}, false, Tags[key].name, "");
           }
           if (result == 1) {
-            GetSongsFromTag(Tags[key]).forEach((key, value) {
-              Playlist.AddToPlaylist(value);
-            });
+            Playlist.BulkAdd(GetSongsFromTag(Tags[key]));
           }
           if (result == 2) {
             Navigator.of(context)
@@ -257,11 +240,9 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
                                         padding: const EdgeInsets.all(15),
                                         child: Row(
                                           children: [
-                                            Icon(Icons.add,
-                                                color: Colors.white),
+                                            Icon(Icons.add, color: Colors.white),
                                             Text('Add To Tag',
-                                                style: TextStyle(
-                                                    color: Colors.white)),
+                                                style: TextStyle(color: Colors.white)),
                                           ],
                                         ),
                                       ),
@@ -271,20 +252,16 @@ ListTile TagTile(void Function(void Function()) c, BuildContext context,
                                       child: Padding(
                                         padding: const EdgeInsets.all(15),
                                         child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
+                                          mainAxisAlignment: MainAxisAlignment.end,
                                           children: [
-                                            Icon(Icons.add,
-                                                color: Colors.white),
+                                            Icon(Icons.add, color: Colors.white),
                                             Text('Add To Tag',
-                                                style: TextStyle(
-                                                    color: Colors.white)),
+                                                style: TextStyle(color: Colors.white)),
                                           ],
                                         ),
                                       ),
                                     ),
-                                    child: SongTile(context, Songs[songkey], c,
-                                        Playlist, true, {
+                                    child: SongTile(context, Songs[songkey], c, Playlist, true, {
                                       0: true,
                                       1: false,
                                       2: false,

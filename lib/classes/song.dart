@@ -1,5 +1,6 @@
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
+
 import "tag.dart";
 
 Map Songs = {};
@@ -60,16 +61,10 @@ bool CreateSong(path) {
     return false;
   }
 
-  String interpret =
-      filename.split(" -_ ").first.replaceAll(RegExp(".mp3"), "").trim();
+  String interpret = filename.split(" -_ ").first.replaceAll(RegExp(".mp3"), "").trim();
 
-  String title = filename
-      .split(" -_ ")
-      .last
-      .replaceAll(RegExp(".mp3"), "")
-      .split(" _ ")
-      .first
-      .trim();
+  String title =
+      filename.split(" -_ ").last.replaceAll(RegExp(".mp3"), "").split(" _ ").first.trim();
 
   Song newsong = Song(path);
   newsong.title = title;
@@ -138,8 +133,10 @@ void DeleteSong(Song s) {
 
 void SaveSongs() async {
   if (!ShouldSaveSongs) {
+    print("No Songs to save");
     return;
   }
+  print("Saving Songs");
   ShouldSaveSongs = false;
 
   String appDocDirectory = "storage/emulated/0/Music";
