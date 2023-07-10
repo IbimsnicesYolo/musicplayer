@@ -16,10 +16,18 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     player.playerStateStream.listen((event) {
       if (event.processingState == ProcessingState.completed && event.playing) {
         skipToNext(true);
+        decreaseStack();
       }
     });
     player.playbackEventStream.map(_transformEvent).pipe(playbackState);
   }
+
+  void decreaseStack() {
+    if (last_added_pos > 0) {
+      last_added_pos -= 1;
+    }
+  }
+
   bool Contains(Song song) {
     for (int i = 0; i < songs.length; i++) {
       if (songs[i].filename == song.filename) {
@@ -55,7 +63,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
 
   void InsertAsNext(Song song) {
     print("InsertAsNext");
-    last_added_pos = 1;
+    decreaseStack();
     if (!Contains(song)) {
       songs.insert(1, song);
     } else {
@@ -122,6 +130,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     } else {
       songs.shuffle();
     }
+    last_added_pos = 0;
     UpDateMediaItem();
   }
 
@@ -145,6 +154,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     } else {
       LoadNextToPlayer();
     }
+    last_added_pos = 0;
   }
 
   void DragNDropUpdate(int oldIndex, int newIndex) {
@@ -156,6 +166,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void LoadNextToPlayer() async {
+    decreaseStack();
     print("LoadNextToPlayer");
     if (songs.length > 0) {
       await player.seek(Duration(seconds: 0));
@@ -213,6 +224,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       done();
       UpDateMediaItem();
     });
+    last_added_pos = 0;
   }
 
   void Clear() {
