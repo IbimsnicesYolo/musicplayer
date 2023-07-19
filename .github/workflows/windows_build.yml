@@ -20,7 +20,7 @@ jobs:
        uses: actions/upload-artifact@v1
        with:
          name: exe
-         path: /build/windows/runner/Release/musicplayer.exe
+         path: ${{ github.workspace }}/build/windows/runner/Release/musicplayer.exe
  release:
    name: Release EXE
    needs: build
