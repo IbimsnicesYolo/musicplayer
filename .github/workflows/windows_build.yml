@@ -20,9 +20,9 @@ jobs:
        uses: actions/upload-artifact@v1
        with:
          name: exe
-         path: build/app/outputs/flutter-apk/app.exe
+         path: build/windows/runner/release/musicplayer.exe
  release:
-   name: Release APK
+   name: Release EXE
    needs: build
    runs-on: ubuntu-latest
    steps:
