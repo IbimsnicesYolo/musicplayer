@@ -16,6 +16,7 @@ jobs:
         flutter-version: '3.0.5'
      - run: flutter pub get
      - run: flutter build windows
+     - run: dir /b /a /s
      - name: Upload EXE
        uses: actions/upload-artifact@v1
        with:
