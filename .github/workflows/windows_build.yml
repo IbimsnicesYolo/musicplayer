@@ -26,7 +26,7 @@ jobs:
        uses: svenstaro/upload-release-action@v2
        with:
          repo_token: ${{ secrets.GITHUB_TOKEN }}
-         file: ${{ github.workspace }}/build/windows/runner/Release/*.*
+         file: ${{ github.workspace }}/build/windows/runner/Release/**
          tag: ${{ github.run_number }}
          release_name: ${{ github.event.repository.name }} Windows Release v${{ github.run_number }} ${{ steps.branchname.outputs.branch }}
          overwrite: true
