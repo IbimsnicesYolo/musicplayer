@@ -22,7 +22,7 @@ jobs:
          repo_token: ${{ secrets.GITHUB_TOKEN }}
          file: ${{ github.workspace }}\build\windows\runner\Release\*
          tag: ${{ github.run_number }}
-         release_name: ${{ github.event.repository.name }} v${{ github.run_number }}
+         release_name: ${{ github.event.repository.name }} Windows Release v${{ github.run_number }} ${{ steps.branchname.outputs.branch }}
          asset_name: ${{ github.event.repository.name }} v${{ github.run_number }}
          overwrite: true
          file_glob: true
