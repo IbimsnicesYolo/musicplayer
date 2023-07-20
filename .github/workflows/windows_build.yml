@@ -15,6 +15,12 @@ jobs:
        with:
         flutter-version: '3.0.5'
      - run: flutter pub get
+     - run: flutter config --enable-windows-desktop
+     - run: flutter channel master
+     - run: flutter upgrade
+     - run: flutter config --enable-windows-desktop
+     - run: flutter doctor
+     - run: flutter pub get
      - run: flutter build windows
      - name: Upload Programm to release
        uses: svenstaro/upload-release-action@v2
