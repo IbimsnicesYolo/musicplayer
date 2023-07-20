@@ -31,12 +31,3 @@ jobs:
          release_name: ${{ github.event.repository.name }} Windows Release v${{ github.run_number }} ${{ steps.branchname.outputs.branch }}
          overwrite: true
          file_glob: true
-     - name: Release
-       uses: meeDamian/github-release@2.0
-       with:
-         token: ${{ secrets.GITHUB_TOKEN }}
-         tag: ${{ github.run_number }}
-         name: ${{ github.event.repository.name }} Windows Release v2 v${{ github.run_number }} ${{ steps.branchname.outputs.branch }}
-         gzip: folders
-         files: >
-           ${{ github.workspace }}/build/windows/runner/Release/
