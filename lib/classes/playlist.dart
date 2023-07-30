@@ -152,7 +152,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   void DragNDropUpdate(int oldIndex, int newIndex) {
     Song song = songs.removeAt(oldIndex);
     songs.insert(newIndex, song);
-    last_added_pos = 0;
     UpDateMediaItem();
   }
 
@@ -216,7 +215,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   void Clear() {
     stop();
     songs = [];
-    last_added_pos = 0;
+    last_added_pos = -1;
     Save();
   }
 
