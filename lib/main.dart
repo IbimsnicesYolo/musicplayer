@@ -51,28 +51,10 @@ class _MainSite extends State<MainSite> {
   int reverse = 0;
   bool loaded = false;
 
-  void CheckForUpdate(BuildContext context) async {
-    if (CFG.NewVersionAvailable) {
-      CFG.NewVersionAvailable = false;
-      await Future.delayed(Duration(seconds: 1));
-      final snackBar = SnackBar(
-        backgroundColor: Colors.green,
-        content: const Text('New Version Available, Update Config!'),
-      );
-      // Find the ScaffoldMessenger in the widget tree
-      // and use it to show a SnackBar.
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
-  }
-
   @override
   void initState() {
     _audioHandler.SetUpdate(update);
     super.initState();
-
-    Future.delayed(const Duration(minutes: 1), () {
-      CheckForUpdate(context);
-    });
   }
 
   @override

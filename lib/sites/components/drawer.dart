@@ -119,8 +119,6 @@ class SongDrawer extends Drawer {
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       },
                     ),
-                    Text("Version:", style: TextStyle(fontSize: 20)),
-                    Text(CFG.Version, style: TextStyle(fontSize: 20)),
                     Text("\nTags:" + Tags.length.toString(), style: TextStyle(fontSize: 20)),
                     Text("\nSongs:" + Songs.length.toString(), style: TextStyle(fontSize: 20)),
                   ],
@@ -481,26 +479,8 @@ class ShowConfig extends StatefulWidget {
 }
 
 class _ShowConfig extends State<ShowConfig> {
-  void CheckForUpdate(BuildContext context) async {
-    if (CFG.NewVersionAvailable) {
-      CFG.NewVersionAvailable = false;
-      await Future.delayed(Duration(seconds: 1));
-      final snackBar = SnackBar(
-        backgroundColor: Colors.green,
-        content: const Text('New Version Available, Update Config!'),
-        action: SnackBarAction(
-          label: 'Undo',
-          onPressed: () {},
-        ),
-      );
-
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    CheckForUpdate(context);
     return SafeArea(
       child: Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -516,14 +496,6 @@ class _ShowConfig extends State<ShowConfig> {
           child: ListBody(
             children: <Widget>[
               for (var key in CFG.Config.keys) Text("$key: " + CFG.Config["$key"].toString()),
-              TextButton(
-                onPressed: () => {
-                  CFG.Config["Version"] = CFG.Version,
-                  CFG.SaveConfig(),
-                  setState(() {}),
-                },
-                child: const Text("Update Version"),
-              ),
               TextButton(
                   onPressed: () {
                     Navigator.pop(context);
@@ -717,8 +689,7 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                       "D:",
                       "Library"
                     ],
-                    "Playlist": [],
-                    "Version": CFG.Version,
+                    "Playlist": []
                   };
                   CFG.SaveConfig();
                   Navigator.pop(context);

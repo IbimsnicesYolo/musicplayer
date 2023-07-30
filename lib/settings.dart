@@ -8,9 +8,6 @@ import 'classes/playlist.dart';
 import 'classes/song.dart';
 import "classes/tag.dart";
 
-final String Version = "Dev 1.8";
-bool NewVersionAvailable =
-    false; // Bool which shows that the config saved on the phone is older than the Apps Version
 Color HomeColor = Color.fromRGBO(61, 61, 61, 0);
 Color ContrastColor = Color.fromRGBO(0, 255, 76, 0);
 
@@ -19,7 +16,6 @@ Map Config = {
   "ContrastColor": ContrastColor.value,
   "SearchPaths": ["storage/emulated/0/Music", "storage/emulated/0/Download", "C:", "D:", "Library"],
   "Playlist": [],
-  "Version": Version,
 };
 
 /* Config */
@@ -42,11 +38,6 @@ void LoadData(reload, MyAudioHandler _audioHandler) async {
           if (contents.isNotEmpty) {
             jsonDecode(contents).forEach((key, value) {
               Config[key] = value;
-              if (key == "Version") {
-                if (value != Version) {
-                  NewVersionAvailable = true;
-                }
-              }
             });
           }
           // Load Songs
