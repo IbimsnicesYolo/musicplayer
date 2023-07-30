@@ -80,6 +80,7 @@ Container buildContent(
             8: false,
             9: false,
             10: false,
+            11: true,
           }),
           for (int i = 1; i < Playlist.songs.length; i++)
             DragTarget<int>(
