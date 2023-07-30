@@ -34,8 +34,8 @@ Container buildContent(
                 ),
                 ControlTile(Playlist: Playlist, c: c),
                 PlayerWidget(playlist: Playlist),
-                Text("Volume:"),
-                VolumeWidget(player: Playlist.player),
+                //Text("Volume:"),
+                //VolumeWidget(player: Playlist.player),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
