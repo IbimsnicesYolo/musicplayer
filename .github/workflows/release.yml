@@ -91,7 +91,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: upload/*
-          tag: ${{ steps.branchname.outputs.branch }} ${{ github.run_number }}
+          tag: ${{ steps.branchname.outputs.branch }}/${{ github.run_number }}
           release_name: ${{ github.event.repository.name }} Release v${{ github.run_number }} ${{ steps.branchname.outputs.branch }}
           overwrite: true
           file_glob: true
