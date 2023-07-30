@@ -72,6 +72,10 @@ Container buildContent(
                         }).then((value) => c(() {}));
                       },
                     ),
+                    Text(
+                      Playlist.songs.length.toString(),
+                      style: TextStyle(fontSize: 16),
+                    ),
                   ],
                 ),
                 // Place for Equializer

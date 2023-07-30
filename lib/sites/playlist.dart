@@ -68,7 +68,20 @@ Container buildContent(
             ),
           ),
           ControlTile(Playlist: Playlist, c: c),
-          for (int i = 0; i < Playlist.songs.length; i++)
+          SongTile(context, Playlist.songs[0], c, Playlist, true, {
+            0: true,
+            1: true,
+            2: true,
+            3: true,
+            4: false,
+            5: false,
+            6: false,
+            7: false,
+            8: false,
+            9: false,
+            10: false,
+          }),
+          for (int i = 1; i < Playlist.songs.length; i++)
             DragTarget<int>(
               builder: (
                 BuildContext context,
