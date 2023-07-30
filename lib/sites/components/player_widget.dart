@@ -122,17 +122,13 @@ class _VolumeWidget extends State<VolumeWidget> {
       children: <Widget>[
         Slider(
           min: 0.0,
-          divisions: 20,
+          divisions: 10,
           max: 1.0,
           onChanged: (v) {
             setState(() {});
             player.setVolume(v);
           },
           value: player.volume,
-        ),
-        Text(
-          player.volume.toString(),
-          style: const TextStyle(fontSize: 16.0),
         ),
       ],
     );

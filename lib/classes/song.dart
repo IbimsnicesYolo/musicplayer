@@ -1,5 +1,6 @@
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
+
 import "tag.dart";
 
 Map Songs = {};
@@ -12,7 +13,6 @@ class Song {
   String title = "Song Title";
   String interpret = "Song Interpret";
   String featuring = "";
-  String hash = "";
   bool edited = false;
   bool blacklisted = false;
   bool hastags = false;
@@ -60,16 +60,10 @@ bool CreateSong(path) {
     return false;
   }
 
-  String interpret =
-      filename.split(" -_ ").first.replaceAll(RegExp(".mp3"), "").trim();
+  String interpret = filename.split(" -_ ").first.replaceAll(RegExp(".mp3"), "").trim();
 
-  String title = filename
-      .split(" -_ ")
-      .last
-      .replaceAll(RegExp(".mp3"), "")
-      .split(" _ ")
-      .first
-      .trim();
+  String title =
+      filename.split(" -_ ").last.replaceAll(RegExp(".mp3"), "").split(" _ ").first.trim();
 
   Song newsong = Song(path);
   newsong.title = title;

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../classes/tag.dart';
+
 import '../../classes/song.dart';
+import '../../classes/tag.dart';
+import "../../settings.dart" as CFG;
 import "checkbox.dart";
 import "elevatedbutton.dart";
-import "../../settings.dart" as CFG;
 
 // Search Page
 class TagEdit extends StatefulWidget {
@@ -77,8 +78,7 @@ class _TagEdit extends State<TagEdit> {
                     ToUpdate[s.filename] = [InSong[i].id, b];
                   }, InSong[i].name),
                   if (i + 1 < InSong.length)
-                    CoolerCheckBox(s.tags.contains(InSong[i + 1].id),
-                        (bool? b) {
+                    CoolerCheckBox(s.tags.contains(InSong[i + 1].id), (bool? b) {
                       ToUpdate[s.filename] = [InSong[i + 1].id, b];
                     }, InSong[i + 1].name),
                 ],
@@ -97,20 +97,17 @@ class _TagEdit extends State<TagEdit> {
                 onPressed: () {
                   if (create.text != "") {
                     int id = CreateTag(create.text.trim());
-                    Navigator.of(context);
                     ToUpdate.forEach((key, value) {
                       UpdateSongTags(key, value[0], value[1]);
                     });
+                    Navigator.pop(context);
                   }
                 },
                 child: const Text("Create Tag")),
             for (int i = 1; i < Tags.length; i++)
               if (Tags.containsKey(i) && !s.tags.contains(i))
                 if (create.text == "" ||
-                    Tags[i]
-                        .name
-                        .toLowerCase()
-                        .contains(create.text.toLowerCase()))
+                    Tags[i].name.toLowerCase().contains(create.text.toLowerCase()))
                   CoolerCheckBox(s.tags.contains(i), (bool? b) {
                     ToUpdate[s.filename] = [i, b];
                   }, Tags[i].name),
@@ -167,13 +164,13 @@ class _TagChoose extends State<TagChoose> {
             ),
             StyledElevatedButton(
                 onPressed: () {
-                  if (create.text != "") {
+                  if (create.text.trim() != "") {
                     int id = CreateTag(create.text.trim());
                     Navigator.of(context).pop(id);
                   }
                 },
                 child: const Text("Create Tag")),
-            if (create.text == "")
+            if (create.text.trim() == "")
               for (int i = 0; i < Tags.length; i = i + 2)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -194,16 +191,13 @@ class _TagChoose extends State<TagChoose> {
                       ),
                   ],
                 ),
-            if (create.text != "")
+            if (create.text.trim() != "")
               for (int i = 0; i < Tags.length; i++)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     if (Tags.containsKey(i) &&
-                        Tags[i]
-                            .name
-                            .toLowerCase()
-                            .contains(create.text.toLowerCase()))
+                        Tags[i].name.toLowerCase().contains(create.text.toLowerCase()))
                       StyledElevatedButton(
                         onPressed: () {
                           Navigator.of(context).pop(i);

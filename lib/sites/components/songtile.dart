@@ -1,16 +1,12 @@
+import 'package:flutter/material.dart';
+
+import "../../classes/playlist.dart";
+import "../../classes/song.dart";
 import 'string_input.dart';
 import 'tagedit.dart';
-import 'package:flutter/material.dart';
-import "../../classes/song.dart";
-import "../../classes/playlist.dart";
 
-PopupMenuButton SongTile(
-    BuildContext context,
-    Song s,
-    void Function(void Function()) c,
-    MyAudioHandler Playlist,
-    bool showchild,
-    Map<int, bool> activated) {
+PopupMenuButton SongTile(BuildContext context, Song s, void Function(void Function()) c,
+    MyAudioHandler Playlist, bool showchild, Map<int, bool> activated) {
   return PopupMenuButton(
     onSelected: (result) {
       if (result == 0) {
@@ -28,11 +24,7 @@ PopupMenuButton SongTile(
                     }),
               ),
             )
-            .then((value) => {
-                  s.title = value,
-                  UpdateSongTitle(s.filename, value),
-                  c(() {})
-                });
+            .then((value) => {s.title = value, UpdateSongTitle(s.filename, value), c(() {})});
       }
       if (result == 1) {
         // Change Interpret
@@ -49,11 +41,8 @@ PopupMenuButton SongTile(
                     }),
               ),
             )
-            .then((value) => {
-                  s.interpret = value,
-                  UpdateSongInterpret(s.filename, value),
-                  c(() {})
-                });
+            .then(
+                (value) => {s.interpret = value, UpdateSongInterpret(s.filename, value), c(() {})});
       }
       if (result == 2) {
         // Change Featuring
@@ -70,36 +59,56 @@ PopupMenuButton SongTile(
                     }),
               ),
             )
-            .then((value) => {
-                  s.featuring = value,
-                  UpdateSongFeaturing(s.filename, value),
-                  c(() {})
-                });
+            .then(
+                (value) => {s.featuring = value, UpdateSongFeaturing(s.filename, value), c(() {})});
       }
       if (result == 3) {
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => TagEdit(s)),
-        );
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(builder: (_) => TagEdit(s)),
+            )
+            .then((value) => c(() {}));
       }
       if (result == 4) {
-        DeleteSong(s);
-        c(() {});
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text("Delete " + s.title + "?"),
+            content: Text("Are you sure you want to delete this song?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text("No"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                  Playlist.RemoveSong(s);
+                  DeleteSong(s);
+                },
+                child: Text("Yes"),
+              ),
+            ],
+          ),
+        );
       }
       if (result == 5) {
+        Playlist.RemoveSong(s);
         Playlist.InsertAsNext(s);
         // Play Song as Next Song
       }
       if (result == 6) {
+        Playlist.RemoveSong(s);
         Playlist.AddToPlaylist(s);
         // Add Song to End of Playlist
       }
       if (result == 7) {
+        Playlist.RemoveSong(s);
         Playlist.Stack(s);
         // Add Song to End of Added Songs
       }
       if (result == 8) {
         s.blacklisted = !s.blacklisted;
-        c(() {});
         ShouldSaveSongs = true;
         SaveSongs();
       }
@@ -110,6 +119,11 @@ PopupMenuButton SongTile(
         Playlist.RemoveSong(s);
         Playlist.AddToPlaylist(s);
       }
+      if (result == 11) {
+        Playlist.RemoveSong(Playlist.songs[0]);
+        Playlist.JumpToSong(s);
+      }
+      c(() {});
     },
     child: (showchild)
         ? ListTile(
@@ -134,44 +148,63 @@ PopupMenuButton SongTile(
           value: 2,
         ),
       const PopupMenuDivider(),
-      if (activated[3] == true)
-        PopupMenuItem(child: Text('Edit Tags'), value: 3),
-      if (activated[4] == true)
-        PopupMenuItem(child: Text('Delete Song'), value: 4),
+      if (activated[3] == true) PopupMenuItem(child: Text('Edit Tags'), value: 3),
+      if (activated[4] == true) PopupMenuItem(child: Text('Delete Song'), value: 4),
       const PopupMenuDivider(),
-      if (activated[5] == true)
-        PopupMenuItem(child: Text('Play Next'), value: 5),
-      if (activated[6] == true)
-        PopupMenuItem(child: Text('Add to Playlist'), value: 6),
-      if (activated[7] == true)
-        PopupMenuItem(child: Text('Add to Stack'), value: 7),
+      if (activated[5] == true) PopupMenuItem(child: Text('Play Next'), value: 5),
+      if (activated[6] == true) PopupMenuItem(child: Text('Add to Playlist'), value: 6),
+      if (activated[7] == true) PopupMenuItem(child: Text('Add to Stack'), value: 7),
       if (activated[8] == true)
         PopupMenuItem(
-            child: Text(s.blacklisted ? 'Un Blacklist Song' : "Blacklist Song"),
-            value: 8),
+            child: Text(s.blacklisted ? 'Un Blacklist Song' : "Blacklist Song"), value: 8),
       if (activated[9] == true) PopupMenuItem(child: Text("Jump To"), value: 9),
-      if (activated[10] == true)
-        PopupMenuItem(child: Text("Move to End"), value: 10),
+      if (activated[10] == true) PopupMenuItem(child: Text("Move to End"), value: 10),
+      if (activated[11] == true) PopupMenuItem(child: Text("Play and Delete current"), value: 11),
     ],
   );
 }
 
-Dismissible DismissibleSongTile(BuildContext context, Song s,
-    void Function(void Function()) c, MyAudioHandler Playlist) {
-  int i = Playlist.songs.indexOf(s);
+Dismissible DismissibleSongTile(
+    BuildContext context, Song s, void Function(void Function()) c, MyAudioHandler Playlist) {
+  int i =
+      -1; // Playlist.songs.indexOf(s); doesnt work because of the updated hash so it doesnt find the objects
+  for (int j = 0; j < Playlist.songs.length; j++) {
+    if (Playlist.songs[j].filename == s.filename) {
+      i = j;
+      break;
+    }
+  }
+
+  if (i == Playlist.songs.indexOf(s)) {
+    print("Found Song in Playlist with indexOf");
+  }
+
+  if (i < 0 || i >= Playlist.songs.length) {
+    return Dismissible(
+      key: Key(s.filename + "weird"),
+      child: ListTile(
+        title: Text("ERROR: " + s.title),
+        trailing: Icon(Icons.drag_handle),
+        onTap: () {},
+      ),
+    );
+  }
   return Dismissible(
-    key: Key(s.filename + s.hash),
+    key: Key(s.filename),
     onDismissed: (DismissDirection direction) {
       if (direction == DismissDirection.startToEnd) {
-        // Dismissed to the left
+        // Dismissed to the right
         // background
         Playlist.RemoveSong(s);
-      } else {
-        // secondary background
-        s.hash += "2";
-        Playlist.Stack(s);
       }
-      Playlist.Save();
+      c(() {});
+    },
+    confirmDismiss: (dir) {
+      if (dir == DismissDirection.endToStart) {
+        Playlist.Stack(s);
+        c(() {});
+      }
+      return Future.value(true);
     },
     background: Container(
       color: Colors.red,
@@ -203,6 +236,7 @@ Dismissible DismissibleSongTile(BuildContext context, Song s,
       subtitle: Text(s.interpret),
       onLongPress: () => {
         Playlist.JumpToSong(s),
+        c(() {}),
       },
       trailing: Draggable<int>(
         // Data is the value this Draggable stores.
@@ -210,7 +244,7 @@ Dismissible DismissibleSongTile(BuildContext context, Song s,
         feedback: Material(
           child: Container(
             child: Text(
-              Playlist.songs[i].title,
+              s.title,
               style: TextStyle(fontSize: 18),
             ),
           ),
@@ -242,12 +276,14 @@ Dismissible DismissibleSongTile(BuildContext context, Song s,
               8: false,
               9: true,
               10: true,
+              11: true,
             });
           },
           onAccept: (int data) {
             if (data == i) return;
             if (i == 0 || data == 0) return;
             Playlist.DragNDropUpdate(data, i);
+            c(() {});
           },
         ),
       ),
