@@ -483,19 +483,55 @@ class _ShowConfig extends State<ShowConfig> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: CFG.ContrastColor,
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Icon(Icons.arrow_back),
-        ),
         appBar: AppBar(
           title: Text("Config"),
         ),
         body: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
-              for (var key in CFG.Config.keys) Text("$key: " + CFG.Config["$key"].toString()),
+              Padding(
+                padding: EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 0),
+                child: Text("Home Color:" + CFG.Config["HomeColor"].toString()),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 0),
+                child: Text("Contrast Color:" + CFG.Config["ContrastColor"].toString()),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 10),
+                child: Text("SearchPaths:" + CFG.Config["SearchPaths"].toString()),
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    StringInput(context, "Add Path", "Create", "Cancel", (String s) {
+                      CFG.Config["SearchPaths"].add(s);
+                      CFG.SaveConfig();
+                    }, (String s) {}, false, "", "");
+                  },
+                  child: const Text("Add Path")),
+              ExpansionTile(
+                title: const Text('Playlist'),
+                children: <Widget>[
+                  Builder(
+                    builder: (BuildContext context) {
+                      return Container(
+                        padding: const EdgeInsets.all(5),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            for (String key in CFG.Config["Playlist"])
+                              Padding(
+                                padding: EdgeInsets.only(top: 10, left: 5, right: 5, bottom: 0),
+                                child: Text(key),
+                              ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
               TextButton(
                   onPressed: () {
                     Navigator.pop(context);
