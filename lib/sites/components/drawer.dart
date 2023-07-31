@@ -28,102 +28,97 @@ class SongDrawer extends Drawer {
       child: Column(
         children: <Widget>[
           // This container holds the align
-          Container(
-            // This align moves the children to the bottom
-            child: Align(
-              alignment: FractionalOffset.bottomCenter,
-              // This container holds all the children that will be aligned
-              // on the bottom and should not scroll with the above ListView
-              child: Container(
-                child: Column(
-                  children: [
-                    StyledElevatedButton(
-                        child: const Text("Search for new Songs"),
-                        onPressed: () {
-                          Navigator.of(context)
-                              .push(
-                                MaterialPageRoute(
-                                  builder: (_) => SearchSongPage(),
-                                ),
-                              )
-                              .then((value) => c(() {}));
-                        }),
-                    StyledElevatedButton(
-                        child: const Text("Edit Song Informations"),
-                        onPressed: () {
-                          Navigator.of(context)
-                              .push(
-                                MaterialPageRoute(
-                                  builder: (_) => ShowSongEdit(Playlist: Playlist, c: c),
-                                ),
-                              )
-                              .then((value) => c(() {}));
-                        }),
-                    StyledElevatedButton(
-                      child: const Text("Open Settings"),
-                      onPressed: () {
-                        Navigator.of(context)
-                            .push(
-                              MaterialPageRoute(
-                                builder: (_) => ShowConfig(),
-                              ),
-                            )
-                            .then((value) => c(() {}));
-                      },
-                    ),
-                    StyledElevatedButton(
-                      child: const Text("Open Blacklist"),
-                      onPressed: () {
-                        Navigator.of(context)
-                            .push(
-                              MaterialPageRoute(
-                                builder: (_) => ShowBlacklist(Playlist: Playlist, c: c),
-                              ),
-                            )
-                            .then((value) => c(() {}));
-                      },
-                    ),
-                    StyledElevatedButton(
-                      child: const Text("Critical Buttons"),
-                      onPressed: () {
-                        Navigator.of(context)
-                            .push(
-                              MaterialPageRoute(
-                                builder: (_) => CriticalButtons(Pl: Playlist),
-                              ),
-                            )
-                            .then((value) => c(() {}));
-                      },
-                    ),
-                    StyledElevatedButton(
-                      child: const Text("Add Random Song to Playlist"),
-                      onPressed: () {
-                        int tries = 0;
-                        final _random = new Random();
-                        List keys = Songs.keys.toList();
-                        Song s;
-                        do {
-                          String element = keys[_random.nextInt(keys.length)];
-                          s = Songs[element];
-                          tries++;
-                          if (tries > Songs.length) {
-                            // no unlimited loop if every song is already in the playlist
-                            return;
-                          }
-                        } while (Playlist.Contains(s));
-                        Playlist.AddToPlaylist(s);
-                        final snackBar = SnackBar(
-                          backgroundColor: Colors.green,
-                          content: Text('Added ' + s.title + ' to Playlist'),
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      },
-                    ),
-                    Text("\nTags:" + Tags.length.toString(), style: TextStyle(fontSize: 20)),
-                    Text("\nSongs:" + Songs.length.toString(), style: TextStyle(fontSize: 20)),
-                  ],
+          Align(
+            alignment: FractionalOffset.bottomCenter,
+            // This container holds all the children that will be aligned
+            // on the bottom and should not scroll with the above ListView
+            child: Column(
+              children: [
+                StyledElevatedButton(
+                    child: const Text("Search for new Songs"),
+                    onPressed: () {
+                      Navigator.of(context)
+                          .push(
+                            MaterialPageRoute(
+                              builder: (_) => const SearchSongPage(),
+                            ),
+                          )
+                          .then((value) => c(() {}));
+                    }),
+                StyledElevatedButton(
+                    child: const Text("Edit Song Informations"),
+                    onPressed: () {
+                      Navigator.of(context)
+                          .push(
+                            MaterialPageRoute(
+                              builder: (_) => ShowSongEdit(Playlist: Playlist, c: c),
+                            ),
+                          )
+                          .then((value) => c(() {}));
+                    }),
+                StyledElevatedButton(
+                  child: const Text("Open Settings"),
+                  onPressed: () {
+                    Navigator.of(context)
+                        .push(
+                          MaterialPageRoute(
+                            builder: (_) => const ShowConfig(),
+                          ),
+                        )
+                        .then((value) => c(() {}));
+                  },
                 ),
-              ),
+                StyledElevatedButton(
+                  child: const Text("Open Blacklist"),
+                  onPressed: () {
+                    Navigator.of(context)
+                        .push(
+                          MaterialPageRoute(
+                            builder: (_) => ShowBlacklist(Playlist: Playlist, c: c),
+                          ),
+                        )
+                        .then((value) => c(() {}));
+                  },
+                ),
+                StyledElevatedButton(
+                  child: const Text("Critical Buttons"),
+                  onPressed: () {
+                    Navigator.of(context)
+                        .push(
+                          MaterialPageRoute(
+                            builder: (_) => CriticalButtons(Pl: Playlist),
+                          ),
+                        )
+                        .then((value) => c(() {}));
+                  },
+                ),
+                StyledElevatedButton(
+                  child: const Text("Add Random Song to Playlist"),
+                  onPressed: () {
+                    int tries = 0;
+                    final random = Random();
+                    List keys = Songs.keys.toList();
+                    Song s;
+                    do {
+                      String element = keys[random.nextInt(keys.length)];
+                      s = Songs[element];
+                      tries++;
+                      if (tries > Songs.length) {
+                        // no unlimited loop if every song is already in the playlist
+                        return;
+                      }
+                    } while (Playlist.Contains(s));
+                    Playlist.AddToPlaylist(s);
+                    final snackBar = SnackBar(
+                      backgroundColor: Colors.green,
+                      content: Text('Added ${s.title} to Playlist'),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  },
+                ),
+                Text("\nTags:${Tags.length}", style: const TextStyle(fontSize: 20)),
+                Text("\nSongs:${Songs.length}", style: const TextStyle(fontSize: 20)),
+              ],
             ),
           ),
         ],
@@ -165,11 +160,11 @@ class _SearchSongPage extends State<SearchSongPage> {
       await Future.delayed(const Duration(milliseconds: 500));
       try {
         Directory dir = Directory(path[i]);
-        List<FileSystemEntity> _files;
-        _files = dir.listSync(recursive: true, followLinks: true);
+        List<FileSystemEntity> files;
+        files = dir.listSync(recursive: true, followLinks: true);
 
-        for (FileSystemEntity entity in _files) {
-          await Future.delayed(Duration(milliseconds: 1));
+        for (FileSystemEntity entity in files) {
+          await Future.delayed(const Duration(milliseconds: 1));
           String path = entity.path;
           if (path.endsWith('.mp3')) {
             if (CreateSong(path)) {
@@ -188,7 +183,6 @@ class _SearchSongPage extends State<SearchSongPage> {
           searchinfo += "\t Error Searching $a\n";
         });
       }
-      ;
     }
     if (count > 0) {
       ShouldSaveSongs = true;
@@ -215,31 +209,27 @@ class _SearchSongPage extends State<SearchSongPage> {
           child: const Icon(Icons.arrow_back),
         ),
         appBar: AppBar(
-          title: Text("Search for unregistered Songs"),
+          title: const Text("Search for unregistered Songs"),
           backgroundColor: CFG.HomeColor,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),
-        body: Container(
-          child: Center(
-            child: Column(
-              children: [
-                Container(
-                  child: TextButton(
-                    onPressed: () {
-                      if (!searching) {
-                        StartSearch();
-                      }
-                    },
-                    child: Text(searching ? "Searching..." : "Start Search"),
-                  ),
-                ),
-                Text(searchcount),
-                Text(searchinfo),
-              ],
-            ),
+        body: Center(
+          child: Column(
+            children: [
+              TextButton(
+                onPressed: () {
+                  if (!searching) {
+                    StartSearch();
+                  }
+                },
+                child: Text(searching ? "Searching..." : "Start Search"),
+              ),
+              Text(searchcount),
+              Text(searchinfo),
+            ],
           ),
         ),
       ),
@@ -248,10 +238,10 @@ class _SearchSongPage extends State<SearchSongPage> {
 }
 
 class ShowSongEdit extends StatefulWidget {
-  ShowSongEdit({Key? key, required this.Playlist, required this.c}) : super(key: key);
+  const ShowSongEdit({Key? key, required this.Playlist, required this.c}) : super(key: key);
 
-  final Playlist;
-  final c;
+  final MyAudioHandler Playlist;
+  final void Function(void Function()) c;
 
   @override
   State<ShowSongEdit> createState() => _ShowSongEdit();
@@ -267,7 +257,7 @@ class _ShowSongEdit extends State<ShowSongEdit> {
       currentsong = FoundSongs.length - 1;
     }
     if (currentsong >= FoundSongs.length || currentsong < 0) {
-      return Center(
+      return const Center(
         child: Text("Done Editing all Songs"),
       );
     }
@@ -279,7 +269,7 @@ class _ShowSongEdit extends State<ShowSongEdit> {
         children: [
           Text("Editing Song ${currentsong + 1} of ${FoundSongs.length}\n",
               style: const TextStyle(fontSize: 15)),
-          Text("\n" + csong.filename + "\n", style: const TextStyle(fontSize: 20)),
+          Text("\n${csong.filename}\n", style: const TextStyle(fontSize: 20)),
           StyledElevatedButton(
               onPressed: () {
                 Navigator.of(context)
@@ -414,35 +404,33 @@ class _ShowSongEdit extends State<ShowSongEdit> {
           child: const Icon(Icons.arrow_back),
         ),
         appBar: AppBar(
-          title: Text("Song Edit"),
+          title: const Text("Song Edit"),
           actions: [
             IconButton(
               onPressed: () => Navigator.of(context)
                   .push(
                     MaterialPageRoute(
                       builder: (_) => SearchPage(
-                          (search, update) => Container(
-                                child: ListView(
-                                  children: [
-                                    for (String key in Songs.keys)
-                                      if (ShouldShowSong(key, search))
-                                        SongTile(
-                                            context, Songs[key], widget.c, widget.Playlist, true, {
-                                          0: false,
-                                          1: false,
-                                          2: false,
-                                          3: true,
-                                          4: false,
-                                          5: false,
-                                          6: false,
-                                          7: false,
-                                          8: true,
-                                          9: false,
-                                          10: false,
-                                          11: false,
-                                        }),
-                                  ],
-                                ),
+                          (search, update) => ListView(
+                                children: [
+                                  for (String key in Songs.keys)
+                                    if (ShouldShowSong(key, search))
+                                      SongTile(
+                                          context, Songs[key], widget.c, widget.Playlist, true, {
+                                        0: false,
+                                        1: false,
+                                        2: false,
+                                        3: true,
+                                        4: false,
+                                        5: false,
+                                        6: false,
+                                        7: false,
+                                        8: true,
+                                        9: false,
+                                        10: false,
+                                        11: false,
+                                      }),
+                                ],
                               ),
                           ""),
                     ),
@@ -472,7 +460,7 @@ class _ShowSongEdit extends State<ShowSongEdit> {
 }
 
 class ShowConfig extends StatefulWidget {
-  ShowConfig({Key? key}) : super(key: key);
+  const ShowConfig({Key? key}) : super(key: key);
 
   @override
   State<ShowConfig> createState() => _ShowConfig();
@@ -484,22 +472,22 @@ class _ShowConfig extends State<ShowConfig> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Config"),
+          title: const Text("Config"),
         ),
         body: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 0),
-                child: Text("Home Color:" + CFG.Config["HomeColor"].toString()),
+                padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 0),
+                child: Text("Home Color:${CFG.Config["HomeColor"]}"),
               ),
               Padding(
-                padding: EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 0),
-                child: Text("Contrast Color:" + CFG.Config["ContrastColor"].toString()),
+                padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 0),
+                child: Text("Contrast Color:${CFG.Config["ContrastColor"]}"),
               ),
               Padding(
-                padding: EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 10),
-                child: Text("SearchPaths:" + CFG.Config["SearchPaths"].toString()),
+                padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 10),
+                child: Text("SearchPaths:${CFG.Config["SearchPaths"]}"),
               ),
               ElevatedButton(
                   onPressed: () {
@@ -522,7 +510,8 @@ class _ShowConfig extends State<ShowConfig> {
                           children: [
                             for (String key in CFG.Config["Playlist"])
                               Padding(
-                                padding: EdgeInsets.only(top: 10, left: 5, right: 5, bottom: 0),
+                                padding:
+                                    const EdgeInsets.only(top: 10, left: 5, right: 5, bottom: 0),
                                 child: Text(key),
                               ),
                           ],
@@ -537,7 +526,7 @@ class _ShowConfig extends State<ShowConfig> {
                     Navigator.pop(context);
                     CFG.SaveConfig();
                   },
-                  child: Text("Close"))
+                  child: const Text("Close"))
             ],
           ),
         ),
@@ -547,10 +536,10 @@ class _ShowConfig extends State<ShowConfig> {
 }
 
 class ShowBlacklist extends StatefulWidget {
-  ShowBlacklist({Key? key, required this.Playlist, required this.c}) : super(key: key);
+  const ShowBlacklist({Key? key, required this.Playlist, required this.c}) : super(key: key);
 
-  final Playlist;
-  final c;
+  final MyAudioHandler Playlist;
+  final void Function(void Function()) c;
   @override
   State<ShowBlacklist> createState() => _ShowBlacklist();
 }
@@ -575,35 +564,32 @@ class _ShowBlacklist extends State<ShowBlacklist> {
           child: const Icon(Icons.arrow_back),
         ),
         appBar: AppBar(
-          title: Text("Blacklist"),
+          title: const Text("Blacklist"),
           actions: [
             IconButton(
               onPressed: () => Navigator.of(context)
                   .push(
                     MaterialPageRoute(
                       builder: (_) => SearchPage(
-                          (search, update) => Container(
-                                child: ListView(
-                                  children: [
-                                    for (String key in Songs.keys)
-                                      if (ShouldShowSong(key, search))
-                                        SongTile(
-                                            context, Songs[key], update, widget.Playlist, true, {
-                                          0: true,
-                                          1: true,
-                                          2: true,
-                                          3: false,
-                                          4: false,
-                                          5: false,
-                                          6: false,
-                                          7: false,
-                                          8: true,
-                                          9: false,
-                                          10: false,
-                                          11: false,
-                                        }),
-                                  ],
-                                ),
+                          (search, update) => ListView(
+                                children: [
+                                  for (String key in Songs.keys)
+                                    if (ShouldShowSong(key, search))
+                                      SongTile(context, Songs[key], update, widget.Playlist, true, {
+                                        0: true,
+                                        1: true,
+                                        2: true,
+                                        3: false,
+                                        4: false,
+                                        5: false,
+                                        6: false,
+                                        7: false,
+                                        8: true,
+                                        9: false,
+                                        10: false,
+                                        11: false,
+                                      }),
+                                ],
                               ),
                           ""),
                     ),
@@ -646,7 +632,7 @@ class _ShowBlacklist extends State<ShowBlacklist> {
 }
 
 class CriticalButtons extends StatefulWidget {
-  CriticalButtons({Key? key, required this.Pl}) : super(key: key);
+  const CriticalButtons({Key? key, required this.Pl}) : super(key: key);
 
   final MyAudioHandler Pl;
   @override
@@ -665,7 +651,7 @@ class _ShowTagDeletion extends State<CriticalButtons> {
           child: const Icon(Icons.arrow_back),
         ),
         appBar: AppBar(
-          title: Text("Tag Deletion"),
+          title: const Text("Tag Deletion"),
         ),
         body: Center(
           child: Column(
@@ -694,7 +680,7 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                     SaveSongs();
                     Navigator.pop(context);
                   },
-                  child: Text("Delete All Tags", style: TextStyle(fontSize: 30))),
+                  child: const Text("Delete All Tags", style: TextStyle(fontSize: 30))),
               TextButton(
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.red,
@@ -707,7 +693,7 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                   SaveSongs();
                   Navigator.pop(context);
                 },
-                child: Text("Delete All Songs", style: TextStyle(fontSize: 30)),
+                child: const Text("Delete All Songs", style: TextStyle(fontSize: 30)),
               ),
               TextButton(
                 style: TextButton.styleFrom(
@@ -730,7 +716,7 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                   CFG.SaveConfig();
                   Navigator.pop(context);
                 },
-                child: Text("Reset Config", style: TextStyle(fontSize: 30)),
+                child: const Text("Reset Config", style: TextStyle(fontSize: 30)),
               ),
             ],
           ),

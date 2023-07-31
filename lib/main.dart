@@ -28,7 +28,7 @@ void checkpermissions() async {
 Future<void> main() async {
   _audioHandler = await AudioService.init(
     builder: () => MyAudioHandler(),
-    config: AudioServiceConfig(
+    config: const AudioServiceConfig(
       androidNotificationChannelId: 'com.ibimsnicesyolo.musicplayer',
       androidNotificationChannelName: 'Music Player',
       androidNotificationOngoing: true,
@@ -36,7 +36,7 @@ Future<void> main() async {
       androidNotificationClickStartsActivity: true,
     ),
   );
-  runApp(MaterialApp(theme: ThemeData.dark(), home: MainSite()));
+  runApp(MaterialApp(theme: ThemeData.dark(), home: const MainSite()));
   checkpermissions();
 }
 
@@ -117,7 +117,7 @@ class _MainSite extends State<MainSite> {
                     : AllSongs.buildContent(context, update, _audioHandler, reverse)))),
         floatingActionButton: (side == 2 || side == 3
             ? FloatingActionButton(
-                child: Icon(Icons.downloading),
+                child: const Icon(Icons.downloading),
                 onPressed: () {
                   reverse += 1;
                   if (reverse > 3) {
@@ -143,22 +143,22 @@ class _MainSite extends State<MainSite> {
           },
           items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.play_arrow),
+              icon: const Icon(Icons.play_arrow),
               backgroundColor: CFG.ContrastColor,
               label: "Current Song",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.music_note),
+              icon: const Icon(Icons.music_note),
               backgroundColor: CFG.ContrastColor,
               label: "Current Playlist",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.tag),
+              icon: const Icon(Icons.tag),
               backgroundColor: CFG.ContrastColor,
               label: "All Tags",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.all_inclusive_sharp),
+              icon: const Icon(Icons.all_inclusive_sharp),
               backgroundColor: CFG.ContrastColor,
               label: "All Songs",
             ),

@@ -52,10 +52,8 @@ void UpdateTagName(tag, name) {
 
 void SaveTags() async {
   if (!ShouldSaveTags) {
-    print("No Tags to save");
     return;
   }
-  print("Saving Tags");
   ShouldSaveTags = false;
 
   String appDocDirectory = "storage/emulated/0/Music";
@@ -71,10 +69,10 @@ void SaveTags() async {
   if (notagsexisting) {
     json = "{}";
   } else {
-    json = json.substring(0, json.length - 1) + "}";
+    json = "${json.substring(0, json.length - 1)}}";
     // remove last comma, close json
   }
-  File(appDocDirectory + '/tags.json').writeAsString(json);
+  File('$appDocDirectory/tags.json').writeAsString(json);
 }
 
 void DeleteTag(Tag t) {
@@ -95,14 +93,13 @@ void UpdateAllTags() {
     v.used = 0;
   });
   Songs.forEach((k, v) {
-    if (!v.blacklisted)
+    if (!v.blacklisted) {
       v.tags.forEach((element) {
         try {
           Tags[element].used += 1;
-        } catch (e) {
-          print(e);
-        }
+        } catch (e) {}
       });
+    }
   });
 }
 
@@ -112,7 +109,7 @@ Map GetSongsFromTag(Tag T) {
   for (String s in Songs.keys) {
     Song so = Songs[s];
     List t = so.tags;
-    if (t.indexOf(T.id, 0) != -1 && !so.blacklisted) {
+    if (t.contains(T.id) && !so.blacklisted) {
       songs[so.filename] = so;
     }
   }

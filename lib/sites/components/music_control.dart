@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+
 import '../../../classes/playlist.dart';
-import 'dart:async';
 
 class ControlTile extends StatefulWidget {
-  ControlTile({Key? key, required this.Playlist, required this.c})
-      : super(key: key);
+  const ControlTile({Key? key, required this.Playlist, required this.c}) : super(key: key);
 
-  MyAudioHandler Playlist;
-  final c;
+  final MyAudioHandler Playlist;
+  final void Function(void Function()) c;
 
   @override
   State<ControlTile> createState() => _ControlTile();
@@ -29,7 +28,7 @@ class _ControlTile extends State<ControlTile> {
                       widget.Playlist.skipToPrevious();
                     });
                   },
-                  icon: Icon(Icons.skip_previous),
+                  icon: const Icon(Icons.skip_previous),
                 ),
                 IconButton(
                   onPressed: () {
@@ -37,7 +36,7 @@ class _ControlTile extends State<ControlTile> {
                       widget.Playlist.Shuffle();
                     });
                   },
-                  icon: Icon(Icons.shuffle),
+                  icon: const Icon(Icons.shuffle),
                 ),
                 IconButton(
                   onPressed: () {
@@ -45,9 +44,7 @@ class _ControlTile extends State<ControlTile> {
                       widget.Playlist.pause();
                     });
                   },
-                  icon: Icon((widget.Playlist.player.playing)
-                      ? Icons.pause
-                      : Icons.play_arrow),
+                  icon: Icon((widget.Playlist.player.playing) ? Icons.pause : Icons.play_arrow),
                 ),
                 IconButton(
                   onPressed: () {
@@ -55,7 +52,7 @@ class _ControlTile extends State<ControlTile> {
                       widget.Playlist.stop();
                     });
                   },
-                  icon: Icon(Icons.stop),
+                  icon: const Icon(Icons.stop),
                 ),
                 IconButton(
                   onPressed: () {
@@ -63,7 +60,7 @@ class _ControlTile extends State<ControlTile> {
                       widget.Playlist.skipToNext();
                     });
                   },
-                  icon: Icon(Icons.skip_next),
+                  icon: const Icon(Icons.skip_next),
                 ),
               ],
             ),

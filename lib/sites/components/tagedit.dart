@@ -8,9 +8,9 @@ import "elevatedbutton.dart";
 
 // Search Page
 class TagEdit extends StatefulWidget {
-  TagEdit(this.s, {Key? key}) : super(key: key);
+  const TagEdit(this.s, {Key? key}) : super(key: key);
 
-  Song s;
+  final Song s;
 
   @override
   State<TagEdit> createState() => _TagEdit(s: s);
@@ -97,6 +97,7 @@ class _TagEdit extends State<TagEdit> {
                 onPressed: () {
                   if (create.text != "") {
                     int id = CreateTag(create.text.trim());
+                    ToUpdate[s.filename] = [id, true];
                     ToUpdate.forEach((key, value) {
                       UpdateSongTags(key, value[0], value[1]);
                     });

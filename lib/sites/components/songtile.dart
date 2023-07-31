@@ -73,12 +73,12 @@ PopupMenuButton SongTile(BuildContext context, Song s, void Function(void Functi
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text("Delete " + s.title + "?"),
-            content: Text("Are you sure you want to delete this song?"),
+            title: Text("Delete ${s.title}?"),
+            content: const Text("Are you sure you want to delete this song?"),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text("No"),
+                child: const Text("No"),
               ),
               TextButton(
                 onPressed: () {
@@ -86,7 +86,7 @@ PopupMenuButton SongTile(BuildContext context, Song s, void Function(void Functi
                   Playlist.RemoveSong(s);
                   DeleteSong(s);
                 },
-                child: Text("Yes"),
+                child: const Text("Yes"),
               ),
             ],
           ),
@@ -128,67 +128,47 @@ PopupMenuButton SongTile(BuildContext context, Song s, void Function(void Functi
     child: (showchild)
         ? ListTile(
             title: Text(s.title),
-            subtitle: Text(s.interpret + " | " + s.featuring),
+            subtitle: Text("${s.interpret} | ${s.featuring}"),
           )
         : null,
     itemBuilder: (BuildContext context) => <PopupMenuEntry>[
       if (activated[0] == true)
         PopupMenuItem(
-          child: Text(s.title),
           value: 0,
+          child: Text(s.title),
         ),
       if (activated[1] == true)
         PopupMenuItem(
-          child: Text(s.interpret),
           value: 1,
+          child: Text(s.interpret),
         ),
       if (activated[2] == true)
         PopupMenuItem(
-          child: Text(s.featuring),
           value: 2,
+          child: Text(s.featuring),
         ),
       const PopupMenuDivider(),
-      if (activated[3] == true) PopupMenuItem(child: Text('Edit Tags'), value: 3),
-      if (activated[4] == true) PopupMenuItem(child: Text('Delete Song'), value: 4),
+      if (activated[3] == true) const PopupMenuItem(value: 3, child: Text('Edit Tags')),
+      if (activated[4] == true) const PopupMenuItem(value: 4, child: Text('Delete Song')),
       const PopupMenuDivider(),
-      if (activated[5] == true) PopupMenuItem(child: Text('Play Next'), value: 5),
-      if (activated[6] == true) PopupMenuItem(child: Text('Add to Playlist'), value: 6),
-      if (activated[7] == true) PopupMenuItem(child: Text('Add to Stack'), value: 7),
+      if (activated[5] == true) const PopupMenuItem(value: 5, child: Text('Play Next')),
+      if (activated[6] == true) const PopupMenuItem(value: 6, child: Text('Add to Playlist')),
+      if (activated[7] == true) const PopupMenuItem(value: 7, child: Text('Add to Stack')),
       if (activated[8] == true)
         PopupMenuItem(
-            child: Text(s.blacklisted ? 'Un Blacklist Song' : "Blacklist Song"), value: 8),
-      if (activated[9] == true) PopupMenuItem(child: Text("Jump To"), value: 9),
-      if (activated[10] == true) PopupMenuItem(child: Text("Move to End"), value: 10),
-      if (activated[11] == true) PopupMenuItem(child: Text("Play and Delete current"), value: 11),
+            value: 8, child: Text(s.blacklisted ? 'Un Blacklist Song' : "Blacklist Song")),
+      if (activated[9] == true) const PopupMenuItem(value: 9, child: Text("Jump To")),
+      if (activated[10] == true) const PopupMenuItem(value: 10, child: Text("Move to End")),
+      if (activated[11] == true)
+        const PopupMenuItem(value: 11, child: Text("Play and Delete current")),
     ],
   );
 }
 
 Dismissible DismissibleSongTile(
     BuildContext context, Song s, void Function(void Function()) c, MyAudioHandler Playlist) {
-  int i =
-      -1; // Playlist.songs.indexOf(s); doesnt work because of the updated hash so it doesnt find the objects
-  for (int j = 0; j < Playlist.songs.length; j++) {
-    if (Playlist.songs[j].filename == s.filename) {
-      i = j;
-      break;
-    }
-  }
+  int i = Playlist.songs.indexOf(s);
 
-  if (i == Playlist.songs.indexOf(s)) {
-    print("Found Song in Playlist with indexOf");
-  }
-
-  if (i < 0 || i >= Playlist.songs.length) {
-    return Dismissible(
-      key: Key(s.filename + "weird"),
-      child: ListTile(
-        title: Text("ERROR: " + s.title),
-        trailing: Icon(Icons.drag_handle),
-        onTap: () {},
-      ),
-    );
-  }
   return Dismissible(
     key: Key(s.filename),
     onDismissed: (DismissDirection direction) {
@@ -208,8 +188,8 @@ Dismissible DismissibleSongTile(
     },
     background: Container(
       color: Colors.red,
-      child: Padding(
-        padding: const EdgeInsets.all(15),
+      child: const Padding(
+        padding: EdgeInsets.all(15),
         child: Row(
           children: [
             Icon(Icons.add, color: Colors.white),
@@ -220,8 +200,8 @@ Dismissible DismissibleSongTile(
     ),
     secondaryBackground: Container(
       color: Colors.green,
-      child: Padding(
-        padding: const EdgeInsets.all(15),
+      child: const Padding(
+        padding: EdgeInsets.all(15),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -242,19 +222,17 @@ Dismissible DismissibleSongTile(
         // Data is the value this Draggable stores.
         data: i,
         feedback: Material(
-          child: Container(
-            child: Text(
-              s.title,
-              style: TextStyle(fontSize: 18),
-            ),
+          child: Text(
+            s.title,
+            style: const TextStyle(fontSize: 18),
           ),
         ),
         childWhenDragging: PopupMenuButton(
           onSelected: (result) {},
           itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-            PopupMenuItem(
-              child: Text(''),
+            const PopupMenuItem(
               value: 0,
+              child: Text(''),
             ),
           ],
         ),

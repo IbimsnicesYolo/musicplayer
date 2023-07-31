@@ -18,17 +18,6 @@ class Song {
   bool hastags = false;
   List tags = [];
   Song(this.path);
-  Info() {
-    print("Song Info");
-    print(path);
-    print(filename);
-    print(title);
-    print(interpret);
-    print(featuring);
-    print(edited);
-    print(blacklisted);
-    print(tags.toString());
-  }
 
   Song.fromJson(Map<String, dynamic> json)
       : path = json['p'],
@@ -139,9 +128,9 @@ void SaveSongs() async {
   String appDocDirectory = "storage/emulated/0/Music";
   String json = "{";
   bool nosongsfound = true;
-  await Future.delayed(Duration(milliseconds: 10));
+  await Future.delayed(const Duration(milliseconds: 10));
   for (var song in Songs.values) {
-    await Future.delayed(Duration(milliseconds: 1));
+    await Future.delayed(const Duration(milliseconds: 1));
     nosongsfound = false;
     json += '"' + song.filename + '":' + jsonEncode(song.toJson(song)) + ",";
   }
@@ -149,11 +138,11 @@ void SaveSongs() async {
   if (nosongsfound) {
     json = "{}";
   } else {
-    json = json.substring(0, json.length - 1) + "}";
+    json = "${json.substring(0, json.length - 1)}}";
     // remove last comma, close json
   }
-  await Future.delayed(Duration(milliseconds: 10));
-  File(appDocDirectory + '/songs.json').writeAsString(json);
+  await Future.delayed(const Duration(milliseconds: 10));
+  File('$appDocDirectory/songs.json').writeAsString(json);
 }
 
 // Check if file in Song path still exists
@@ -161,7 +150,6 @@ void ValidateSongs() {
   Songs.forEach((k, v) {
     v.hastags = v.tags.isNotEmpty;
     if (!File(v.path).existsSync()) {
-      print("Song " + v.path + " does not exist anymore!");
       DeleteSong(v);
     }
   });

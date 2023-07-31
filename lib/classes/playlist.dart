@@ -84,15 +84,15 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   void UpDateMediaItem() {
     if (songs.length > 1) {
       mediaItem.add(MediaItem(
-        id: 'file://storage/' + songs[0].path,
-        album: (songs[1] != null) ? "Next: " + songs[1].title : "No Next Song",
+        id: 'file://storage/${songs[0].path}',
+        album: (songs[1].edited) ? "Next: ${songs[1].title}" : "No Next Song",
         title: songs[0].title,
         artist: songs[0].interpret,
         duration: player.duration,
       ));
-    } else if (songs.length > 0) {
+    } else if (songs.isNotEmpty) {
       mediaItem.add(MediaItem(
-        id: 'file://storage/' + songs[0].path,
+        id: 'file://storage/${songs[0].path}',
         album: "No Next Song",
         title: songs[0].title,
         artist: songs[0].interpret,
@@ -113,7 +113,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void Shuffle() {
-    if (songs.length < 1) {
+    if (songs.isEmpty) {
       return;
     }
     if (player.playing) {
@@ -141,7 +141,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       songs.add(songs.removeAt(0));
     }
     if (player.playing) {
-      await player.seek(Duration(seconds: 0));
+      await player.seek(const Duration(seconds: 0));
       play();
     } else {
       LoadNextToPlayer();
@@ -157,32 +157,31 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
 
   void LoadNextToPlayer() async {
     decreaseStack();
-    if (songs.length > 0) {
-      await player.seek(Duration(seconds: 0));
+    if (songs.isNotEmpty) {
+      await player.seek(const Duration(seconds: 0));
       await play(true);
     }
   }
 
   void Save() {
     List<String> names = [];
-    songs.forEach((element) {
+    for (var element in songs) {
       names.add(element.filename);
-    });
+    }
     Config["Playlist"] = names;
     SaveConfig();
   }
 
   void AddTagToAll(Tag t) {
-    songs.forEach((element) {
+    for (var element in songs) {
       UpdateSongTags(element.filename, t.id, true);
-    });
+    }
   }
 
   void SaveToTag(int id) {
-    List<String> names = [];
-    songs.forEach((element) {
+    for (var element in songs) {
       UpdateSongTags(element.filename, id, true);
-    });
+    }
     Clear();
     UpDateMediaItem();
     ShouldSaveTags = true;
@@ -196,7 +195,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     List savedsongs = Config["Playlist"];
     if (savedsongs.isNotEmpty) {
       savedsongs.forEach((element) async {
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future.delayed(const Duration(milliseconds: 50));
         if (Songs.containsKey(element)) {
           if (Contains(Songs[element])) {
             return;
@@ -205,7 +204,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
         }
       });
     }
-    Future.delayed(Duration(seconds: 1)).then((value) {
+    Future.delayed(const Duration(seconds: 1)).then((value) {
       done();
       UpDateMediaItem();
     });
@@ -219,14 +218,15 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     Save();
   }
 
+  @override
   Future<void> play([pause = false]) async {
     if (paused) {
       player.play();
       paused = false;
     } else {
-      if (songs.length > 0) {
+      if (songs.isNotEmpty) {
         await player.stop();
-        await player.setUrl('file://storage/' + songs[0].path);
+        await player.setUrl('file://storage/${songs[0].path}');
         if (pause || paused) {
           player.pause();
         } else {
@@ -238,6 +238,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     }
   }
 
+  @override
   Future<void> pause() async {
     if (player.playing) {
       await player.pause();
@@ -250,10 +251,11 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     }
   }
 
+  @override
   Future<void> stop() async {
     await player.stop();
     paused = false;
-    await player.seek(Duration(seconds: 0));
+    await player.seek(const Duration(seconds: 0));
     UpDateMediaItem();
   }
 
@@ -267,11 +269,12 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     Shuffle();
   }
 
+  @override
   Future<void> skipToNext([next = false]) async {
-    if (songs.length > 0) {
+    if (songs.isNotEmpty) {
       songs.add(songs.removeAt(0));
       if (player.playing || next) {
-        await player.seek(Duration(seconds: 0));
+        await player.seek(const Duration(seconds: 0));
         play();
       } else {
         LoadNextToPlayer();
@@ -280,11 +283,12 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   DateTime lastback = DateTime.now();
+  @override
   Future<void> skipToPrevious() async {
-    if (songs.length > 0) {
+    if (songs.isNotEmpty) {
       if (player.playing && DateTime.now().difference(lastback).inSeconds > 3) {
         lastback = DateTime.now();
-        await player.seek(Duration(seconds: 0));
+        await player.seek(const Duration(seconds: 0));
         play();
       } else {
         await pause();

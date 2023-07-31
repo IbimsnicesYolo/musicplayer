@@ -36,27 +36,25 @@ IconButton buildActions(
         .push(
           MaterialPageRoute(
             builder: (_) => SearchPage(
-                (search, update) => Container(
-                      child: ListView(
-                        children: [
-                          for (String key in Songs.keys)
-                            if (ShouldShowSong(key, search))
-                              SongTile(context, Songs[key], c, Playlist, true, {
-                                0: true,
-                                1: true,
-                                2: true,
-                                3: true,
-                                4: true,
-                                5: true,
-                                6: true,
-                                7: true,
-                                8: true,
-                                9: false,
-                                10: false,
-                                11: false,
-                              }),
-                        ],
-                      ),
+                (search, update) => ListView(
+                      children: [
+                        for (String key in Songs.keys)
+                          if (ShouldShowSong(key, search))
+                            SongTile(context, Songs[key], c, Playlist, true, {
+                              0: true,
+                              1: true,
+                              2: true,
+                              3: true,
+                              4: true,
+                              5: true,
+                              6: true,
+                              7: true,
+                              8: true,
+                              9: false,
+                              10: false,
+                              11: false,
+                            }),
+                      ],
                     ),
                 ""),
           ),

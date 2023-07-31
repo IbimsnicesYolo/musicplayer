@@ -8,8 +8,8 @@ import 'classes/playlist.dart';
 import 'classes/song.dart';
 import "classes/tag.dart";
 
-Color HomeColor = Color.fromRGBO(61, 61, 61, 0);
-Color ContrastColor = Color.fromRGBO(0, 255, 76, 0);
+Color HomeColor = const Color.fromRGBO(61, 61, 61, 0);
+Color ContrastColor = const Color.fromRGBO(0, 255, 76, 0);
 
 Map Config = {
   "HomeColor": HomeColor.value,
@@ -22,18 +22,18 @@ Map Config = {
 void SaveConfig() {
   SaveSongs();
   String appDocDirectory = "storage/emulated/0/Music";
-  File(appDocDirectory + '/config.json').create(recursive: true).then((File file) {
+  File('$appDocDirectory/config.json').create(recursive: true).then((File file) {
     file.writeAsString(jsonEncode(Config));
   });
 }
 
-void LoadData(reload, MyAudioHandler _audioHandler) async {
+void LoadData(reload, MyAudioHandler audioHandler) async {
   String appDocDirectory = "storage/emulated/0/Music";
 
-  Future.delayed(Duration(seconds: 2), () {
+  Future.delayed(const Duration(seconds: 2), () {
     try {
       // Load Config
-      File(appDocDirectory + '/config.json').create(recursive: true).then((File file) {
+      File('$appDocDirectory/config.json').create(recursive: true).then((File file) {
         file.readAsString().then((String contents) {
           if (contents.isNotEmpty) {
             jsonDecode(contents).forEach((key, value) {
@@ -41,30 +41,30 @@ void LoadData(reload, MyAudioHandler _audioHandler) async {
             });
           }
           // Load Songs
-          File(appDocDirectory + '/songs.json').create(recursive: true).then((File file) {
+          File('$appDocDirectory/songs.json').create(recursive: true).then((File file) {
             file.readAsString().then((String contents) {
               if (contents.isNotEmpty) {
                 jsonDecode(contents).forEach((key, value) async {
-                  await Future.delayed(Duration(milliseconds: 1));
+                  await Future.delayed(const Duration(milliseconds: 1));
                   Song currentsong = Song.fromJson(value);
                   Songs[key] = currentsong;
                 });
                 ValidateSongs();
               }
               // Load Tags
-              File(appDocDirectory + '/tags.json').create(recursive: true).then((File file) {
+              File('$appDocDirectory/tags.json').create(recursive: true).then((File file) {
                 file.readAsString().then((String contents) {
                   if (contents.isNotEmpty) {
                     jsonDecode(contents).forEach((key, value) async {
-                      await Future.delayed(Duration(milliseconds: 1));
+                      await Future.delayed(const Duration(milliseconds: 1));
 
                       Tag currenttag = Tag.fromJson(value);
                       Tags[currenttag.id] = currenttag;
                     });
                   }
-                  Future.delayed(Duration(seconds: 1), () {
+                  Future.delayed(const Duration(seconds: 1), () {
                     UpdateAllTags();
-                    _audioHandler.LoadPlaylist(reload);
+                    audioHandler.LoadPlaylist(reload);
                   });
                 });
               });
@@ -72,8 +72,6 @@ void LoadData(reload, MyAudioHandler _audioHandler) async {
           });
         });
       });
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
   });
 }

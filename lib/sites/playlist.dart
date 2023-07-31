@@ -37,14 +37,12 @@ IconButton buildActions(
         .push(
           MaterialPageRoute(
             builder: (_) => SearchPage(
-                (search, update) => Container(
-                      child: ListView(
-                        children: [
-                          for (Song s in Playlist.songs)
-                            if (ShouldShowSong(s.filename, search))
-                              DismissibleSongTile(context, Songs[s.filename], c, Playlist),
-                        ],
-                      ),
+                (search, update) => ListView(
+                      children: [
+                        for (Song s in Playlist.songs)
+                          if (ShouldShowSong(s.filename, search))
+                            DismissibleSongTile(context, Songs[s.filename], c, Playlist),
+                      ],
                     ),
                 ""),
           ),
@@ -54,61 +52,59 @@ IconButton buildActions(
   );
 }
 
-Container buildContent(
+ListView buildContent(
     BuildContext context, void Function(void Function()) c, MyAudioHandler Playlist) {
-  return Container(
-    child: ListView(
-      reverse: true,
-      children: [
-        if (!Playlist.songs.isEmpty) ...[
-          Center(
-            child: Text(
-              Playlist.songs.length.toString() + " Songs",
-              style: const TextStyle(fontSize: 30),
-            ),
+  return ListView(
+    reverse: true,
+    children: [
+      if (Playlist.songs.isNotEmpty) ...[
+        Center(
+          child: Text(
+            "${Playlist.songs.length} Songs",
+            style: const TextStyle(fontSize: 30),
           ),
-          ControlTile(Playlist: Playlist, c: c),
-          SongTile(context, Playlist.songs[0], c, Playlist, true, {
-            0: true,
-            1: true,
-            2: true,
-            3: true,
-            4: false,
-            5: false,
-            6: false,
-            7: false,
-            8: false,
-            9: false,
-            10: false,
-            11: true,
-          }),
-          for (int i = 1; i < Playlist.songs.length; i++)
-            DragTarget<int>(
-              builder: (
-                BuildContext context,
-                List<dynamic> accepted,
-                List<dynamic> rejected,
-              ) {
-                return DismissibleSongTile(context, Playlist.songs[i], c, Playlist);
-              },
-              onAccept: (int data) {
-                if (data == i) return;
-                if (i == 0 || data == 0) return;
-                Playlist.DragNDropUpdate(data, i);
-                c(() {});
-              },
-            ),
-        ] else ...[
-          const Align(
-            alignment: Alignment.center,
-            heightFactor: 10,
-            child: Text(
-              'No Current Playlist',
-              style: TextStyle(color: Colors.black, fontSize: 30),
-            ),
+        ),
+        ControlTile(Playlist: Playlist, c: c),
+        SongTile(context, Playlist.songs[0], c, Playlist, true, {
+          0: true,
+          1: true,
+          2: true,
+          3: true,
+          4: false,
+          5: false,
+          6: false,
+          7: false,
+          8: false,
+          9: false,
+          10: false,
+          11: true,
+        }),
+        for (int i = 1; i < Playlist.songs.length; i++)
+          DragTarget<int>(
+            builder: (
+              BuildContext context,
+              List<dynamic> accepted,
+              List<dynamic> rejected,
+            ) {
+              return DismissibleSongTile(context, Playlist.songs[i], c, Playlist);
+            },
+            onAccept: (int data) {
+              if (data == i) return;
+              if (i == 0 || data == 0) return;
+              Playlist.DragNDropUpdate(data, i);
+              c(() {});
+            },
           ),
-        ]
-      ],
-    ),
+      ] else ...[
+        const Align(
+          alignment: Alignment.center,
+          heightFactor: 10,
+          child: Text(
+            'No Current Playlist',
+            style: TextStyle(color: Colors.black, fontSize: 30),
+          ),
+        ),
+      ]
+    ],
   );
 }
