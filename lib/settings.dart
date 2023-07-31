@@ -1,12 +1,9 @@
-import 'dart:convert';
 import 'dart:core';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
 
 import 'classes/playlist.dart';
-import 'classes/song.dart';
-import "classes/tag.dart";
 
 Color HomeColor = const Color.fromRGBO(61, 61, 61, 0);
 Color ContrastColor = const Color.fromRGBO(0, 255, 76, 0);
@@ -19,6 +16,46 @@ Map Config = {
 };
 
 /* Config */
+
+void SaveConfig() {}
+
+void LoadData(reload, MyAudioHandler audioHandler) async {
+  Database database = await openDatabase("storage/emulated/0/Documents", version: 1,
+      onCreate: (Database db, int version) async {
+    // When creating the db, create the table
+    await db
+        .execute('CREATE TABLE Test (id INTEGER PRIMARY KEY, name TEXT, value INTEGER, num REAL)');
+    await db.execute('CREATE TABLE Playlist (id INTEGER PRIMARY KEY, name TEXT, songs TEXT)');
+  });
+
+  List<Map> list = await database.rawQuery('SELECT * FROM Test');
+
+  // Count the records
+  int? count = Sqflite.firstIntValue(await database.rawQuery('SELECT COUNT(*) FROM Test'));
+}
+
+/*
+await database.transaction((txn) async {
+  int id1 = await txn.rawInsert(
+      'INSERT INTO Test(name, value, num) VALUES("some name", 1234, 456.789)');
+  print('inserted1: $id1');
+  int id2 = await txn.rawInsert(
+      'INSERT INTO Test(name, value, num) VALUES(?, ?, ?)',
+      ['another name', 12345678, 3.1416]);
+  print('inserted2: $id2');
+});
+
+// Update some record
+int count = await database.rawUpdate(
+    'UPDATE Test SET name = ?, value = ? WHERE name = ?',
+    ['updated name', '9876', 'some name']);
+print('updated: $count');
+
+// Delete a record
+count = await database
+    .rawDelete('DELETE FROM Test WHERE name = ?', ['another name']);
+
+
 void SaveConfig() {
   SaveSongs();
   String appDocDirectory = "storage/emulated/0/Music";
@@ -75,3 +112,5 @@ void LoadData(reload, MyAudioHandler audioHandler) async {
     } catch (e) {}
   });
 }
+
+*/
