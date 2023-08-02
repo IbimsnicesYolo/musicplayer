@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
-import "../classes/playlist.dart";
-import "../classes/song.dart";
-import "../classes/tag.dart";
+import '../settings.dart';
 import 'components/search.dart';
 import 'components/songtile.dart';
 import 'components/string_input.dart';

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../classes/song.dart';
-import '../../classes/tag.dart';
-import "../../settings.dart" as CFG;
+import "../../settings.dart";
 import "checkbox.dart";
 import "elevatedbutton.dart";
 
@@ -53,13 +51,13 @@ class _TagEdit extends State<TagEdit> {
               },
               icon: const Icon(Icons.arrow_back),
             ),
-            backgroundColor: CFG.HomeColor,
+            backgroundColor: HomeColor,
             // The search area here
             title: const Text("Tag Editor")),
         backgroundColor: Colors.blueGrey,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: FloatingActionButton(
-          backgroundColor: CFG.ContrastColor,
+          backgroundColor: ContrastColor,
           onPressed: () {
             Navigator.pop(context);
             ToUpdate.forEach((key, value) {
@@ -140,12 +138,12 @@ class _TagChoose extends State<TagChoose> {
               },
               icon: const Icon(Icons.arrow_back),
             ),
-            backgroundColor: CFG.HomeColor,
+            backgroundColor: HomeColor,
             // The search area here
             title: const Text("Tag Chooser")),
         backgroundColor: Colors.blueGrey,
         floatingActionButton: FloatingActionButton(
-          backgroundColor: CFG.ContrastColor,
+          backgroundColor: ContrastColor,
           onPressed: () {
             Navigator.of(context).pop(-1);
           },

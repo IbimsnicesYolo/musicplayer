@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../classes/playlist.dart';
+import '../../settings.dart';
 
 class ControlTile extends StatefulWidget {
   const ControlTile({Key? key, required this.Playlist, required this.c}) : super(key: key);

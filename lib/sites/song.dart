@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import "../classes/playlist.dart";
-import "../classes/tag.dart";
+import '../settings.dart';
 import "allsongs.dart" as AllSongs;
 import "components/music_control.dart";
 import "components/player_widget.dart";

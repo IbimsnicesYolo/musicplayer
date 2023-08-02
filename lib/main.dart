@@ -2,9 +2,7 @@ import "package:audio_service/audio_service.dart";
 import 'package:flutter/material.dart';
 import "package:permission_handler/permission_handler.dart";
 
-import "classes/playlist.dart";
-import "classes/tag.dart";
-import "settings.dart" as CFG;
+import "settings.dart";
 import "sites/allsongs.dart" as AllSongs;
 import "sites/components/drawer.dart" as Side;
 import 'sites/components/string_input.dart';
@@ -79,7 +77,7 @@ class _MainSite extends State<MainSite> {
   @override
   Widget build(BuildContext context) {
     if (!loaded) {
-      CFG.LoadData(doneloading, _audioHandler);
+      LoadData(doneloading, _audioHandler);
 
       return Scaffold(
         backgroundColor: Colors.black,
@@ -144,22 +142,22 @@ class _MainSite extends State<MainSite> {
           items: [
             BottomNavigationBarItem(
               icon: const Icon(Icons.play_arrow),
-              backgroundColor: CFG.ContrastColor,
+              backgroundColor: ContrastColor,
               label: "Current Song",
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.music_note),
-              backgroundColor: CFG.ContrastColor,
+              backgroundColor: ContrastColor,
               label: "Current Playlist",
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.tag),
-              backgroundColor: CFG.ContrastColor,
+              backgroundColor: ContrastColor,
               label: "All Tags",
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.all_inclusive_sharp),
-              backgroundColor: CFG.ContrastColor,
+              backgroundColor: ContrastColor,
               label: "All Songs",
             ),
           ],

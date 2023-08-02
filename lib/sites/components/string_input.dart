@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import "../../settings.dart" as CFG;
+import "../../settings.dart";
 import "elevatedbutton.dart";
 // Possible Overflow because _textFieldController never gets disposed
 // Hint Text is constantly Tag Name
@@ -121,13 +121,13 @@ class _StringInputExpanded extends State<StringInputExpanded> {
         child: Scaffold(
           floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
           floatingActionButton: FloatingActionButton(
-            backgroundColor: CFG.ContrastColor,
+            backgroundColor: ContrastColor,
             onPressed: () => Navigator.of(context).pop(textFieldController.text.trim()),
             child: const Icon(Icons.arrow_back),
           ),
           appBar: AppBar(
             title: Text(widget.Title),
-            backgroundColor: CFG.HomeColor,
+            backgroundColor: HomeColor,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () => Navigator.of(context).pop(textFieldController.text.trim()),

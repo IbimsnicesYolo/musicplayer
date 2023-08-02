@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../settings.dart' as CFG;
+import '../../settings.dart';
 
 // Search Page
 class SearchPage extends StatefulWidget {
@@ -43,7 +43,7 @@ class _SearchPageState extends State<SearchPage> {
         child: Scaffold(
           floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
           floatingActionButton: FloatingActionButton(
-            backgroundColor: CFG.ContrastColor,
+            backgroundColor: ContrastColor,
             onPressed: () => Navigator.of(context).pop(),
             child: const Icon(Icons.arrow_back),
           ),
@@ -52,7 +52,7 @@ class _SearchPageState extends State<SearchPage> {
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const Icon(Icons.arrow_back),
               ),
-              backgroundColor: CFG.HomeColor,
+              backgroundColor: HomeColor,
               // The search area here
               title: SizedBox(
                 height: 40,

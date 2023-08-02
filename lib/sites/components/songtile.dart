@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import "../../classes/playlist.dart";
-import "../../classes/song.dart";
+import '../../settings.dart';
 import 'string_input.dart';
 import 'tagedit.dart';
 

@@ -1,7 +1,9 @@
 import 'dart:async';
-import 'package:just_audio/just_audio.dart';
+
 import 'package:flutter/material.dart';
-import 'package:tagmusicplayer/classes/playlist.dart';
+import 'package:just_audio/just_audio.dart';
+
+import '../../settings.dart';
 
 class PlayerWidget extends StatefulWidget {
   final MyAudioHandler playlist;

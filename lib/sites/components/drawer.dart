@@ -4,10 +4,7 @@ import "dart:math";
 
 import 'package:flutter/material.dart';
 
-import "../../classes/playlist.dart";
-import "../../classes/song.dart";
-import "../../classes/tag.dart";
-import '../../settings.dart' as CFG;
+import '../../settings.dart';
 import "../allsongs.dart";
 import "elevatedbutton.dart";
 import "search.dart";
@@ -23,7 +20,7 @@ class SongDrawer extends Drawer {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: CFG.HomeColor,
+      backgroundColor: HomeColor,
       // column holds all the widgets in the drawer
       child: Column(
         children: <Widget>[
@@ -147,7 +144,7 @@ class _SearchSongPage extends State<SearchSongPage> {
 
     int count = 0;
     List<String> path = [];
-    for (String p in CFG.Config["SearchPaths"]) {
+    for (String p in Config["SearchPaths"]) {
       path.add(p);
     }
 
@@ -202,7 +199,7 @@ class _SearchSongPage extends State<SearchSongPage> {
       child: Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: FloatingActionButton(
-          backgroundColor: CFG.ContrastColor,
+          backgroundColor: ContrastColor,
           onPressed: () => {
             Navigator.of(context).pop(),
           },
@@ -210,7 +207,7 @@ class _SearchSongPage extends State<SearchSongPage> {
         ),
         appBar: AppBar(
           title: const Text("Search for unregistered Songs"),
-          backgroundColor: CFG.HomeColor,
+          backgroundColor: HomeColor,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () => Navigator.of(context).pop(),
@@ -393,7 +390,7 @@ class _ShowSongEdit extends State<ShowSongEdit> {
       child: Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: FloatingActionButton(
-          backgroundColor: CFG.ContrastColor,
+          backgroundColor: ContrastColor,
           onPressed: () => {
             ShouldSaveSongs = true,
             ShouldSaveTags = true,
@@ -439,7 +436,7 @@ class _ShowSongEdit extends State<ShowSongEdit> {
               icon: const Icon(Icons.search),
             ),
           ],
-          backgroundColor: CFG.HomeColor,
+          backgroundColor: HomeColor,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () => {
@@ -479,21 +476,21 @@ class _ShowConfig extends State<ShowConfig> {
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 0),
-                child: Text("Home Color:${CFG.Config["HomeColor"]}"),
+                child: Text("Home Color:${Config["HomeColor"]}"),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 0),
-                child: Text("Contrast Color:${CFG.Config["ContrastColor"]}"),
+                child: Text("Contrast Color:${Config["ContrastColor"]}"),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 10),
-                child: Text("SearchPaths:${CFG.Config["SearchPaths"]}"),
+                child: Text("SearchPaths:${Config["SearchPaths"]}"),
               ),
               ElevatedButton(
                   onPressed: () {
                     StringInput(context, "Add Path", "Create", "Cancel", (String s) {
-                      CFG.Config["SearchPaths"].add(s);
-                      CFG.SaveConfig();
+                      Config["SearchPaths"].add(s);
+                      SaveConfig();
                     }, (String s) {}, false, "", "");
                   },
                   child: const Text("Add Path")),
@@ -508,7 +505,7 @@ class _ShowConfig extends State<ShowConfig> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            for (String key in CFG.Config["Playlist"])
+                            for (String key in Config["Playlist"])
                               Padding(
                                 padding:
                                     const EdgeInsets.only(top: 10, left: 5, right: 5, bottom: 0),
@@ -524,7 +521,7 @@ class _ShowConfig extends State<ShowConfig> {
               TextButton(
                   onPressed: () {
                     Navigator.pop(context);
-                    CFG.SaveConfig();
+                    SaveConfig();
                   },
                   child: const Text("Close"))
             ],
@@ -559,7 +556,7 @@ class _ShowBlacklist extends State<ShowBlacklist> {
       child: Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: FloatingActionButton(
-          backgroundColor: CFG.ContrastColor,
+          backgroundColor: ContrastColor,
           onPressed: () => Navigator.of(context).pop(),
           child: const Icon(Icons.arrow_back),
         ),
@@ -598,7 +595,7 @@ class _ShowBlacklist extends State<ShowBlacklist> {
               icon: const Icon(Icons.search),
             ),
           ],
-          backgroundColor: CFG.HomeColor,
+          backgroundColor: HomeColor,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () => {
@@ -646,7 +643,7 @@ class _ShowTagDeletion extends State<CriticalButtons> {
       child: Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: FloatingActionButton(
-          backgroundColor: CFG.ContrastColor,
+          backgroundColor: ContrastColor,
           onPressed: () => Navigator.of(context).pop(),
           child: const Icon(Icons.arrow_back),
         ),
@@ -701,9 +698,9 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                 ),
                 onPressed: () {
                   widget.Pl.Clear();
-                  CFG.Config = {
-                    "HomeColor": CFG.HomeColor.value,
-                    "ContrastColor": CFG.ContrastColor.value,
+                  Config = {
+                    "HomeColor": HomeColor.value,
+                    "ContrastColor": ContrastColor.value,
                     "SearchPaths": [
                       "storage/emulated/0/Music",
                       "storage/emulated/0/Download",
@@ -713,7 +710,7 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                     ],
                     "Playlist": []
                   };
-                  CFG.SaveConfig();
+                  SaveConfig();
                   Navigator.pop(context);
                 },
                 child: const Text("Reset Config", style: TextStyle(fontSize: 30)),
