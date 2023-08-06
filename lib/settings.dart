@@ -1,16 +1,16 @@
-import 'dart:core';
 import 'dart:convert';
+import 'dart:core';
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:sqflite/sqflite.dart';
 
+late Database database;
 
-Color HomeColor = const Color.fromRGBO(61, 61, 61, 0);
-Color ContrastColor = const Color.fromRGBO(0, 255, 76, 0);
-
+Color HomeColor = const Color(0xFF485F4F);
+Color ContrastColor = const Color(0xFF4BBDAE);
 Map Config = {
   "HomeColor": HomeColor.value,
   "ContrastColor": ContrastColor.value,
@@ -18,190 +18,63 @@ Map Config = {
   "Playlist": [],
 };
 
-/* Config */
-
-void SaveConfig() {}
-
-void LoadData(reload, MyAudioHandler audioHandler) async {
-  Database database = await openDatabase("storage/emulated/0/Documents", version: 1,
-      onCreate: (Database db, int version) async {
-    // When creating the db, create the table
-    await db
-        .execute('CREATE TABLE Test (id INTEGER PRIMARY KEY, name TEXT, value INTEGER, num REAL)');
-    await db.execute('CREATE TABLE Playlist (id INTEGER PRIMARY KEY, name TEXT, songs TEXT)');
-  });
-
-  List<Map> list = await database.rawQuery('SELECT * FROM Test');
-
-  // Count the records
-  int? count = Sqflite.firstIntValue(await database.rawQuery('SELECT COUNT(*) FROM Test'));
-}
-
-/*
-await database.transaction((txn) async {
-  int id1 = await txn.rawInsert(
-      'INSERT INTO Test(name, value, num) VALUES("some name", 1234, 456.789)');
-  print('inserted1: $id1');
-  int id2 = await txn.rawInsert(
-      'INSERT INTO Test(name, value, num) VALUES(?, ?, ?)',
-      ['another name', 12345678, 3.1416]);
-  print('inserted2: $id2');
-});
-
-// Update some record
-int count = await database.rawUpdate(
-    'UPDATE Test SET name = ?, value = ? WHERE name = ?',
-    ['updated name', '9876', 'some name']);
-print('updated: $count');
-
-// Delete a record
-count = await database
-    .rawDelete('DELETE FROM Test WHERE name = ?', ['another name']);
-
+bool ShouldSaveSongs = false;
+Map<int, Tag> Tags = {};
+Map<int, Song> Songs = {};
 
 void SaveConfig() {
   SaveSongs();
-  String appDocDirectory = "storage/emulated/0/Music";
-  File('$appDocDirectory/config.json').create(recursive: true).then((File file) {
-    file.writeAsString(jsonEncode(Config));
-  });
 }
 
 void LoadData(reload, MyAudioHandler audioHandler) async {
-  String appDocDirectory = "storage/emulated/0/Music";
+  database = await openDatabase("storage/emulated/0/Documents", version: 1,
+      onCreate: (Database db, int version) async {
+    // When creating the db, create the table
+    await db.execute('CREATE TABLE Tags (id INTEGER PRIMARY KEY, name TEXT)');
+    await db.execute(
+        'CREATE TABLE Songs (id INTEGER PRIMARY KEY, path TEXT, filename TEXT, title TEXT, interpret TEXT, featuring TEXT, edited INTEGER, blacklisted INTEGER, tags TEXT)');
+  });
 
-  Future.delayed(const Duration(seconds: 2), () {
-    try {
-      // Load Config
-      File('$appDocDirectory/config.json').create(recursive: true).then((File file) {
-        file.readAsString().then((String contents) {
-          if (contents.isNotEmpty) {
-            jsonDecode(contents).forEach((key, value) {
-              Config[key] = value;
-            });
-          }
-          // Load Songs
-          File('$appDocDirectory/songs.json').create(recursive: true).then((File file) {
-            file.readAsString().then((String contents) {
-              if (contents.isNotEmpty) {
-                jsonDecode(contents).forEach((key, value) async {
-                  await Future.delayed(const Duration(milliseconds: 1));
-                  Song currentsong = Song.fromJson(value);
-                  Songs[key] = currentsong;
-                });
-                ValidateSongs();
-              }
-              // Load Tags
-              File('$appDocDirectory/tags.json').create(recursive: true).then((File file) {
-                file.readAsString().then((String contents) {
-                  if (contents.isNotEmpty) {
-                    jsonDecode(contents).forEach((key, value) async {
-                      await Future.delayed(const Duration(milliseconds: 1));
+  List<Map> alltags = await database.rawQuery('SELECT * FROM Tags');
+  alltags.forEach((element) {
+    print(element);
+  });
 
-                      Tag currenttag = Tag.fromJson(value);
-                      Tags[currenttag.id] = currenttag;
-                    });
-                  }
-                  Future.delayed(const Duration(seconds: 1), () {
-                    UpdateAllTags();
-                    audioHandler.LoadPlaylist(reload);
-                  });
-                });
-              });
-            });
-          });
-        });
-      });
-    } catch (e) {}
+  List<Map> allsongs = await database.rawQuery('SELECT * FROM Songs');
+  allsongs.forEach((element) {
+    print(element);
   });
 }
-
-*/
-
-
-Map Tags = {};
-bool ShouldSaveTags = false;
-/* Tags */
 
 class Tag {
   String name = "New Tag";
   int id = -1;
   int used = 0;
-  Tag(this.name);
-  Tag.fromJson(Map<String, dynamic> json)
-      : name = json['n'],
-        used = json['u'],
-        id = json['i'];
-  Map<String, dynamic> toJson(Tag value) => {'n': value.name, 'u': value.used, 'i': value.id};
+  Tag(this.id, this.name);
 }
 
-int CreateTag(name) {
-  int newid = -1;
-  Tags.forEach((key, value) {
-    if (value.name.trim() == name.trim()) {
-      newid = key;
-    }
-  });
-  if (newid != -1) {
-    return newid;
-  }
-  newid = 0;
+Future<int> CreateTag(name) async {
+  int id = -1;
+  name = name.trim();
 
-  for (var i = 0; i < Tags.length; i++) {
-    if (Tags.containsKey(i) && Tags[i].id == newid) {
-      newid = i + 1;
-    }
-  }
-  Tag newtag = Tag(name.trim());
-  newtag.id = newid;
-  Tags[newtag.id] = newtag;
-  ShouldSaveTags = true;
-  return newid;
-}
-
-void UpdateTagName(tag, name) {
-  if (Tags.containsKey(tag)) {
-    Tags[tag].name = name.trim();
-    ShouldSaveTags = true;
-  }
-}
-
-void SaveTags() async {
-  if (!ShouldSaveTags) {
-    return;
-  }
-  ShouldSaveTags = false;
-
-  String appDocDirectory = "storage/emulated/0/Music";
-
-  String json = "{";
-  bool notagsexisting = true;
-
-  Tags.forEach((k, v) {
-    notagsexisting = false;
-    json += '"' + k.toString() + '":' + jsonEncode(v.toJson(v)) + ",";
+  await database.transaction((txn) async {
+    id = await txn.rawInsert('INSERT INTO Tags(name) VALUES($name)');
+    print('inserted1: $id');
   });
 
-  if (notagsexisting) {
-    json = "{}";
-  } else {
-    json = "${json.substring(0, json.length - 1)}}";
-    // remove last comma, close json
-  }
-  File('$appDocDirectory/tags.json').writeAsString(json);
+  Tags[id] = Tag(id, name);
+  return id;
+}
+
+void UpdateTagName(tag, name) async {
+  name = name.trim();
+  Tags[tag].name = name;
+
+  database.rawUpdate('UPDATE Tags SET name = ? WHERE id = ?', [name, tag]);
 }
 
 void DeleteTag(Tag t) {
-  Songs.forEach(
-        (k, v) {
-      if (v.tags.contains(t.id)) {
-        UpdateSongTags(v.filename, t.id, false);
-      }
-    },
-  );
-  Tags.remove(t.id);
-  ShouldSaveTags = true;
-  SaveTags();
+  database.rawDelete('DELETE FROM Tags WHERE id = ?', [t.id]);
 }
 
 void UpdateAllTags() {
@@ -222,8 +95,8 @@ void UpdateAllTags() {
 Map GetSongsFromTag(Tag T) {
   Map songs = {};
 
-  for (String s in Songs.keys) {
-    Song so = Songs[s];
+  for (int id in Songs.keys) {
+    Song so = Songs[id];
     List t = so.tags;
     if (t.contains(T.id) && !so.blacklisted) {
       songs[so.filename] = so;
@@ -233,12 +106,8 @@ Map GetSongsFromTag(Tag T) {
   return songs;
 }
 
-
-Map Songs = {};
-bool ShouldSaveSongs = false;
-/* Songs */
-
 class Song {
+  int id = -1;
   String path = "";
   String filename = "";
   String title = "Song Title";
@@ -246,77 +115,46 @@ class Song {
   String featuring = "";
   bool edited = false;
   bool blacklisted = false;
-  bool hastags = false;
   List tags = [];
-  Song(this.path);
-
-  Song.fromJson(Map<String, dynamic> json)
-      : path = json['p'],
-        filename = json['f'],
-        title = json['t'],
-        interpret = json['i'],
-        featuring = json['fe'],
-        edited = json['e'],
-        hastags = json['h'],
-        blacklisted = json['b'],
-        tags = json['ta'];
-  Map<String, dynamic> toJson(Song value) => {
-    'p': value.path,
-    'f': value.filename,
-    't': value.title,
-    'i': value.interpret,
-    'fe': value.featuring,
-    'e': value.edited,
-    'h': value.hastags,
-    'b': value.blacklisted,
-    'ta': value.tags
-  };
+  Song(this.id, this.path);
 }
 
-bool CreateSong(path) {
-  String filename = path.split("/").last;
-
-  if (Songs.containsKey(filename)) {
+Future<bool> CreateSong(path) async {
+  // Check if a song for this file already exists
+  bool found = false;
+  Songs.forEach((k, v) {
+    if (v.path == path) {
+      found = true;
+    }
+  });
+  if (found) {
     return false;
   }
 
+  String filename = path.split("/").last;
+  String title =
+      filename.split(" -_ ").last.replaceAll(RegExp(".mp3"), "").split(" _ ").first.trim();
   String interpret = filename.split(" -_ ").first.replaceAll(RegExp(".mp3"), "").trim();
 
-  String title =
-  filename.split(" -_ ").last.replaceAll(RegExp(".mp3"), "").split(" _ ").first.trim();
+  int id = -1;
+  await database.transaction((txn) async {
+    id = await txn.rawInsert(
+        'INSERT INTO Songs(path, filename, title, interpret, featuring, edited, blacklisted, tags) VALUES($path, $filename, $title, $interpret, "", 0, 0, "[]")');
+    print('inserted1: $id');
+  });
 
-  Song newsong = Song(path);
+  Song newsong = Song(id, path);
   newsong.title = title;
   newsong.filename = filename;
   newsong.interpret = interpret;
-  if (interpret.contains("feat.")) {
-    newsong.featuring = interpret.split("feat.").last.trim();
-    newsong.interpret = interpret.split("feat.").first.trim();
-  }
-  if (interpret.contains("feat")) {
-    newsong.featuring = interpret.split("feat").last.trim();
-    newsong.interpret = interpret.split("feat").first.trim();
-  }
-  if (interpret.contains("ft")) {
-    newsong.featuring = interpret.split("ft").last.trim();
-    newsong.interpret = interpret.split("ft").first.trim();
-  }
-  if (interpret.contains("ft.")) {
-    newsong.featuring = interpret.split("ft.").last.trim();
-    newsong.interpret = interpret.split("ft.").first.trim();
-  }
-  if (interpret.contains("Feat.")) {
-    newsong.featuring = interpret.split("Feat.").last.trim();
-    newsong.interpret = interpret.split("Feat.").first.trim();
-  }
-  Songs[filename] = newsong;
-  ShouldSaveSongs = true;
+  Songs[id] = newsong;
   return true;
 }
 
-void UpdateSongInterpret(String key, String newtitle) {
+void UpdateSongInterpret(int key, String newtitle) {
   Songs[key].interpret = newtitle.trim();
-  ShouldSaveSongs = true;
+
+  database.rawUpdate('UPDATE Tags SET name = ? WHERE id = ?', [name, tag]);
 }
 
 void UpdateSongFeaturing(String key, String newtitle) {
@@ -575,9 +413,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     }
     Clear();
     UpDateMediaItem();
-    ShouldSaveTags = true;
     ShouldSaveSongs = true;
-    SaveTags();
     SaveConfig();
     update(() {});
   }
