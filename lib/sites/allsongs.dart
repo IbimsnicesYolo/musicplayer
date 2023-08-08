@@ -4,18 +4,18 @@ import '../settings.dart';
 import 'components/search.dart';
 import "components/songtile.dart";
 
-bool ShouldShowSong(String key, String search) {
-  if (Songs[key].blacklisted) {
+bool ShouldShowSong(int key, String search) {
+  if (Songs[key]!.blacklisted) {
     return false;
   }
   if (search == "") return true;
 
-  if (Songs[key].title.toLowerCase().contains(search.toLowerCase())) return true;
+  if (Songs[key]!.title.toLowerCase().contains(search.toLowerCase())) return true;
 
-  if (Songs[key].interpret.toLowerCase().contains(search.toLowerCase())) return true;
+  if (Songs[key]!.interpret.toLowerCase().contains(search.toLowerCase())) return true;
 
-  if (Songs[key].featuring != 0 &&
-      Songs[key].featuring.toLowerCase().contains(search.toLowerCase())) return true;
+  if (Songs[key]!.featuring != 0 &&
+      Songs[key]!.featuring.toLowerCase().contains(search.toLowerCase())) return true;
 
   /*
   List<String> searchname = search.toLowerCase().split(" ");
@@ -37,9 +37,9 @@ IconButton buildActions(
             builder: (_) => SearchPage(
                 (search, update) => ListView(
                       children: [
-                        for (String key in Songs.keys)
+                        for (int key in Songs.keys)
                           if (ShouldShowSong(key, search))
-                            SongTile(context, Songs[key], c, Playlist, true, {
+                            SongTile(context, Songs[key]!, c, Playlist, true, {
                               0: true,
                               1: true,
                               2: true,
@@ -89,7 +89,7 @@ ListView buildContent(
   return ListView(
     children: [
       for (Song s in sorted)
-        if (ShouldShowSong(s.filename, ""))
+        if (ShouldShowSong(s.id, ""))
           SongTile(
             context,
             s,

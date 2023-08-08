@@ -15,24 +15,63 @@ Map Config = {
   "HomeColor": HomeColor.value,
   "ContrastColor": ContrastColor.value,
   "SearchPaths": ["storage/emulated/0/Music", "storage/emulated/0/Download", "C:", "D:", "Library"],
-  "Playlist": [],
+  "Playlist": <int>[],
 };
 
-bool ShouldSaveSongs = false;
-Map<int, Tag> Tags = {};
-Map<int, Song> Songs = {};
-
-void SaveConfig() {
-  SaveSongs();
+void AddSearchPath(String path) {
+  Config["SearchPaths"].add(path);
+  database.rawUpdate('UPDATE Config SET value = ? WHERE name = ?',
+      [jsonEncode(Config["SearchPaths"]), "SearchPaths"]);
 }
 
+void ResetConfig() {
+  Config = {
+    "HomeColor": HomeColor.value,
+    "ContrastColor": ContrastColor.value,
+    "SearchPaths": [
+      "storage/emulated/0/Music",
+      "storage/emulated/0/Download",
+      "C:",
+      "D:",
+      "Library"
+    ],
+    "Playlist": <int>[],
+  };
+  database.rawUpdate('UPDATE Config SET value = ? WHERE name = ?', [HomeColor.value, "HomeColor"]);
+  database.rawUpdate(
+      'UPDATE Config SET value = ? WHERE name = ?', [ContrastColor.value, "ContrastColor"]);
+  database.rawUpdate('UPDATE Config SET value = ? WHERE name = ?',
+      [jsonEncode(Config["SearchPaths"]), "SearchPaths"]);
+  database.rawUpdate(
+      'UPDATE Config SET value = ? WHERE name = ?', [jsonEncode(Config["Playlist"]), "Playlist"]);
+}
+
+Map<int, Tag> Tags = <int, Tag>{};
+Map<int, Song> Songs = <int, Song>{};
+
+// ../../../../../storage/emulated/0/Documents/
 void LoadData(reload, MyAudioHandler audioHandler) async {
-  database = await openDatabase("storage/emulated/0/Documents", version: 1,
-      onCreate: (Database db, int version) async {
+  database = await openDatabase("music.db", version: 1, onCreate: (Database db, int version) async {
     // When creating the db, create the table
-    await db.execute('CREATE TABLE Tags (id INTEGER PRIMARY KEY, name TEXT)');
+    await db.execute('CREATE TABLE Config (name STRING, value STRING)');
+    // Load Config
+    await db.rawInsert('INSERT INTO Config(name, value) VALUES("HomeColor", ${HomeColor.value})');
+    await db.rawInsert(
+        'INSERT INTO Config(name, value) VALUES("ContrastColor", ${ContrastColor.value})');
+    await db.rawInsert(
+        'INSERT INTO Config(name, value) VALUES("SearchPaths", "${jsonEncode(Config["SearchPaths"])}")');
+    await db.rawInsert(
+        'INSERT INTO Config(name, value) VALUES("Playlist", "${jsonEncode(Config["Playlist"])}")');
+
+    await db.execute('CREATE TABLE Tags (id INTEGER PRIMARY KEY, name TEXT, lastused INTEGER)');
     await db.execute(
-        'CREATE TABLE Songs (id INTEGER PRIMARY KEY, path TEXT, filename TEXT, title TEXT, interpret TEXT, featuring TEXT, edited INTEGER, blacklisted INTEGER, tags TEXT)');
+        'CREATE TABLE Songs (id INTEGER PRIMARY KEY, path TEXT, filename TEXT, title TEXT, interpret TEXT, featuring TEXT, edited INTEGER, blacklisted INTEGER, tags TEXT, lastplayed INTEGER)');
+  });
+
+  List<Map> allrows = await database.rawQuery('SELECT * FROM Config');
+  allrows.forEach((element) {
+    print(element);
+    Config[element["name"]] = element["value"];
   });
 
   List<Map> alltags = await database.rawQuery('SELECT * FROM Tags');
@@ -44,6 +83,11 @@ void LoadData(reload, MyAudioHandler audioHandler) async {
   allsongs.forEach((element) {
     print(element);
   });
+
+  Future.delayed(const Duration(seconds: 1), () {
+    UpdateAllTags();
+    audioHandler.LoadPlaylist(reload);
+  });
 }
 
 class Tag {
@@ -54,11 +98,18 @@ class Tag {
 }
 
 Future<int> CreateTag(name) async {
+  for (Tag t in Tags.values) {
+    if (t.name == name) {
+      return t.id;
+    }
+  }
+
   int id = -1;
   name = name.trim();
+  int time = DateTime.now().millisecondsSinceEpoch;
 
   await database.transaction((txn) async {
-    id = await txn.rawInsert('INSERT INTO Tags(name) VALUES($name)');
+    id = await txn.rawInsert('INSERT INTO Tags(name, lastused) VALUES($name, $time)');
     print('inserted1: $id');
   });
 
@@ -67,14 +118,18 @@ Future<int> CreateTag(name) async {
 }
 
 void UpdateTagName(tag, name) async {
+  if (Tags[tag] == null) {
+    return;
+  }
   name = name.trim();
-  Tags[tag].name = name;
+  Tags[tag]!.name = name;
+  int time = DateTime.now().millisecondsSinceEpoch;
 
-  database.rawUpdate('UPDATE Tags SET name = ? WHERE id = ?', [name, tag]);
+  database.rawUpdate('UPDATE Tags SET name = ?, lastused = ? WHERE id = ?', [name, time, tag]);
 }
 
-void DeleteTag(Tag t) {
-  database.rawDelete('DELETE FROM Tags WHERE id = ?', [t.id]);
+void DeleteTag(int key) {
+  database.rawDelete('DELETE FROM Tags WHERE id = ?', [key]);
 }
 
 void UpdateAllTags() {
@@ -85,7 +140,7 @@ void UpdateAllTags() {
     if (!v.blacklisted) {
       v.tags.forEach((element) {
         try {
-          Tags[element].used += 1;
+          Tags[element]!.used += 1;
         } catch (e) {}
       });
     }
@@ -96,7 +151,7 @@ Map GetSongsFromTag(Tag T) {
   Map songs = {};
 
   for (int id in Songs.keys) {
-    Song so = Songs[id];
+    Song so = Songs[id]!;
     List t = so.tags;
     if (t.contains(T.id) && !so.blacklisted) {
       songs[so.filename] = so;
@@ -119,7 +174,7 @@ class Song {
   Song(this.id, this.path);
 }
 
-Future<bool> CreateSong(path) async {
+Future<bool> CreateSong(String path) async {
   // Check if a song for this file already exists
   bool found = false;
   Songs.forEach((k, v) {
@@ -136,10 +191,11 @@ Future<bool> CreateSong(path) async {
       filename.split(" -_ ").last.replaceAll(RegExp(".mp3"), "").split(" _ ").first.trim();
   String interpret = filename.split(" -_ ").first.replaceAll(RegExp(".mp3"), "").trim();
 
+  int time = DateTime.now().millisecondsSinceEpoch;
   int id = -1;
   await database.transaction((txn) async {
     id = await txn.rawInsert(
-        'INSERT INTO Songs(path, filename, title, interpret, featuring, edited, blacklisted, tags) VALUES($path, $filename, $title, $interpret, "", 0, 0, "[]")');
+        'INSERT INTO Songs(path, filename, title, interpret, featuring, edited, blacklisted, tags, lastused) VALUES($path, $filename, $title, $interpret, "", 0, 0, "[]", $time)');
     print('inserted1: $id');
   });
 
@@ -152,76 +208,94 @@ Future<bool> CreateSong(path) async {
 }
 
 void UpdateSongInterpret(int key, String newtitle) {
-  Songs[key].interpret = newtitle.trim();
-
-  database.rawUpdate('UPDATE Tags SET name = ? WHERE id = ?', [name, tag]);
-}
-
-void UpdateSongFeaturing(String key, String newtitle) {
-  Songs[key].featuring = newtitle.trim();
-  ShouldSaveSongs = true;
-}
-
-void UpdateSongTitle(String key, String newtitle) {
-  Songs[key].title = newtitle.trim();
-  ShouldSaveSongs = true;
-}
-
-void UpdateSongTags(String key, int Tagid, bool? add) {
-  if (add != null && add && !Songs[key].tags.contains(Tagid)) {
-    Songs[key].tags.add(Tagid);
-    Tags[Tagid].used += 1;
-  } else if (add != null && !add && Songs[key].tags.contains(Tagid)) {
-    Songs[key].tags.remove(Tagid);
-    Tags[Tagid].used -= 1;
-  }
-
-  Songs[key].hastags = Songs[key].tags.isNotEmpty;
-  ShouldSaveSongs = true;
-}
-
-void DeleteSong(Song s) {
-  if (Songs.containsKey(s.filename)) {
-    Songs.remove(s.filename);
-    ShouldSaveSongs = true;
-    SaveSongs();
-  }
-}
-
-void SaveSongs() async {
-  if (!ShouldSaveSongs) {
+  if (Songs[key] == null) {
     return;
   }
-  ShouldSaveSongs = false;
+  newtitle = newtitle.trim();
+  Songs[key]!.interpret = newtitle;
 
-  String appDocDirectory = "storage/emulated/0/Music";
-  String json = "{";
-  bool nosongsfound = true;
-  await Future.delayed(const Duration(milliseconds: 10));
-  for (var song in Songs.values) {
-    await Future.delayed(const Duration(milliseconds: 1));
-    nosongsfound = false;
-    json += '"' + song.filename + '":' + jsonEncode(song.toJson(song)) + ",";
+  database.rawUpdate('UPDATE Songs SET interpret = ? WHERE id = ?', [newtitle, key]);
+}
+
+void UpdateSongFeaturing(int key, String newtitle) {
+  if (Songs[key] == null) {
+    return;
+  }
+  newtitle = newtitle.trim();
+  Songs[key]!.featuring = newtitle;
+
+  database.rawUpdate('UPDATE Songs SET featuring = ? WHERE id = ?', [newtitle, key]);
+}
+
+void UpdateSongTitle(int key, String newtitle) {
+  if (Songs[key] == null) {
+    return;
+  }
+  newtitle = newtitle.trim();
+  Songs[key]!.title = newtitle;
+
+  database.rawUpdate('UPDATE Songs SET title = ? WHERE id = ?', [newtitle, key]);
+}
+
+void UpdateSongBlacklisted(int key, bool blacklisted) {
+  if (Songs[key] == null) {
+    return;
+  }
+  Songs[key]!.blacklisted = blacklisted;
+
+  database.rawUpdate('UPDATE Songs SET blacklisted = ? WHERE id = ?', [blacklisted, key]);
+}
+
+void UpdateSongEdited(int key, bool edited) {
+  if (Songs[key] == null) {
+    return;
+  }
+  Songs[key]!.edited = edited;
+
+  database.rawUpdate('UPDATE Songs SET edited = ? WHERE id = ?', [edited, key]);
+}
+
+void ClearSongTags(int key) {
+  if (Songs[key] == null) {
+    return;
+  }
+  Songs[key]!.tags = [];
+
+  database.rawUpdate('UPDATE Songs SET tags = ? WHERE id = ?', ["[]", key]);
+}
+
+void UpdateSongTags(int key, int Tagid, bool add) {
+  if (Songs[key] == null) {
+    return;
+  }
+  if (add && !Songs[key]!.tags.contains(Tagid)) {
+    Songs[key]!.tags.add(Tagid);
+    Tags[Tagid]!.used += 1;
+  } else if (!add && Songs[key]!.tags.contains(Tagid)) {
+    Songs[key]!.tags.remove(Tagid);
+    Tags[Tagid]!.used -= 1;
   }
 
-  if (nosongsfound) {
-    json = "{}";
-  } else {
-    json = "${json.substring(0, json.length - 1)}}";
-    // remove last comma, close json
-  }
-  await Future.delayed(const Duration(milliseconds: 10));
-  File('$appDocDirectory/songs.json').writeAsString(json);
+  database.rawUpdate('UPDATE Songs SET tags = ? WHERE id = ?', [jsonEncode(Songs[key]!.tags), key]);
+}
+
+void DeleteSong(int key) {
+  database.rawDelete('DELETE FROM Songs WHERE id = ?', [key]);
+  Songs.remove(key);
 }
 
 // Check if file in Song path still exists
 void ValidateSongs() {
   Songs.forEach((k, v) {
-    v.hastags = v.tags.isNotEmpty;
     if (!File(v.path).existsSync()) {
-      DeleteSong(v);
+      DeleteSong(k);
     }
   });
+}
+
+void SongPlayed(int id) async {
+  int time = DateTime.now().millisecondsSinceEpoch;
+  database.rawUpdate('UPDATE Songs SET lastplayed = ? WHERE id = ?', [time, id]);
 }
 
 List<Song> AllNotEditedSongs() {
@@ -393,28 +467,28 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void Save() {
-    List<String> names = [];
+    List<int> names = [];
     for (var element in songs) {
-      names.add(element.filename);
+      names.add(element.id);
     }
     Config["Playlist"] = names;
-    SaveConfig();
+    database.rawUpdate(
+        'UPDATE Config SET value = ? WHERE name = ?', [jsonEncode(Config["Playlist"]), "Playlist"]);
   }
 
   void AddTagToAll(Tag t) {
-    for (var element in songs) {
-      UpdateSongTags(element.filename, t.id, true);
+    for (Song element in songs) {
+      UpdateSongTags(element.id, t.id, true);
     }
   }
 
   void SaveToTag(int id) {
-    for (var element in songs) {
-      UpdateSongTags(element.filename, id, true);
+    for (Song element in songs) {
+      UpdateSongTags(element.id, id, true);
     }
     Clear();
     UpDateMediaItem();
-    ShouldSaveSongs = true;
-    SaveConfig();
+
     update(() {});
   }
 
@@ -424,10 +498,10 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       savedsongs.forEach((element) async {
         await Future.delayed(const Duration(milliseconds: 50));
         if (Songs.containsKey(element)) {
-          if (Contains(Songs[element])) {
+          if (Contains(Songs[element]!)) {
             return;
           }
-          songs.add(Songs[element]);
+          songs.add(Songs[element]!);
         }
       });
     }

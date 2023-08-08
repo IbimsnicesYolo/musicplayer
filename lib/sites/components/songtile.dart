@@ -19,11 +19,11 @@ PopupMenuButton SongTile(BuildContext context, Song s, void Function(void Functi
                     additionalinfos: s.filename,
                     OnSaved: (String si) {
                       s.title = si;
-                      UpdateSongTitle(s.filename, si);
+                      UpdateSongTitle(s.id, si);
                     }),
               ),
             )
-            .then((value) => {s.title = value, UpdateSongTitle(s.filename, value), c(() {})});
+            .then((value) => {s.title = value, UpdateSongTitle(s.id, value), c(() {})});
       }
       if (result == 1) {
         // Change Interpret
@@ -36,12 +36,11 @@ PopupMenuButton SongTile(BuildContext context, Song s, void Function(void Functi
                     additionalinfos: s.filename,
                     OnSaved: (String si) {
                       s.interpret = si;
-                      UpdateSongInterpret(s.filename, si);
+                      UpdateSongInterpret(s.id, si);
                     }),
               ),
             )
-            .then(
-                (value) => {s.interpret = value, UpdateSongInterpret(s.filename, value), c(() {})});
+            .then((value) => {s.interpret = value, UpdateSongInterpret(s.id, value), c(() {})});
       }
       if (result == 2) {
         // Change Featuring
@@ -54,12 +53,11 @@ PopupMenuButton SongTile(BuildContext context, Song s, void Function(void Functi
                     additionalinfos: s.filename,
                     OnSaved: (String si) {
                       s.featuring = si;
-                      UpdateSongFeaturing(s.filename, si);
+                      UpdateSongFeaturing(s.id, si);
                     }),
               ),
             )
-            .then(
-                (value) => {s.featuring = value, UpdateSongFeaturing(s.filename, value), c(() {})});
+            .then((value) => {s.featuring = value, UpdateSongFeaturing(s.id, value), c(() {})});
       }
       if (result == 3) {
         Navigator.of(context)
@@ -83,7 +81,7 @@ PopupMenuButton SongTile(BuildContext context, Song s, void Function(void Functi
                 onPressed: () {
                   Navigator.of(context).pop(true);
                   Playlist.RemoveSong(s);
-                  DeleteSong(s);
+                  DeleteSong(s.id);
                 },
                 child: const Text("Yes"),
               ),
@@ -108,8 +106,7 @@ PopupMenuButton SongTile(BuildContext context, Song s, void Function(void Functi
       }
       if (result == 8) {
         s.blacklisted = !s.blacklisted;
-        ShouldSaveSongs = true;
-        SaveSongs();
+        UpdateSongBlacklisted(s.id, s.blacklisted);
       }
       if (result == 9) {
         Playlist.JumpToSong(s);

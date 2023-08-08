@@ -12,15 +12,27 @@ import "sites/tagsite.dart" as TagSite;
 
 late MyAudioHandler _audioHandler;
 
-void checkpermissions() async {
+Future<bool> checkpermissions() async {
+  print("Checking permissions");
   PermissionStatus status = await Permission.storage.status;
   if (!status.isGranted) {
+    print("Requesting1");
     await Permission.storage.request();
   }
+  if (!await Permission.storage.status.isGranted) {
+    //return false;
+  }
+
   status = await Permission.manageExternalStorage.status;
   if (!status.isGranted) {
+    print("Requesting2");
     await Permission.manageExternalStorage.request();
   }
+  if (!await Permission.manageExternalStorage.status.isGranted) {
+    return false;
+  }
+
+  return true;
 }
 
 Future<void> main() async {
@@ -35,7 +47,6 @@ Future<void> main() async {
     ),
   );
   runApp(MaterialApp(theme: ThemeData.dark(), home: const MainSite()));
-  checkpermissions();
 }
 
 class MainSite extends StatefulWidget {
@@ -77,7 +88,21 @@ class _MainSite extends State<MainSite> {
   @override
   Widget build(BuildContext context) {
     if (!loaded) {
-      LoadData(doneloading, _audioHandler);
+      checkpermissions().then((value) async {
+        if (!value) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text("Please allow storage permissions"),
+              duration: const Duration(seconds: 1),
+            ),
+          );
+          Future.delayed(const Duration(seconds: 5), () {
+            setState(() {});
+          });
+        } else {
+          LoadData(doneloading, _audioHandler);
+        }
+      });
 
       return Scaffold(
         backgroundColor: Colors.black,
@@ -122,7 +147,6 @@ class _MainSite extends State<MainSite> {
                     if (side == 2) {
                       StringInput(context, "Create new Tag", "Create", "Cancel", (String s) {
                         CreateTag(s);
-                        SaveTags();
                         setState(() {});
                       }, (String s) {}, false, "", "Tag Name");
                     }

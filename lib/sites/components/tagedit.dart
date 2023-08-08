@@ -19,7 +19,7 @@ class _TagEdit extends State<TagEdit> {
   Song s;
 
   TextEditingController create = TextEditingController();
-  Map<String, List> ToUpdate = {};
+  Map<int, List> ToUpdate = {};
 
   void update(void Function() c) {
     setState(
@@ -35,7 +35,7 @@ class _TagEdit extends State<TagEdit> {
 
     for (int i = 0; i < Tags.length; i++) {
       if (Tags.containsKey(i) && s.tags.contains(i)) {
-        InSong.add(Tags[i]);
+        InSong.add(Tags[i]!);
       }
     }
 
@@ -73,11 +73,11 @@ class _TagEdit extends State<TagEdit> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   CoolerCheckBox(s.tags.contains(InSong[i].id), (bool? b) {
-                    ToUpdate[s.filename] = [InSong[i].id, b];
+                    ToUpdate[s.id] = [InSong[i].id, b];
                   }, InSong[i].name),
                   if (i + 1 < InSong.length)
                     CoolerCheckBox(s.tags.contains(InSong[i + 1].id), (bool? b) {
-                      ToUpdate[s.filename] = [InSong[i + 1].id, b];
+                      ToUpdate[s.id] = [InSong[i + 1].id, b];
                     }, InSong[i + 1].name),
                 ],
               ),
@@ -92,10 +92,10 @@ class _TagEdit extends State<TagEdit> {
               },
             ),
             StyledElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (create.text != "") {
-                    int id = CreateTag(create.text.trim());
-                    ToUpdate[s.filename] = [id, true];
+                    int id = await CreateTag(create.text.trim());
+                    ToUpdate[s.id] = [id, true];
                     ToUpdate.forEach((key, value) {
                       UpdateSongTags(key, value[0], value[1]);
                     });
@@ -106,10 +106,10 @@ class _TagEdit extends State<TagEdit> {
             for (int i = 1; i < Tags.length; i++)
               if (Tags.containsKey(i) && !s.tags.contains(i))
                 if (create.text == "" ||
-                    Tags[i].name.toLowerCase().contains(create.text.toLowerCase()))
+                    Tags[i]!.name.toLowerCase().contains(create.text.toLowerCase()))
                   CoolerCheckBox(s.tags.contains(i), (bool? b) {
-                    ToUpdate[s.filename] = [i, b];
-                  }, Tags[i].name),
+                    ToUpdate[s.id] = [i, b];
+                  }, Tags[i]!.name),
           ],
         ),
       ),
@@ -162,9 +162,9 @@ class _TagChoose extends State<TagChoose> {
               },
             ),
             StyledElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (create.text.trim() != "") {
-                    int id = CreateTag(create.text.trim());
+                    int id = await CreateTag(create.text.trim());
                     Navigator.of(context).pop(id);
                   }
                 },
@@ -179,14 +179,14 @@ class _TagChoose extends State<TagChoose> {
                         onPressed: () {
                           Navigator.of(context).pop(i);
                         },
-                        child: Text(Tags[i].name),
+                        child: Text(Tags[i]!.name),
                       ),
                     if (Tags.length > i + 1 && Tags.containsKey(i + 1))
                       StyledElevatedButton(
                         onPressed: () {
                           Navigator.of(context).pop(i + 1);
                         },
-                        child: Text(Tags[i + 1].name),
+                        child: Text(Tags[i + 1]!.name),
                       ),
                   ],
                 ),
@@ -196,12 +196,12 @@ class _TagChoose extends State<TagChoose> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     if (Tags.containsKey(i) &&
-                        Tags[i].name.toLowerCase().contains(create.text.toLowerCase()))
+                        Tags[i]!.name.toLowerCase().contains(create.text.toLowerCase()))
                       StyledElevatedButton(
                         onPressed: () {
                           Navigator.of(context).pop(i);
                         },
-                        child: Text(Tags[i].name),
+                        child: Text(Tags[i]!.name),
                       ),
                   ],
                 ),

@@ -5,18 +5,18 @@ import "components/music_control.dart";
 import 'components/search.dart';
 import 'components/songtile.dart';
 
-bool ShouldShowSong(String key, String search) {
-  if (Songs[key].blacklisted) {
+bool ShouldShowSong(int key, String search) {
+  if (Songs[key]!.blacklisted) {
     return false;
   }
   if (search == "") return true;
 
-  if (Songs[key].title.toLowerCase().contains(search.toLowerCase())) return true;
+  if (Songs[key]!.title.toLowerCase().contains(search.toLowerCase())) return true;
 
-  if (Songs[key].interpret.toLowerCase().contains(search.toLowerCase())) return true;
+  if (Songs[key]!.interpret.toLowerCase().contains(search.toLowerCase())) return true;
 
-  if (Songs[key].featuring != "" &&
-      Songs[key].featuring.toLowerCase().contains(search.toLowerCase())) return true;
+  if (Songs[key]!.featuring != "" &&
+      Songs[key]!.featuring.toLowerCase().contains(search.toLowerCase())) return true;
 /*
   List<String> searchname = search.toLowerCase().split(" ");
 
@@ -39,8 +39,8 @@ IconButton buildActions(
                 (search, update) => ListView(
                       children: [
                         for (Song s in Playlist.songs)
-                          if (ShouldShowSong(s.filename, search))
-                            DismissibleSongTile(context, Songs[s.filename], c, Playlist),
+                          if (ShouldShowSong(s.id, search))
+                            DismissibleSongTile(context, Songs[s.id]!, c, Playlist),
                       ],
                     ),
                 ""),

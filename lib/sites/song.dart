@@ -65,7 +65,7 @@ Center buildContent(
                           .push(MaterialPageRoute(builder: (_) => const TagChoose()))
                           .then((value) {
                         if (value != -1) {
-                          Playlist.AddTagToAll(Tags[value]);
+                          Playlist.AddTagToAll(Tags[value]!);
                         }
                       }).then((value) => c(() {}));
                     },

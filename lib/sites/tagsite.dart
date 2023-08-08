@@ -9,7 +9,7 @@ import 'components/tagedit.dart';
 bool ShouldShowTag(int key, String search) {
   if (search == "") return true;
 
-  if (Tags[key].name.toLowerCase().contains(search.toLowerCase())) return true;
+  if (Tags[key]!.name.toLowerCase().contains(search.toLowerCase())) return true;
 
   //List<String> searchname = search.toLowerCase().split(" ");
 
@@ -34,7 +34,7 @@ IconButton buildActions(
                             Dismissible(
                               key: Key(key.toString()),
                               onDismissed: (direction) {
-                                DeleteTag(Tags[key]);
+                                DeleteTag(key);
                                 update(() {});
                               },
                               background: Container(
@@ -115,14 +115,17 @@ ListTile TagTile(
               builder: (_) => SearchPage(
                   (search, update) => ListView(
                         children: [
-                          for (String songkey in GetSongsFromTag(Tags[key]).keys)
-                            if (Songs[songkey].title.toLowerCase().contains(search.toLowerCase()) ||
-                                Songs[songkey]
+                          for (int songkey in GetSongsFromTag(Tags[key]!).keys)
+                            if (Songs[songkey]!
+                                    .title
+                                    .toLowerCase()
+                                    .contains(search.toLowerCase()) ||
+                                Songs[songkey]!
                                     .interpret
                                     .toLowerCase()
                                     .contains(search.toLowerCase()))
                               Dismissible(
-                                key: Key(songkey),
+                                key: Key(songkey.toString()),
                                 onDismissed: (DismissDirection direction) {
                                   if (direction == DismissDirection.startToEnd) {
                                     UpdateSongTags(songkey, key, false);
@@ -131,7 +134,7 @@ ListTile TagTile(
                                 },
                                 confirmDismiss: (DismissDirection direction) async {
                                   if (direction == DismissDirection.endToStart) {
-                                    Playlist.Stack(Songs[songkey]);
+                                    Playlist.Stack(Songs[songkey]!);
                                     update(() {});
                                     return Future.value(false);
                                   }
@@ -163,7 +166,7 @@ ListTile TagTile(
                                     ),
                                   ),
                                 ),
-                                child: SongTile(context, Songs[songkey], update, Playlist, true, {
+                                child: SongTile(context, Songs[songkey]!, update, Playlist, true, {
                                   0: true,
                                   1: false,
                                   2: false,
@@ -192,19 +195,19 @@ ListTile TagTile(
           if (result == 0) {
             // Change Name
             StringInput(context, "Rename Tag: $key", "Save", "Cancel", (String s) {
-              UpdateTagName(Tags[key].id, s);
+              UpdateTagName(Tags[key]!.id, s);
               c(() {});
-            }, (String s) {}, false, Tags[key].name, "");
+            }, (String s) {}, false, Tags[key]!.name, "");
           }
           if (result == 1) {
-            Playlist.BulkAdd(GetSongsFromTag(Tags[key]));
+            Playlist.BulkAdd(GetSongsFromTag(Tags[key]!));
           }
           if (result == 2) {
             Navigator.of(context)
                 .push(MaterialPageRoute(builder: (_) => const TagChoose()))
                 .then((value) {
               if (value != -1) {
-                GetSongsFromTag(Tags[key]).forEach((songkey, song) {
+                GetSongsFromTag(Tags[key]!).forEach((songkey, song) {
                   UpdateSongTags(songkey, value, true);
                 });
               }
@@ -217,18 +220,18 @@ ListTile TagTile(
                     builder: (_) => SearchPage(
                         (search, update) => ListView(
                               children: [
-                                for (String songkey in Songs.keys)
-                                  if ((Songs[songkey]
+                                for (int songkey in Songs.keys)
+                                  if ((Songs[songkey]!
                                               .title
                                               .toLowerCase()
                                               .contains(search.toLowerCase()) ||
-                                          Songs[songkey]
+                                          Songs[songkey]!
                                               .interpret
                                               .toLowerCase()
                                               .contains(search.toLowerCase())) &
-                                      !Songs[songkey].tags.contains(key))
+                                      !Songs[songkey]!.tags.contains(key))
                                     Dismissible(
-                                      key: Key(songkey),
+                                      key: Key(songkey.toString()),
                                       onDismissed: (DismissDirection direction) {
                                         UpdateSongTags(songkey, key, true);
                                         update(() {});
@@ -260,7 +263,7 @@ ListTile TagTile(
                                           ),
                                         ),
                                       ),
-                                      child: SongTile(context, Songs[songkey], c, Playlist, true, {
+                                      child: SongTile(context, Songs[songkey]!, c, Playlist, true, {
                                         0: true,
                                         1: false,
                                         2: false,
@@ -277,19 +280,19 @@ ListTile TagTile(
                                     ),
                               ],
                             ),
-                        Tags[key].name),
+                        Tags[key]!.name),
                   ),
                 )
                 .then((value) => c(() {}));
           }
           if (result == 4) {
             // Delete
-            DeleteTag(Tags[key]);
+            DeleteTag(key);
             c(() {});
           }
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-          PopupMenuItem(value: 0, child: Text(Tags[key].name)),
+          PopupMenuItem(value: 0, child: Text(Tags[key]!.name)),
           const PopupMenuDivider(),
           const PopupMenuItem(value: 1, child: Text('Add Songs to Playlist')),
           const PopupMenuDivider(),
@@ -301,7 +304,7 @@ ListTile TagTile(
         ],
       ),
     ]),
-    title: Text(Tags[key].name),
-    subtitle: Text(Tags[key].used.toString()),
+    title: Text(Tags[key]!.name),
+    subtitle: Text(Tags[key]!.used.toString()),
   );
 }

@@ -98,7 +98,7 @@ class SongDrawer extends Drawer {
                     Song s;
                     do {
                       String element = keys[random.nextInt(keys.length)];
-                      s = Songs[element];
+                      s = Songs[element]!;
                       tries++;
                       if (tries > Songs.length) {
                         // no unlimited loop if every song is already in the playlist
@@ -164,7 +164,7 @@ class _SearchSongPage extends State<SearchSongPage> {
           await Future.delayed(const Duration(milliseconds: 1));
           String path = entity.path;
           if (path.endsWith('.mp3')) {
-            if (CreateSong(path)) {
+            if (await CreateSong(path)) {
               count += 1;
             }
           }
@@ -180,10 +180,6 @@ class _SearchSongPage extends State<SearchSongPage> {
           searchinfo += "\t Error Searching $a\n";
         });
       }
-    }
-    if (count > 0) {
-      ShouldSaveSongs = true;
-      SaveSongs();
     }
 
     setState(() {
@@ -278,13 +274,13 @@ class _ShowSongEdit extends State<ShowSongEdit> {
                             additionalinfos: csong.filename,
                             OnSaved: (String s) {
                               csong.title = s;
-                              UpdateSongTitle(csong.filename, s);
+                              UpdateSongTitle(csong.id, s);
                             }),
                       ),
                     )
                     .then((value) => {
                           csong.title = value,
-                          UpdateSongTitle(csong.filename, value),
+                          UpdateSongTitle(csong.id, value),
                           setState(() {}),
                         });
               },
@@ -300,13 +296,13 @@ class _ShowSongEdit extends State<ShowSongEdit> {
                             additionalinfos: csong.filename,
                             OnSaved: (String s) {
                               csong.interpret = s;
-                              UpdateSongInterpret(csong.filename, s);
+                              UpdateSongInterpret(csong.id, s);
                             }),
                       ),
                     )
                     .then((value) => {
                           csong.interpret = value,
-                          UpdateSongInterpret(csong.filename, value),
+                          UpdateSongInterpret(csong.id, value),
                           setState(() {}),
                         });
               },
@@ -322,13 +318,13 @@ class _ShowSongEdit extends State<ShowSongEdit> {
                             additionalinfos: csong.filename,
                             OnSaved: (String s) {
                               csong.interpret = s;
-                              UpdateSongFeaturing(csong.filename, s);
+                              UpdateSongFeaturing(csong.id, s);
                             }),
                       ),
                     )
                     .then((value) => {
                           csong.featuring = value,
-                          UpdateSongFeaturing(csong.filename, value),
+                          UpdateSongFeaturing(csong.id, value),
                           setState(() {}),
                         });
               },
@@ -347,10 +343,8 @@ class _ShowSongEdit extends State<ShowSongEdit> {
               StyledElevatedButton(
                   onPressed: () {
                     currentsong += 1;
-                    csong.edited = true;
-                    csong.blacklisted = true;
-                    ShouldSaveSongs = true;
-                    SaveSongs();
+                    UpdateSongEdited(csong.id, true);
+                    UpdateSongBlacklisted(csong.id, true);
                     widget.c(() {});
                     setState(() {});
                   },
@@ -361,20 +355,16 @@ class _ShowSongEdit extends State<ShowSongEdit> {
                   },
                   child: const Text("Add to Playlist")),
               StyledElevatedButton(
-                  onPressed: () {
-                    int id = CreateTag(csong.interpret);
-                    UpdateSongTags(csong.filename, id, true);
+                  onPressed: () async {
+                    int id = await CreateTag(csong.interpret);
+                    UpdateSongTags(csong.id, id, true);
                     if (csong.featuring != "") {
-                      int id2 = CreateTag(csong.featuring);
-                      UpdateSongTags(csong.filename, id2, true);
+                      int id2 = await CreateTag(csong.featuring);
+                      UpdateSongTags(csong.id, id2, true);
                     }
                     currentsong += 1;
-                    csong.edited = true;
+                    UpdateSongEdited(csong.id, true);
                     setState(() {});
-
-                    if (currentsong % 10 == 0) {
-                      SaveSongs();
-                    }
                   },
                   child: const Text("Done")),
             ],
@@ -392,10 +382,6 @@ class _ShowSongEdit extends State<ShowSongEdit> {
         floatingActionButton: FloatingActionButton(
           backgroundColor: ContrastColor,
           onPressed: () => {
-            ShouldSaveSongs = true,
-            ShouldSaveTags = true,
-            SaveTags(),
-            SaveSongs(),
             Navigator.of(context).pop(),
           },
           child: const Icon(Icons.arrow_back),
@@ -410,10 +396,10 @@ class _ShowSongEdit extends State<ShowSongEdit> {
                       builder: (_) => SearchPage(
                           (search, update) => ListView(
                                 children: [
-                                  for (String key in Songs.keys)
+                                  for (int key in Songs.keys)
                                     if (ShouldShowSong(key, search))
                                       SongTile(
-                                          context, Songs[key], widget.c, widget.Playlist, true, {
+                                          context, Songs[key]!, widget.c, widget.Playlist, true, {
                                         0: false,
                                         1: false,
                                         2: false,
@@ -440,10 +426,6 @@ class _ShowSongEdit extends State<ShowSongEdit> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () => {
-              ShouldSaveSongs = true,
-              ShouldSaveTags = true,
-              SaveTags(),
-              SaveSongs(),
               Navigator.of(context).pop(),
             },
           ),
@@ -489,8 +471,7 @@ class _ShowConfig extends State<ShowConfig> {
               ElevatedButton(
                   onPressed: () {
                     StringInput(context, "Add Path", "Create", "Cancel", (String s) {
-                      Config["SearchPaths"].add(s);
-                      SaveConfig();
+                      AddSearchPath(s);
                     }, (String s) {}, false, "", "");
                   },
                   child: const Text("Add Path")),
@@ -521,7 +502,6 @@ class _ShowConfig extends State<ShowConfig> {
               TextButton(
                   onPressed: () {
                     Navigator.pop(context);
-                    SaveConfig();
                   },
                   child: const Text("Close"))
             ],
@@ -570,9 +550,10 @@ class _ShowBlacklist extends State<ShowBlacklist> {
                       builder: (_) => SearchPage(
                           (search, update) => ListView(
                                 children: [
-                                  for (String key in Songs.keys)
+                                  for (int key in Songs.keys)
                                     if (ShouldShowSong(key, search))
-                                      SongTile(context, Songs[key], update, widget.Playlist, true, {
+                                      SongTile(
+                                          context, Songs[key]!, update, widget.Playlist, true, {
                                         0: true,
                                         1: true,
                                         2: true,
@@ -605,9 +586,9 @@ class _ShowBlacklist extends State<ShowBlacklist> {
         ),
         body: ListView(
           children: [
-            for (String key in Songs.keys)
-              if (Songs[key].blacklisted)
-                SongTile(context, Songs[key], update, widget.Playlist, true, {
+            for (int key in Songs.keys)
+              if (Songs[key]!.blacklisted)
+                SongTile(context, Songs[key]!, update, widget.Playlist, true, {
                   0: true,
                   1: true,
                   2: true,
@@ -657,10 +638,8 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                   child: const Text("Add All To Edit"),
                   onPressed: () {
                     Songs.forEach((key, value) {
-                      value.edited = false;
+                      UpdateSongEdited(key, false);
                     });
-                    ShouldSaveSongs = true;
-                    SaveSongs();
                   }),
               TextButton(
                   style: TextButton.styleFrom(
@@ -668,13 +647,10 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                   ),
                   onPressed: () {
                     Tags = {};
-                    ShouldSaveTags = true;
                     Songs.forEach((key, value) {
-                      value.tags = [];
+                      ClearSongTags(key);
                     });
-                    SaveTags();
                     UpdateAllTags();
-                    SaveSongs();
                     Navigator.pop(context);
                   },
                   child: const Text("Delete All Tags", style: TextStyle(fontSize: 30))),
@@ -685,9 +661,7 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                 onPressed: () {
                   widget.Pl.Clear();
                   Songs = {};
-                  ShouldSaveSongs = true;
                   UpdateAllTags();
-                  SaveSongs();
                   Navigator.pop(context);
                 },
                 child: const Text("Delete All Songs", style: TextStyle(fontSize: 30)),
@@ -698,19 +672,7 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                 ),
                 onPressed: () {
                   widget.Pl.Clear();
-                  Config = {
-                    "HomeColor": HomeColor.value,
-                    "ContrastColor": ContrastColor.value,
-                    "SearchPaths": [
-                      "storage/emulated/0/Music",
-                      "storage/emulated/0/Download",
-                      "C:",
-                      "D:",
-                      "Library"
-                    ],
-                    "Playlist": []
-                  };
-                  SaveConfig();
+                  ResetConfig();
                   Navigator.pop(context);
                 },
                 child: const Text("Reset Config", style: TextStyle(fontSize: 30)),
