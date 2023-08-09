@@ -58,10 +58,12 @@ void LoadData(reload, MyAudioHandler audioHandler) async {
     await db.rawInsert('INSERT INTO Config(name, value) VALUES("HomeColor", ${HomeColor.value})');
     await db.rawInsert(
         'INSERT INTO Config(name, value) VALUES("ContrastColor", ${ContrastColor.value})');
-    await db.rawInsert(
-        'INSERT INTO Config(name, value) VALUES("SearchPaths", "${jsonEncode(Config["SearchPaths"])}")');
-    await db.rawInsert(
-        'INSERT INTO Config(name, value) VALUES("Playlist", "${jsonEncode(Config["Playlist"])}")');
+    await db.rawInsert('INSERT INTO Config(name, value) VALUES("SearchPaths", "' +
+        jsonEncode(Config["SearchPaths"]).replaceAll(RegExp(r'"'), "'") +
+        '")');
+    await db.rawInsert('INSERT INTO Config(name, value) VALUES("Playlist", "' +
+        jsonEncode(Config["Playlist"]).replaceAll(RegExp(r'"'), "'") +
+        '")');
 
     await db.execute('CREATE TABLE Tags (id INTEGER PRIMARY KEY, name TEXT, lastused INTEGER)');
     await db.execute(
@@ -70,18 +72,29 @@ void LoadData(reload, MyAudioHandler audioHandler) async {
 
   List<Map> allrows = await database.rawQuery('SELECT * FROM Config');
   allrows.forEach((element) {
-    print(element);
-    Config[element["name"]] = element["value"];
+    if (element["name"] == "Playlist" || element["name"] == "SearchPaths") {
+      Config[element["name"]] = jsonDecode(element["value"].replaceAll(RegExp(r"'"), '"'));
+    } else {
+      Config[element["name"]] = element["value"];
+    }
   });
 
   List<Map> alltags = await database.rawQuery('SELECT * FROM Tags');
   alltags.forEach((element) {
-    print(element);
+    Tags[element["id"]] = Tag(element["id"], element["name"]);
   });
 
   List<Map> allsongs = await database.rawQuery('SELECT * FROM Songs');
   allsongs.forEach((element) {
-    print(element);
+    List tags = jsonDecode(element["tags"].replaceAll(RegExp(r"'"), '"'));
+    Songs[element["id"]] = Song(element["id"], element["path"]);
+    Songs[element["id"]]!.filename = element["filename"];
+    Songs[element["id"]]!.title = element["title"];
+    Songs[element["id"]]!.interpret = element["interpret"];
+    Songs[element["id"]]!.featuring = element["featuring"];
+    Songs[element["id"]]!.edited = element["edited"] == 1;
+    Songs[element["id"]]!.blacklisted = element["blacklisted"] == 1;
+    Songs[element["id"]]!.tags = tags;
   });
 
   Future.delayed(const Duration(seconds: 1), () {
@@ -109,7 +122,8 @@ Future<int> CreateTag(name) async {
   int time = DateTime.now().millisecondsSinceEpoch;
 
   await database.transaction((txn) async {
-    id = await txn.rawInsert('INSERT INTO Tags(name, lastused) VALUES($name, $time)');
+    id = await txn.rawInsert(
+        'INSERT INTO Tags(name, lastused) VALUES("' + name + '",' + time.toString() + ')');
     print('inserted1: $id');
   });
 
@@ -195,7 +209,17 @@ Future<bool> CreateSong(String path) async {
   int id = -1;
   await database.transaction((txn) async {
     id = await txn.rawInsert(
-        'INSERT INTO Songs(path, filename, title, interpret, featuring, edited, blacklisted, tags, lastused) VALUES($path, $filename, $title, $interpret, "", 0, 0, "[]", $time)');
+        'INSERT INTO Songs(path, filename, title, interpret, featuring, edited, blacklisted, tags, lastplayed) VALUES("' +
+            path +
+            '","' +
+            filename +
+            '","' +
+            title +
+            '","' +
+            interpret +
+            '","", 0, 0, "[]",' +
+            time.toString() +
+            ')');
     print('inserted1: $id');
   });
 
