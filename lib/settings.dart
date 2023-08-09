@@ -16,12 +16,18 @@ Map Config = {
   "ContrastColor": ContrastColor.value,
   "SearchPaths": ["storage/emulated/0/Music", "storage/emulated/0/Download", "C:", "D:", "Library"],
   "Playlist": <int>[],
+  "Version": "1"
 };
 
 void AddSearchPath(String path) {
   Config["SearchPaths"].add(path);
   database.rawUpdate('UPDATE Config SET value = ? WHERE name = ?',
       [jsonEncode(Config["SearchPaths"]), "SearchPaths"]);
+}
+
+void UpdateVersion(newVersion) {
+  Config["Version"] = newVersion;
+  database.rawUpdate('UPDATE Config SET value = ? WHERE name = ?', [Config["Version"], "Version"]);
 }
 
 void ResetConfig() {
@@ -36,6 +42,7 @@ void ResetConfig() {
       "Library"
     ],
     "Playlist": <int>[],
+    "Version": "1"
   };
   database.rawUpdate('UPDATE Config SET value = ? WHERE name = ?', [HomeColor.value, "HomeColor"]);
   database.rawUpdate(
@@ -50,11 +57,12 @@ Map<int, Tag> Tags = <int, Tag>{};
 Map<int, Song> Songs = <int, Song>{};
 
 // ../../../../../storage/emulated/0/Documents/
-void LoadData(reload, MyAudioHandler audioHandler) async {
+void LoadData(reload, MyAudioHandler audioHandler, context, istart, iend) async {
   database = await openDatabase("music.db", version: 1, onCreate: (Database db, int version) async {
     // When creating the db, create the table
     await db.execute('CREATE TABLE Config (name STRING, value STRING)');
     // Load Config
+    await db.rawInsert('INSERT INTO Config(name, value) VALUES("Version", "1")');
     await db.rawInsert('INSERT INTO Config(name, value) VALUES("HomeColor", ${HomeColor.value})');
     await db.rawInsert(
         'INSERT INTO Config(name, value) VALUES("ContrastColor", ${ContrastColor.value})');
@@ -101,6 +109,23 @@ void LoadData(reload, MyAudioHandler audioHandler) async {
     UpdateAllTags();
     audioHandler.LoadPlaylist(reload);
   });
+
+  if (Config["Version"] == "1") {
+    Future.delayed(const Duration(seconds: 10), () {
+      final snackBar = SnackBar(
+        backgroundColor: Colors.green,
+        content: const Text("Import old Stuff?"),
+        action: SnackBarAction(
+          label: 'Import',
+          onPressed: () async {
+            istart();
+            await ImportOldDB(iend, audioHandler);
+          },
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    });
+  }
 }
 
 class Tag {
@@ -110,7 +135,7 @@ class Tag {
   Tag(this.id, this.name);
 }
 
-Future<int> CreateTag(name) async {
+Future<int> CreateTag(name, [int? newid]) async {
   for (Tag t in Tags.values) {
     if (t.name == name) {
       return t.id;
@@ -125,6 +150,10 @@ Future<int> CreateTag(name) async {
     id = await txn.rawInsert(
         'INSERT INTO Tags(name, lastused) VALUES("' + name + '",' + time.toString() + ')');
   });
+
+  if (newid != -1) {
+    await database.rawUpdate('UPDATE Tags SET id = ? WHERE id = ?', [newid, id]);
+  }
 
   Tags[id] = Tag(id, name);
   return id;
@@ -311,13 +340,22 @@ void UpdateSongTags(int key, int Tagid, bool add) {
   database.rawUpdate('UPDATE Songs SET tags = ? WHERE id = ?', [jsonEncode(Songs[key]!.tags), key]);
 }
 
+void SetSongTags(int key, List<int> Tagids) {
+  if (Songs[key] == null) {
+    return;
+  }
+  Songs[key]!.tags = Tagids;
+
+  database.rawUpdate('UPDATE Songs SET tags = ? WHERE id = ?', [jsonEncode(Tagids), key]);
+}
+
 void DeleteSong(int key) {
   database.rawDelete('DELETE FROM Songs WHERE id = ?', [key]);
   Songs.remove(key);
 }
 
 // Check if file in Song path still exists
-void ValidateSongs() {
+void ValidateSongs() async {
   Songs.forEach((k, v) {
     if (!File(v.path).existsSync()) {
       DeleteSong(k);
@@ -673,4 +711,162 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       queueIndex: event.currentIndex,
     );
   }
+}
+
+/*
+Import Code
+ */
+
+Song? FindSongByFilename(filename) {
+  Song? song;
+  Songs.forEach((key, value) {
+    if (value.filename == filename) {
+      song = Songs[key];
+    }
+  });
+
+  return song;
+}
+
+int? GetIdBySongPath(String path) {
+  int? id;
+  Songs.forEach((key, value) {
+    if (value.path == path) {
+      id = key;
+    }
+  });
+
+  return id;
+}
+
+Future<void> DeleteAllSongs() async {
+  List<int> keys = [];
+  Songs.forEach((key, value) async {
+    keys.add(key);
+  });
+  keys.forEach((element) {
+    DeleteSong(element);
+  });
+  Songs = {};
+}
+
+Future<void> DeleteAllTags() async {
+  List<int> keys = [];
+  Tags.forEach((key, value) async {
+    keys.add(key);
+  });
+  keys.forEach((element) {
+    DeleteTag(element);
+  });
+  Tags = {};
+}
+
+Future<void> ImportOldDB(reload, MyAudioHandler audiohandler) async {
+  print("Deleting Old");
+
+  await DeleteAllSongs();
+  await DeleteAllTags();
+
+  Config["Playlist"] = [];
+
+  print("Starting Import");
+  String appDocDirectory = "storage/emulated/0/Music";
+
+  try {
+    print("Loading Tags");
+    await File(appDocDirectory + '/tags.json').create(recursive: true).then((File file) async {
+      await file.readAsString().then((String contents) {
+        if (contents.isNotEmpty) {
+          jsonDecode(contents).forEach((key, value) async {
+            print(value["n"].toString() + value["i"].toString());
+            await CreateTag(value["n"], value["i"]);
+            print("Tag ${value["n"]} created");
+          });
+        } else
+          print("No Tags");
+      });
+    });
+    await Future.delayed(const Duration(seconds: 10));
+    print("Tags Loaded");
+  } catch (e) {
+    print(e);
+  }
+
+  try {
+    print("Loading Songs");
+    await File(appDocDirectory + '/songs.json').create(recursive: true).then((File file) async {
+      await file.readAsString().then((String contents) {
+        print(contents);
+        if (contents.isNotEmpty) {
+          jsonDecode(contents).forEach((key, value) async {
+            if (FindSongByFilename(value["f"]) == null) {
+              await CreateSong(value["p"]);
+
+              if (GetIdBySongPath(value["p"]) != null) {
+                int id = GetIdBySongPath(value["p"])!;
+
+                UpdateSongTitle(id, value["t"]);
+                UpdateSongInterpret(id, value["i"]);
+                UpdateSongFeaturing(id, value["fe"]);
+                UpdateSongEdited(id, value["e"]);
+                UpdateSongBlacklisted(id, value["b"]);
+                List<int> a = <int>[];
+                value["ta"].forEach((element) {
+                  a.add(element);
+                });
+                SetSongTags(id, a);
+
+                print("Song $id created");
+              }
+            }
+          });
+          ValidateSongs();
+        } else
+          print("No Songs");
+      });
+    });
+    await Future.delayed(const Duration(seconds: 10));
+    print("Songs Loaded");
+  } catch (e) {
+    print(e);
+  }
+
+  try {
+    // Load Config
+    await File(appDocDirectory + '/config.json').create(recursive: true).then((File file) async {
+      await file.readAsString().then((String contents) {
+        if (contents.isNotEmpty) {
+          jsonDecode(contents).forEach((key, value) {
+            if (key == "SearchPaths") {
+              Config["SearchPaths"] = value;
+            } else if (key == "Playlist") {
+              List playlist = [];
+
+              value.forEach((element) {
+                if (FindSongByFilename(element) != null) {
+                  playlist.add(FindSongByFilename(element)!.id);
+                }
+              });
+
+              print("Old Playlist: $value");
+              print("New Playlist: $playlist");
+              Config["Playlist"] = playlist;
+            }
+          });
+        }
+      });
+    });
+  } catch (e) {
+    print(e);
+  }
+
+  await Future.delayed(const Duration(seconds: 5));
+  print("Import Done");
+
+  UpdateVersion("2");
+
+  Future.delayed(const Duration(seconds: 1), () {
+    UpdateAllTags();
+    audiohandler.LoadPlaylist(reload);
+  });
 }
