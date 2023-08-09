@@ -124,7 +124,6 @@ Future<int> CreateTag(name) async {
   await database.transaction((txn) async {
     id = await txn.rawInsert(
         'INSERT INTO Tags(name, lastused) VALUES("' + name + '",' + time.toString() + ')');
-    print('inserted1: $id');
   });
 
   Tags[id] = Tag(id, name);
@@ -168,7 +167,7 @@ Map GetSongsFromTag(Tag T) {
     Song so = Songs[id]!;
     List t = so.tags;
     if (t.contains(T.id) && !so.blacklisted) {
-      songs[so.filename] = so;
+      songs[so.id] = so;
     }
   }
   T.used = songs.length;
@@ -220,7 +219,6 @@ Future<bool> CreateSong(String path) async {
             '","", 0, 0, "[]",' +
             time.toString() +
             ')');
-    print('inserted1: $id');
   });
 
   Song newsong = Song(id, path);
@@ -267,7 +265,12 @@ void UpdateSongBlacklisted(int key, bool blacklisted) {
   }
   Songs[key]!.blacklisted = blacklisted;
 
-  database.rawUpdate('UPDATE Songs SET blacklisted = ? WHERE id = ?', [blacklisted, key]);
+  int placeholder = 0;
+  if (blacklisted) {
+    placeholder = 1;
+  }
+
+  database.rawUpdate('UPDATE Songs SET blacklisted = ? WHERE id = ?', [placeholder, key]);
 }
 
 void UpdateSongEdited(int key, bool edited) {
@@ -276,7 +279,12 @@ void UpdateSongEdited(int key, bool edited) {
   }
   Songs[key]!.edited = edited;
 
-  database.rawUpdate('UPDATE Songs SET edited = ? WHERE id = ?', [edited, key]);
+  int placeholder = 0;
+  if (edited) {
+    placeholder = 1;
+  }
+
+  database.rawUpdate('UPDATE Songs SET edited = ? WHERE id = ?', [placeholder, key]);
 }
 
 void ClearSongTags(int key) {
@@ -388,8 +396,10 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
 
   void InsertAsNext(Song song) {
     decreaseStack();
-    if (!Contains(song)) {
+    if (!Contains(song) && songs.length > 1) {
       songs.insert(1, song);
+    } else if (!Contains(song)) {
+      songs.insert(0, song);
     } else {
       songs.remove(song);
       songs.insert(1, song);
