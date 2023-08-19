@@ -870,3 +870,11 @@ Future<void> ImportOldDB(reload, MyAudioHandler audiohandler) async {
     audiohandler.LoadPlaylist(reload);
   });
 }
+
+/*
+
+Change to mysql database, so it wont be deleted on reinstall / appupdate, where hosting?
+
+Add Export Button to old file format so the import button does sth
+
+ */
