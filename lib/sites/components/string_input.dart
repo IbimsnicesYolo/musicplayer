@@ -112,7 +112,6 @@ class _StringInputExpanded extends State<StringInputExpanded> {
         possibleinputs.add(element);
       });
     });
-    possibleinputs.add("Unknown");
 
     possibleinputs = possibleinputs.toSet().toList();
     return MaterialApp(
