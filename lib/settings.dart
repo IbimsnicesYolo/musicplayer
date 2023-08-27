@@ -472,7 +472,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
 
   void InsertAsNext(Song song) {
     decreaseStack();
-    if (!Contains(song) && songs.length > 1) {
+    if (!Contains(song) && songs.length > 0) {
       songs.insert(1, song);
     } else if (!Contains(song)) {
       songs.insert(0, song);
@@ -517,6 +517,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void RemoveSong(Song s) {
+    decreaseStack();
     for (int i = 0; i < songs.length; i++) {
       if (songs[i] == s) {
         songs.remove(s);

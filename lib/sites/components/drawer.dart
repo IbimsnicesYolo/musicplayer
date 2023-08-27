@@ -457,7 +457,9 @@ class _ShowConfig extends State<ShowConfig> {
                   onPressed: () {
                     StringInput(context, "Add Path", "Create", "Cancel", (String s) {
                       AddSearchPath(s);
+                      setState(() {});
                     }, (String s) {}, false, "", "");
+                    setState(() {});
                   },
                   child: const Text("Add Path")),
               ExpansionTile(
