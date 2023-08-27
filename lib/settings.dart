@@ -73,7 +73,8 @@ void LoadData(reload, MyAudioHandler audioHandler, context, istart, iend) async 
         jsonEncode(Config["Playlist"]).replaceAll(RegExp(r'"'), "'") +
         '")');
 
-    await db.execute('CREATE TABLE Tags (id INTEGER PRIMARY KEY, name TEXT, lastused INTEGER)');
+    await db.execute(
+        'CREATE TABLE Tags (id INTEGER PRIMARY KEY, name TEXT, lastused INTEGER, is_artist INTEGER)');
     await db.execute(
         'CREATE TABLE Songs (id INTEGER PRIMARY KEY, path TEXT, filename TEXT, title TEXT, interpret TEXT, featuring TEXT, edited INTEGER, blacklisted INTEGER, tags TEXT, lastplayed INTEGER)');
   });
@@ -89,7 +90,8 @@ void LoadData(reload, MyAudioHandler audioHandler, context, istart, iend) async 
 
   List<Map> alltags = await database.rawQuery('SELECT * FROM Tags');
   alltags.forEach((element) {
-    Tags[element["id"]] = Tag(element["id"], element["name"]);
+    Tags[element["id"]] = Tag(element["id"], element["name"], element["is_artist"]);
+    Tags[element["id"]]!.used = element["lastused"];
   });
 
   List<Map> allsongs = await database.rawQuery('SELECT * FROM Songs');
@@ -132,16 +134,19 @@ class Tag {
   String name = "New Tag";
   int id = -1;
   int used = 0;
-  Tag(this.id, this.name);
+  bool is_artist = false;
+  Tag(this.id, this.name, this.is_artist);
 
   Tag.fromJson(Map<String, dynamic> json)
       : name = json['n'],
         used = json['u'],
+        is_artist = json['a'],
         id = json['i'];
-  Map<String, dynamic> toJson(Tag value) => {'n': value.name, 'u': value.used, 'i': value.id};
+  Map<String, dynamic> toJson(Tag value) =>
+      {'n': value.name, 'u': value.used, 'a': is_artist, 'i': value.id};
 }
 
-Future<int> CreateTag(name, [int? newid]) async {
+Future<int> CreateTag(name) async {
   for (Tag t in Tags.values) {
     if (t.name == name) {
       return t.id;
@@ -153,15 +158,41 @@ Future<int> CreateTag(name, [int? newid]) async {
   int time = DateTime.now().millisecondsSinceEpoch;
 
   await database.transaction((txn) async {
-    id = await txn.rawInsert(
-        'INSERT INTO Tags(name, lastused) VALUES("' + name + '",' + time.toString() + ')');
+    id = await txn.rawInsert('INSERT INTO Tags(name, is_artist, lastused) VALUES("' +
+        name +
+        '",' +
+        true.toString() +
+        '",' +
+        time.toString() +
+        ')');
   });
 
-  if (newid != -1) {
-    await database.rawUpdate('UPDATE Tags SET id = ? WHERE id = ?', [newid, id]);
+  Tags[id] = Tag(id, name, true);
+  return id;
+}
+
+Future<int> CreatePlaylistTag(name) async {
+  for (Tag t in Tags.values) {
+    if (t.name == name) {
+      return t.id;
+    }
   }
 
-  Tags[id] = Tag(id, name);
+  int id = -1;
+  name = name.trim();
+  int time = DateTime.now().millisecondsSinceEpoch;
+
+  await database.transaction((txn) async {
+    id = await txn.rawInsert('INSERT INTO Tags(name, is_artist, lastused) VALUES("' +
+        name +
+        '",' +
+        false.toString() +
+        '",' +
+        time.toString() +
+        ')');
+  });
+
+  Tags[id] = Tag(id, name, false);
   return id;
 }
 
@@ -220,6 +251,26 @@ class Song {
   bool blacklisted = false;
   List tags = [];
   Song(this.id, this.path);
+
+  Song.fromJson(Map<String, dynamic> json)
+      : path = json['p'],
+        filename = json['f'],
+        title = json['t'],
+        interpret = json['i'],
+        featuring = json['fe'],
+        edited = json['e'],
+        blacklisted = json['b'],
+        tags = json['ta'];
+  Map<String, dynamic> toJson(Song value) => {
+        'p': value.path,
+        'f': value.filename,
+        't': value.title,
+        'i': value.interpret,
+        'fe': value.featuring,
+        'e': value.edited,
+        'b': value.blacklisted,
+        'ta': value.tags
+      };
 }
 
 Future<bool> CreateSong(String path) async {
@@ -767,8 +818,8 @@ Future<void> DeleteAllTags() async {
   Tags = {};
 }
 
-Future<void> ImportOldDB(reload, MyAudioHandler audiohandler) async {
-  print("Deleting Old");
+Future<void> ImportFromFile(reload, MyAudioHandler audiohandler) async {
+  print("Deleting Current Stuff");
 
   await DeleteAllSongs();
   await DeleteAllTags();
@@ -781,11 +832,15 @@ Future<void> ImportOldDB(reload, MyAudioHandler audiohandler) async {
   try {
     print("Loading Tags");
     await File(appDocDirectory + '/tags.json').create(recursive: true).then((File file) async {
-      await file.readAsString().then((String contents) {
+      await file.readAsString().then((String contents) async {
         if (contents.isNotEmpty) {
-          jsonDecode(contents).forEach((key, value) async {
+          await jsonDecode(contents).forEach((key, value) async {
             print(value["n"].toString() + value["i"].toString());
-            await CreateTag(value["n"], value["i"]);
+            if (value["a"] == 0) {
+              await CreatePlaylistTag(value["n"]);
+            } else {
+              await CreateTag(value["n"]);
+            }
             print("Tag ${value["n"]} created");
           });
         } else
@@ -801,10 +856,10 @@ Future<void> ImportOldDB(reload, MyAudioHandler audiohandler) async {
   try {
     print("Loading Songs");
     await File(appDocDirectory + '/songs.json').create(recursive: true).then((File file) async {
-      await file.readAsString().then((String contents) {
+      await file.readAsString().then((String contents) async {
         print(contents);
         if (contents.isNotEmpty) {
-          jsonDecode(contents).forEach((key, value) async {
+          await jsonDecode(contents).forEach((key, value) async {
             if (FindSongByFilename(value["f"]) == null) {
               await CreateSong(value["p"]);
 
@@ -840,14 +895,13 @@ Future<void> ImportOldDB(reload, MyAudioHandler audiohandler) async {
   try {
     // Load Config
     await File(appDocDirectory + '/config.json').create(recursive: true).then((File file) async {
-      await file.readAsString().then((String contents) {
+      await file.readAsString().then((String contents) async {
         if (contents.isNotEmpty) {
-          jsonDecode(contents).forEach((key, value) {
+          await jsonDecode(contents).forEach((key, value) {
             if (key == "SearchPaths") {
               Config["SearchPaths"] = value;
             } else if (key == "Playlist") {
               List playlist = [];
-
               value.forEach((element) {
                 if (FindSongByFilename(element) != null) {
                   playlist.add(FindSongByFilename(element)!.id);
@@ -869,18 +923,8 @@ Future<void> ImportOldDB(reload, MyAudioHandler audiohandler) async {
   await Future.delayed(const Duration(seconds: 5));
   print("Import Done");
 
-  UpdateVersion("2");
-
   Future.delayed(const Duration(seconds: 1), () {
     UpdateAllTags();
     audiohandler.LoadPlaylist(reload);
   });
 }
-
-/*
-
-Change to mysql database, so it wont be deleted on reinstall / appupdate, where hosting?
-
-Add Export Button to old file format so the import button does sth
-
- */
