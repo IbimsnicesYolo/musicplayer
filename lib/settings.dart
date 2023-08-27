@@ -133,6 +133,12 @@ class Tag {
   int id = -1;
   int used = 0;
   Tag(this.id, this.name);
+
+  Tag.fromJson(Map<String, dynamic> json)
+      : name = json['n'],
+        used = json['u'],
+        id = json['i'];
+  Map<String, dynamic> toJson(Tag value) => {'n': value.name, 'u': value.used, 'i': value.id};
 }
 
 Future<int> CreateTag(name, [int? newid]) async {
