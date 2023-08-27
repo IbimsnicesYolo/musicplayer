@@ -83,7 +83,7 @@ class SongDrawer extends Drawer {
                     Navigator.of(context)
                         .push(
                           MaterialPageRoute(
-                            builder: (_) => CriticalButtons(Pl: Playlist),
+                            builder: (_) => CriticalButtons(Pl: Playlist, reload: c),
                           ),
                         )
                         .then((value) => c(() {}));
@@ -610,8 +610,9 @@ class _ShowBlacklist extends State<ShowBlacklist> {
 }
 
 class CriticalButtons extends StatefulWidget {
-  const CriticalButtons({Key? key, required this.Pl}) : super(key: key);
+  const CriticalButtons({Key? key, required this.Pl, required this.reload}) : super(key: key);
 
+  final reload;
   final MyAudioHandler Pl;
   @override
   State<CriticalButtons> createState() => _ShowTagDeletion();
@@ -676,6 +677,28 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                   Navigator.pop(context);
                 },
                 child: const Text("Reset Config", style: TextStyle(fontSize: 30)),
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.red,
+                ),
+                onPressed: () {
+                  widget.Pl.Clear();
+                  ImportFromFile(widget.Pl, widget.Pl);
+                  Navigator.pop(context);
+                },
+                child: const Text("Import From File", style: TextStyle(fontSize: 30)),
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.red,
+                ),
+                onPressed: () {
+                  widget.Pl.Clear();
+                  ExportToFile(widget.Pl, widget.Pl);
+                  Navigator.pop(context);
+                },
+                child: const Text("Export to File", style: TextStyle(fontSize: 30)),
               ),
             ],
           ),

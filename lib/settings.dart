@@ -25,11 +25,6 @@ void AddSearchPath(String path) {
       [jsonEncode(Config["SearchPaths"]), "SearchPaths"]);
 }
 
-void UpdateVersion(newVersion) {
-  Config["Version"] = newVersion;
-  database.rawUpdate('UPDATE Config SET value = ? WHERE name = ?', [Config["Version"], "Version"]);
-}
-
 void ResetConfig() {
   Config = {
     "HomeColor": HomeColor.value,
@@ -111,23 +106,6 @@ void LoadData(reload, MyAudioHandler audioHandler, context, istart, iend) async 
     UpdateAllTags();
     audioHandler.LoadPlaylist(reload);
   });
-
-  if (Config["Version"] == "1") {
-    Future.delayed(const Duration(seconds: 10), () {
-      final snackBar = SnackBar(
-        backgroundColor: Colors.green,
-        content: const Text("Import old Stuff?"),
-        action: SnackBarAction(
-          label: 'Import',
-          onPressed: () async {
-            istart();
-            await ImportOldDB(iend, audioHandler);
-          },
-        ),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    });
-  }
 }
 
 class Tag {
@@ -927,4 +905,34 @@ Future<void> ImportFromFile(reload, MyAudioHandler audiohandler) async {
     UpdateAllTags();
     audiohandler.LoadPlaylist(reload);
   });
+}
+
+Future<void> ExportToFile(reload, MyAudioHandler audiohandler) async {
+  print("Starting Exprt");
+  String appDocDirectory = "storage/emulated/0/Music";
+
+  try {
+    print("Exporting Tags");
+    await Future.delayed(const Duration(seconds: 10));
+    print("Tags Exported");
+  } catch (e) {
+    print(e);
+  }
+
+  try {
+    print("Exporting Songs");
+
+    await Future.delayed(const Duration(seconds: 10));
+    print("Songs Exported");
+  } catch (e) {
+    print(e);
+  }
+
+  try {
+    print("Exporting Config");
+  } catch (e) {
+    print(e);
+  }
+
+  print("Export Done");
 }
