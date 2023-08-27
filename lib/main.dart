@@ -125,7 +125,7 @@ class _MainSite extends State<MainSite> {
                   if (reverse > 3) {
                     if (side == 2) {
                       StringInput(context, "Create new Tag", "Create", "Cancel", (String s) async {
-                        await CreateTag(s);
+                        await CreatePlaylistTag(s);
                         setState(() {});
                       }, (String s) {}, false, "", "Tag Name");
                     }

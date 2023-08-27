@@ -77,7 +77,13 @@ IconButton buildActions(
 ListView buildContent(
     BuildContext context, void Function(void Function()) c, MyAudioHandler Playlist, int reverse) {
   UpdateAllTags();
-  List sortedtags = Tags.values.toList();
+  List sortedtags = [];
+  Tags.forEach((key, value) {
+    if (value.is_artist == false) {
+      sortedtags.add(value);
+    }
+  });
+
   sortedtags.sort((a, b) {
     return a.used.compareTo(b.used);
   });
@@ -87,14 +93,28 @@ ListView buildContent(
 
     // reversed = 1 sorted by used, lowest first
   } else if (reverse == 2) {
+    sortedtags = [];
+    Tags.forEach((key, value) {
+      if (value.is_artist == true) {
+        sortedtags.add(value);
+      }
+    });
+
     // sorted by name, a-z
     sortedtags.sort((a, b) {
-      return a.name.compareTo(b.name);
+      return a.used.compareTo(b.used);
     });
   } else if (reverse == 3) {
+    sortedtags = [];
+    Tags.forEach((key, value) {
+      if (value.is_artist == true) {
+        sortedtags.add(value);
+      }
+    });
+
     // sorted by name, z-a
     sortedtags.sort((a, b) {
-      return a.name.compareTo(b.name);
+      return a.used.compareTo(b.used);
     });
     sortedtags = sortedtags.reversed.toList();
   }
@@ -288,6 +308,7 @@ ListTile TagTile(
           if (result == 4) {
             // Delete
             await DeleteTag(key);
+            Tags.remove(key);
             c(() {});
           }
         },

@@ -127,8 +127,17 @@ class TagChoose extends StatefulWidget {
 
 class _TagChoose extends State<TagChoose> {
   TextEditingController create = TextEditingController();
+  List non_artist_tags = [];
+
   @override
   Widget build(BuildContext context) {
+    non_artist_tags = [];
+    Tags.forEach((key, value) {
+      if (value.is_artist == false) {
+        non_artist_tags.add(value);
+      }
+    });
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -164,47 +173,32 @@ class _TagChoose extends State<TagChoose> {
             StyledElevatedButton(
                 onPressed: () async {
                   if (create.text.trim() != "") {
-                    int id = await CreateTag(create.text.trim());
+                    int id = await CreatePlaylistTag(create.text.trim());
                     Navigator.of(context).pop(id);
                   }
                 },
                 child: const Text("Create Tag")),
             if (create.text.trim() == "")
-              for (int i = 0; i < Tags.length; i = i + 2)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    if (Tags.containsKey(i))
-                      StyledElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(i);
-                        },
-                        child: Text(Tags[i]!.name),
-                      ),
-                    if (Tags.length > i + 1 && Tags.containsKey(i + 1))
-                      StyledElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(i + 1);
-                        },
-                        child: Text(Tags[i + 1]!.name),
-                      ),
-                  ],
+              for (int i = 0; i < non_artist_tags.length; i++)
+                StyledElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(non_artist_tags[i].id);
+                  },
+                  child: Text(Tags[non_artist_tags[i].id]?.name ?? "weird shit"),
                 ),
             if (create.text.trim() != "")
-              for (int i = 0; i < Tags.length; i++)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    if (Tags.containsKey(i) &&
-                        Tags[i]!.name.toLowerCase().contains(create.text.toLowerCase()))
-                      StyledElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(i);
-                        },
-                        child: Text(Tags[i]!.name),
-                      ),
-                  ],
-                ),
+              for (int i = 0; i < non_artist_tags.length; i++)
+                if (Tags[non_artist_tags[i].id]
+                        ?.name
+                        .toLowerCase()
+                        .contains(create.text.toLowerCase()) ??
+                    false)
+                  StyledElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(non_artist_tags[i].id);
+                    },
+                    child: Text(Tags[non_artist_tags[i].id]?.name ?? "weird shit"),
+                  ),
           ],
         ),
       ),
