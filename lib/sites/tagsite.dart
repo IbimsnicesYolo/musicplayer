@@ -33,8 +33,8 @@ IconButton buildActions(
                           if (ShouldShowTag(key, search))
                             Dismissible(
                               key: Key(key.toString()),
-                              onDismissed: (direction) {
-                                DeleteTag(key);
+                              onDismissed: (direction) async {
+                                await DeleteTag(key);
                                 update(() {});
                               },
                               background: Container(
@@ -191,7 +191,7 @@ ListTile TagTile(
     },
     trailing: Row(mainAxisSize: MainAxisSize.min, children: [
       PopupMenuButton(
-        onSelected: (result) {
+        onSelected: (result) async {
           if (result == 0) {
             // Change Name
             StringInput(context, "Rename Tag: $key", "Save", "Cancel", (String s) {
@@ -287,7 +287,7 @@ ListTile TagTile(
           }
           if (result == 4) {
             // Delete
-            DeleteTag(key);
+            await DeleteTag(key);
             c(() {});
           }
         },

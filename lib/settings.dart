@@ -52,8 +52,9 @@ Map<int, Tag> Tags = <int, Tag>{};
 Map<int, Song> Songs = <int, Song>{};
 
 // ../../../../../storage/emulated/0/Documents/
-void LoadData(reload, MyAudioHandler audioHandler, context, istart, iend) async {
-  database = await openDatabase("music.db", version: 1, onCreate: (Database db, int version) async {
+void LoadData(MyAudioHandler audioHandler, context) async {
+  database =
+      await openDatabase("musicplayer.db", version: 1, onCreate: (Database db, int version) async {
     // When creating the db, create the table
     await db.execute('CREATE TABLE Config (name STRING, value STRING)');
     // Load Config
@@ -85,7 +86,7 @@ void LoadData(reload, MyAudioHandler audioHandler, context, istart, iend) async 
 
   List<Map> alltags = await database.rawQuery('SELECT * FROM Tags');
   alltags.forEach((element) {
-    Tags[element["id"]] = Tag(element["id"], element["name"], element["is_artist"]);
+    Tags[element["id"]] = Tag(element["id"], element["name"], element["is_artist"] == 1);
     Tags[element["id"]]!.used = element["lastused"];
   });
 
@@ -104,7 +105,7 @@ void LoadData(reload, MyAudioHandler audioHandler, context, istart, iend) async 
 
   Future.delayed(const Duration(seconds: 1), () {
     UpdateAllTags();
-    audioHandler.LoadPlaylist(reload);
+    audioHandler.LoadPlaylist();
   });
 }
 
@@ -140,7 +141,7 @@ Future<int> CreateTag(name) async {
         name +
         '",' +
         true.toString() +
-        '",' +
+        ',' +
         time.toString() +
         ')');
   });
@@ -165,7 +166,7 @@ Future<int> CreatePlaylistTag(name) async {
         name +
         '",' +
         false.toString() +
-        '",' +
+        ',' +
         time.toString() +
         ')');
   });
@@ -185,8 +186,8 @@ void UpdateTagName(tag, name) async {
   database.rawUpdate('UPDATE Tags SET name = ?, lastused = ? WHERE id = ?', [name, time, tag]);
 }
 
-void DeleteTag(int key) {
-  database.rawDelete('DELETE FROM Tags WHERE id = ?', [key]);
+Future<void> DeleteTag(int key) async {
+  await database.rawDelete('DELETE FROM Tags WHERE id = ?', [key]);
 }
 
 void UpdateAllTags() {
@@ -384,16 +385,16 @@ void SetSongTags(int key, List<int> Tagids) {
   database.rawUpdate('UPDATE Songs SET tags = ? WHERE id = ?', [jsonEncode(Tagids), key]);
 }
 
-void DeleteSong(int key) {
-  database.rawDelete('DELETE FROM Songs WHERE id = ?', [key]);
+Future<void> DeleteSong(int key) async {
+  await database.rawDelete('DELETE FROM Songs WHERE id = ?', [key]);
   Songs.remove(key);
 }
 
 // Check if file in Song path still exists
-void ValidateSongs() async {
-  Songs.forEach((k, v) {
+Future<void> ValidateSongs() async {
+  Songs.forEach((k, v) async {
     if (!File(v.path).existsSync()) {
-      DeleteSong(k);
+      await DeleteSong(k);
     }
   });
 }
@@ -415,6 +416,7 @@ List<Song> AllNotEditedSongs() {
 
 class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   late void Function(void Function()) update;
+  late void Function() done;
   List<Song> songs = [];
   int last_added_pos = 0;
   bool paused = false;
@@ -445,8 +447,9 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     return false;
   }
 
-  void SetUpdate(void Function(void Function()) c) {
+  void SetUpdate(void Function(void Function()) c, void Function() doneL) {
     update = c;
+    done = doneL;
   }
 
   void AddToPlaylist(Song song) {
@@ -599,7 +602,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     update(() {});
   }
 
-  Future<void> LoadPlaylist(done) async {
+  Future<void> LoadPlaylist() async {
     List savedsongs = Config["Playlist"];
     if (savedsongs.isNotEmpty) {
       savedsongs.forEach((element) async {
@@ -774,33 +777,33 @@ int? GetIdBySongPath(String path) {
   return id;
 }
 
-Future<void> DeleteAllSongs() async {
+void DeleteAllSongs() async {
   List<int> keys = [];
-  Songs.forEach((key, value) async {
+  Songs.forEach((key, value) {
     keys.add(key);
   });
-  keys.forEach((element) {
-    DeleteSong(element);
+  keys.forEach((element) async {
+    await DeleteSong(element);
   });
   Songs = {};
 }
 
-Future<void> DeleteAllTags() async {
+void DeleteAllTags() async {
   List<int> keys = [];
-  Tags.forEach((key, value) async {
+  Tags.forEach((key, value) {
     keys.add(key);
   });
-  keys.forEach((element) {
-    DeleteTag(element);
+  keys.forEach((element) async {
+    await DeleteTag(element);
   });
   Tags = {};
 }
 
-Future<void> ImportFromFile(reload, MyAudioHandler audiohandler) async {
+Future<void> ImportFromFile(MyAudioHandler audiohandler) async {
   print("Deleting Current Stuff");
 
-  await DeleteAllSongs();
-  await DeleteAllTags();
+  DeleteAllSongs();
+  DeleteAllTags();
 
   Config["Playlist"] = [];
 
@@ -859,7 +862,7 @@ Future<void> ImportFromFile(reload, MyAudioHandler audiohandler) async {
               }
             }
           });
-          ValidateSongs();
+          await ValidateSongs();
         } else
           print("No Songs");
       });
@@ -876,19 +879,18 @@ Future<void> ImportFromFile(reload, MyAudioHandler audiohandler) async {
       await file.readAsString().then((String contents) async {
         if (contents.isNotEmpty) {
           await jsonDecode(contents).forEach((key, value) {
-            if (key == "SearchPaths") {
-              Config["SearchPaths"] = value;
-            } else if (key == "Playlist") {
-              List playlist = [];
-              value.forEach((element) {
+            if (key == "Playlist") {
+              List filenames = value;
+              List newids = [];
+              filenames.forEach((element) {
                 if (FindSongByFilename(element) != null) {
-                  playlist.add(FindSongByFilename(element)!.id);
+                  newids.add(FindSongByFilename(element)!.id);
                 }
               });
 
-              print("Old Playlist: $value");
-              print("New Playlist: $playlist");
-              Config["Playlist"] = playlist;
+              Config[key] = newids;
+            } else {
+              Config[key] = value;
             }
           });
         }
@@ -901,19 +903,35 @@ Future<void> ImportFromFile(reload, MyAudioHandler audiohandler) async {
   await Future.delayed(const Duration(seconds: 5));
   print("Import Done");
 
-  Future.delayed(const Duration(seconds: 1), () {
+  Future.delayed(const Duration(seconds: 1), () async {
     UpdateAllTags();
-    audiohandler.LoadPlaylist(reload);
+    await audiohandler.LoadPlaylist();
   });
 }
 
-Future<void> ExportToFile(reload, MyAudioHandler audiohandler) async {
+Future<void> ExportToFile(MyAudioHandler audiohandler) async {
   print("Starting Exprt");
   String appDocDirectory = "storage/emulated/0/Music";
 
   try {
     print("Exporting Tags");
-    await Future.delayed(const Duration(seconds: 10));
+
+    String json = "{";
+    bool notagsexisting = true;
+
+    Tags.forEach((k, v) {
+      notagsexisting = false;
+      json += '"' + k.toString() + '":' + jsonEncode(v.toJson(v)) + ",";
+    });
+
+    if (notagsexisting) {
+      json = "{}";
+    } else {
+      json = json.substring(0, json.length - 1) + "}";
+      // remove last comma, close json
+    }
+    File(appDocDirectory + '/tags.json').writeAsString(json);
+
     print("Tags Exported");
   } catch (e) {
     print(e);
@@ -921,6 +939,23 @@ Future<void> ExportToFile(reload, MyAudioHandler audiohandler) async {
 
   try {
     print("Exporting Songs");
+
+    String json = "{";
+    bool nosongsfound = true;
+    await Future.delayed(Duration(milliseconds: 10));
+    for (var song in Songs.values) {
+      await Future.delayed(Duration(milliseconds: 1));
+      nosongsfound = false;
+      json += '"' + song.filename + '":' + jsonEncode(song.toJson(song)) + ",";
+    }
+
+    if (nosongsfound) {
+      json = "{}";
+    } else {
+      json = json.substring(0, json.length - 1) + "}";
+      // remove last comma, close json
+    }
+    File(appDocDirectory + '/songs.json').writeAsString(json);
 
     await Future.delayed(const Duration(seconds: 10));
     print("Songs Exported");
@@ -930,6 +965,17 @@ Future<void> ExportToFile(reload, MyAudioHandler audiohandler) async {
 
   try {
     print("Exporting Config");
+    List ids = Config["Playlist"];
+    List filenames = [];
+    ids.forEach((element) {
+      filenames.add(Songs[element]!.filename);
+    });
+    Config["Playlist"] = filenames;
+    File(appDocDirectory + '/config.json').create(recursive: true).then((File file) {
+      file.writeAsString(jsonEncode(Config));
+    });
+    Config["Playlist"] = ids;
+    print("Config Exported");
   } catch (e) {
     print(e);
   }

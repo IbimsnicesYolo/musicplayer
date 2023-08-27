@@ -12,10 +12,12 @@ import "songtile.dart";
 import "string_input.dart";
 
 class SongDrawer extends Drawer {
-  const SongDrawer({Key? key, required this.c, required this.Playlist}) : super(key: key);
+  const SongDrawer({Key? key, required this.c, required this.Playlist, required this.done})
+      : super(key: key);
 
   final MyAudioHandler Playlist;
   final void Function(void Function()) c;
+  final done;
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +85,7 @@ class SongDrawer extends Drawer {
                     Navigator.of(context)
                         .push(
                           MaterialPageRoute(
-                            builder: (_) => CriticalButtons(Pl: Playlist, reload: c),
+                            builder: (_) => CriticalButtons(Pl: Playlist),
                           ),
                         )
                         .then((value) => c(() {}));
@@ -486,11 +488,11 @@ class _ShowConfig extends State<ShowConfig> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            for (String key in Config["Playlist"])
+                            for (int id in Config["Playlist"])
                               Padding(
                                 padding:
                                     const EdgeInsets.only(top: 10, left: 5, right: 5, bottom: 0),
-                                child: Text(key),
+                                child: Text(Songs[id]!.title),
                               ),
                           ],
                         ),
@@ -610,9 +612,8 @@ class _ShowBlacklist extends State<ShowBlacklist> {
 }
 
 class CriticalButtons extends StatefulWidget {
-  const CriticalButtons({Key? key, required this.Pl, required this.reload}) : super(key: key);
+  const CriticalButtons({Key? key, required this.Pl}) : super(key: key);
 
-  final reload;
   final MyAudioHandler Pl;
   @override
   State<CriticalButtons> createState() => _ShowTagDeletion();
@@ -647,11 +648,10 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                     backgroundColor: Colors.red,
                   ),
                   onPressed: () {
-                    Tags = {};
+                    DeleteAllTags();
                     Songs.forEach((key, value) {
                       ClearSongTags(key);
                     });
-                    UpdateAllTags();
                     Navigator.pop(context);
                   },
                   child: const Text("Delete All Tags", style: TextStyle(fontSize: 30))),
@@ -661,7 +661,7 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                 ),
                 onPressed: () {
                   widget.Pl.Clear();
-                  Songs = {};
+                  DeleteAllSongs();
                   UpdateAllTags();
                   Navigator.pop(context);
                 },
@@ -682,9 +682,9 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.red,
                 ),
-                onPressed: () {
+                onPressed: () async {
                   widget.Pl.Clear();
-                  ImportFromFile(widget.Pl, widget.Pl);
+                  await ImportFromFile(widget.Pl);
                   Navigator.pop(context);
                 },
                 child: const Text("Import From File", style: TextStyle(fontSize: 30)),
@@ -693,9 +693,8 @@ class _ShowTagDeletion extends State<CriticalButtons> {
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.red,
                 ),
-                onPressed: () {
-                  widget.Pl.Clear();
-                  ExportToFile(widget.Pl, widget.Pl);
+                onPressed: () async {
+                  await ExportToFile(widget.Pl);
                   Navigator.pop(context);
                 },
                 child: const Text("Export to File", style: TextStyle(fontSize: 30)),

@@ -78,10 +78,10 @@ PopupMenuButton SongTile(BuildContext context, Song s, void Function(void Functi
                 child: const Text("No"),
               ),
               TextButton(
-                onPressed: () {
+                onPressed: () async {
                   Navigator.of(context).pop(true);
                   Playlist.RemoveSong(s);
-                  DeleteSong(s.id);
+                  await DeleteSong(s.id);
                 },
                 child: const Text("Yes"),
               ),

@@ -40,7 +40,7 @@ class _MainSite extends State<MainSite> {
 
   @override
   void initState() {
-    _audioHandler.SetUpdate(update);
+    _audioHandler.SetUpdate(update, doneloading);
     super.initState();
   }
 
@@ -55,20 +55,6 @@ class _MainSite extends State<MainSite> {
         c();
       },
     );
-  }
-
-  void importstart() {
-    setState(() {
-      importing = true;
-      loaded = false;
-    });
-  }
-
-  void import_end() {
-    setState(() {
-      importing = false;
-      loaded = true;
-    });
   }
 
   void doneloading() {
@@ -93,7 +79,7 @@ class _MainSite extends State<MainSite> {
               setState(() {});
             });
           } else {
-            LoadData(doneloading, _audioHandler, context, importstart, import_end);
+            LoadData(_audioHandler, context);
           }
         });
       }
@@ -179,7 +165,7 @@ class _MainSite extends State<MainSite> {
             ),
           ],
         ),
-        drawer: Side.SongDrawer(c: update, Playlist: _audioHandler),
+        drawer: Side.SongDrawer(c: update, Playlist: _audioHandler, done: doneloading),
       ),
     );
   }
