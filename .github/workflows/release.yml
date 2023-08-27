@@ -1,9 +1,6 @@
 name: Github Release
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+on: push
+
 
 jobs:
   build-android:
@@ -34,42 +31,10 @@ jobs:
         with:
           name: apk
           path: build/app/outputs/flutter-apk/app-release.apk
-  build-windows:
-    name: Create Windows build
-    runs-on: windows-latest
-    steps:
-      - name: Clone Flutter repository
-        uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
-        with:
-         flutter-version: '3.0.5'
-      - run: flutter pub get
-      - run: flutter config --enable-windows-desktop
-      - run: flutter channel master
-      - run: flutter upgrade
-      - run: flutter config --enable-windows-desktop
-      - run: flutter doctor
-      - run: flutter pub get
-      - run: flutter build windows
-      # Package the build.
-      - name: Copy VC redistributables to release directory for Windows
-        run: |
-          Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\msvcp140.dll') .
-          Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\vcruntime140.dll') .
-          Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\vcruntime140_1.dll') .
-        working-directory: build\windows\runner\Release
-      - name: Compress build for Windows
-        run: compress-archive -Path * -DestinationPath ..\..\..\windows.zip
-        working-directory: build\windows\runner\Release
-      - name: Upload Build
-        uses: actions/upload-artifact@v1
-        with:
-          name: win
-          path: build\windows.zip
 
   release:
-    name: Release Both
-    needs: [build-windows, build-android]
+    name: Release
+    needs: [build-android]
     runs-on: ubuntu-latest
     steps:
       - name: Get the current branch name
@@ -80,14 +45,9 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: apk
-      - name: Download Win from build
-        uses: actions/download-artifact@v1
-        with:
-          name: win
       - run: dir -R
       - run: mkdir -v upload
       - run: mv apk/app-release.apk upload/app.apk
-      - run: mv win/windows.zip upload/windows.zip
       - name: Upload Programm to release
         uses: svenstaro/upload-release-action@v2
         with:
