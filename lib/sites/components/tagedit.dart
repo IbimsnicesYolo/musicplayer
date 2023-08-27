@@ -293,7 +293,7 @@ class _ArtistTagChoose extends State<ArtistTagChoose> {
             StyledElevatedButton(
                 onPressed: () async {
                   if (create.text.trim() != "") {
-                    int id = await CreatePlaylistTag(create.text.trim());
+                    int id = await CreateTag(create.text.trim());
                     Navigator.of(context).pop(id);
                   }
                 },
