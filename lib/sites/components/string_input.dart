@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import "../../settings.dart" as CFG;
+
+import "../../settings.dart";
 import "elevatedbutton.dart";
 // Possible Overflow because _textFieldController never gets disposed
 // Hint Text is constantly Tag Name
@@ -14,8 +15,8 @@ void StringInput(
     bool clearbutton,
     String value,
     String htext) {
-  TextEditingController _textFieldController = TextEditingController();
-  _textFieldController.text = value;
+  TextEditingController textFieldController = TextEditingController();
+  textFieldController.text = value;
 
   Navigator.of(context).push(
     MaterialPageRoute(
@@ -25,45 +26,44 @@ void StringInput(
           title: Text(TitlePopup),
           content: TextField(
             onChanged: (value) {},
-            controller: _textFieldController,
+            controller: textFieldController,
             decoration: InputDecoration(hintText: htext),
           ),
           actions: <Widget>[
             if (clearbutton)
               TextButton(
                 style: TextButton.styleFrom(
-                  primary: Colors.white,
+                  foregroundColor: Colors.white,
                   backgroundColor: Colors.lightGreenAccent,
                 ),
                 child: const Text("Strip ()"),
                 // replace all () with ""
                 onPressed: () {
-                  _textFieldController.text = _textFieldController.text
-                      .replaceAll(RegExp(r"\(.*\)"), "")
-                      .trim();
+                  textFieldController.text =
+                      textFieldController.text.replaceAll(RegExp(r"\(.*\)"), "").trim();
                 },
               ),
             TextButton(
               style: TextButton.styleFrom(
-                primary: Colors.white,
+                foregroundColor: Colors.white,
                 backgroundColor: Colors.red,
               ),
               child: Text(Button2),
               onPressed: () {
-                OnPressed2(_textFieldController.text.trim());
-                _textFieldController.clear();
+                OnPressed2(textFieldController.text.trim());
+                textFieldController.clear();
                 Navigator.pop(context);
               },
             ),
             TextButton(
               style: TextButton.styleFrom(
-                primary: Colors.white,
+                foregroundColor: Colors.white,
                 backgroundColor: Colors.green,
               ),
               child: Text(Button1),
               onPressed: () {
-                OnPressed1(_textFieldController.text.trim());
-                _textFieldController.clear();
+                OnPressed1(textFieldController.text.trim());
+                textFieldController.clear();
                 Navigator.pop(context);
               },
             ),
@@ -95,8 +95,7 @@ class StringInputExpanded extends StatefulWidget {
 class _StringInputExpanded extends State<StringInputExpanded> {
   @override
   Widget build(BuildContext context) {
-    TextEditingController _textFieldController =
-        TextEditingController(text: widget.Text);
+    TextEditingController textFieldController = TextEditingController(text: widget.Text);
 
     List<String> possibleinputs = [];
 
@@ -113,78 +112,68 @@ class _StringInputExpanded extends State<StringInputExpanded> {
         possibleinputs.add(element);
       });
     });
-    possibleinputs.add("Unknown");
 
     possibleinputs = possibleinputs.toSet().toList();
     return MaterialApp(
       theme: ThemeData.dark(),
       home: SafeArea(
         child: Scaffold(
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
           floatingActionButton: FloatingActionButton(
-            backgroundColor: CFG.ContrastColor,
-            onPressed: () =>
-                Navigator.of(context).pop(_textFieldController.text.trim()),
+            backgroundColor: ContrastColor,
+            onPressed: () => Navigator.of(context).pop(textFieldController.text.trim()),
             child: const Icon(Icons.arrow_back),
           ),
           appBar: AppBar(
             title: Text(widget.Title),
-            backgroundColor: CFG.HomeColor,
+            backgroundColor: HomeColor,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
-              onPressed: () =>
-                  Navigator.of(context).pop(_textFieldController.text.trim()),
+              onPressed: () => Navigator.of(context).pop(textFieldController.text.trim()),
             ),
           ),
-          body: Container(
-            child: ListView(
-              children: <Widget>[
-                ListTile(
-                  title: TextField(
-                    controller: _textFieldController,
-                    decoration: InputDecoration(
-                        suffixIcon: IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: () {
-                            _textFieldController.clear();
-                          },
-                        ),
-                        border: OutlineInputBorder(),
-                        labelText: 'New Name'),
-                  ),
+          body: ListView(
+            children: <Widget>[
+              ListTile(
+                title: TextField(
+                  controller: textFieldController,
+                  decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          textFieldController.clear();
+                        },
+                      ),
+                      border: const OutlineInputBorder(),
+                      labelText: 'New Name'),
                 ),
-                ListTile(
-                  title: Text(widget.additionalinfos),
-                  onTap: () {
-                    _textFieldController.text += " " + widget.additionalinfos;
-                  },
+              ),
+              ListTile(
+                title: Text(widget.additionalinfos),
+                onTap: () {
+                  textFieldController.text += " ${widget.additionalinfos}";
+                },
+              ),
+              for (int i = 0; i < possibleinputs.length; i = i + 2)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    StyledElevatedButton(
+                      child: Text(possibleinputs[i]),
+                      onPressed: () {
+                        textFieldController.text += " ${possibleinputs[i]}";
+                      },
+                    ),
+                    if (possibleinputs.length > i + 1)
+                      StyledElevatedButton(
+                        child: Text(possibleinputs[i + 1]),
+                        onPressed: () {
+                          textFieldController.text += " ${possibleinputs[i + 1]}";
+                        },
+                      ),
+                  ],
                 ),
-                for (int i = 0; i < possibleinputs.length; i = i + 2)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      if (possibleinputs[i] != null)
-                        StyledElevatedButton(
-                          child: Text(possibleinputs[i]),
-                          onPressed: () {
-                            _textFieldController.text +=
-                                " " + possibleinputs[i];
-                          },
-                        ),
-                      if (possibleinputs.length > i + 1 &&
-                          possibleinputs[i + 1] != null)
-                        StyledElevatedButton(
-                          child: Text(possibleinputs[i + 1]),
-                          onPressed: () {
-                            _textFieldController.text +=
-                                " " + possibleinputs[i + 1];
-                          },
-                        ),
-                    ],
-                  ),
-              ],
-            ),
+            ],
           ),
         ),
       ),

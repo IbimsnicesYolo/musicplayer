@@ -2,9 +2,7 @@ import "package:audio_service/audio_service.dart";
 import 'package:flutter/material.dart';
 import "package:permission_handler/permission_handler.dart";
 
-import "classes/playlist.dart";
-import "classes/tag.dart";
-import "settings.dart" as CFG;
+import "settings.dart";
 import "sites/allsongs.dart" as AllSongs;
 import "sites/components/drawer.dart" as Side;
 import 'sites/components/string_input.dart';
@@ -14,21 +12,10 @@ import "sites/tagsite.dart" as TagSite;
 
 late MyAudioHandler _audioHandler;
 
-void checkpermissions() async {
-  PermissionStatus status = await Permission.storage.status;
-  if (!status.isGranted) {
-    await Permission.storage.request();
-  }
-  status = await Permission.manageExternalStorage.status;
-  if (!status.isGranted) {
-    await Permission.manageExternalStorage.request();
-  }
-}
-
 Future<void> main() async {
   _audioHandler = await AudioService.init(
     builder: () => MyAudioHandler(),
-    config: AudioServiceConfig(
+    config: const AudioServiceConfig(
       androidNotificationChannelId: 'com.ibimsnicesyolo.musicplayer',
       androidNotificationChannelName: 'Music Player',
       androidNotificationOngoing: true,
@@ -36,8 +23,7 @@ Future<void> main() async {
       androidNotificationClickStartsActivity: true,
     ),
   );
-  runApp(MaterialApp(theme: ThemeData.dark(), home: MainSite()));
-  checkpermissions();
+  runApp(MaterialApp(theme: ThemeData.dark(), home: const MainSite()));
 }
 
 class MainSite extends StatefulWidget {
@@ -50,10 +36,11 @@ class _MainSite extends State<MainSite> {
   int side = 0;
   int reverse = 0;
   bool loaded = false;
+  bool importing = false;
 
   @override
   void initState() {
-    _audioHandler.SetUpdate(update);
+    _audioHandler.SetUpdate(update, doneloading);
     super.initState();
   }
 
@@ -79,8 +66,23 @@ class _MainSite extends State<MainSite> {
   @override
   Widget build(BuildContext context) {
     if (!loaded) {
-      CFG.LoadData(doneloading, _audioHandler);
-
+      if (!importing) {
+        checkpermissions().then((value) async {
+          if (!value) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text("Please allow storage permissions"),
+                duration: const Duration(seconds: 1),
+              ),
+            );
+            Future.delayed(const Duration(seconds: 5), () {
+              setState(() {});
+            });
+          } else {
+            LoadData(_audioHandler, context);
+          }
+        });
+      }
       return Scaffold(
         backgroundColor: Colors.black,
         body: Center(
@@ -117,14 +119,13 @@ class _MainSite extends State<MainSite> {
                     : AllSongs.buildContent(context, update, _audioHandler, reverse)))),
         floatingActionButton: (side == 2 || side == 3
             ? FloatingActionButton(
-                child: Icon(Icons.downloading),
+                child: const Icon(Icons.downloading),
                 onPressed: () {
                   reverse += 1;
                   if (reverse > 3) {
                     if (side == 2) {
-                      StringInput(context, "Create new Tag", "Create", "Cancel", (String s) {
-                        CreateTag(s);
-                        SaveTags();
+                      StringInput(context, "Create new Tag", "Create", "Cancel", (String s) async {
+                        await CreatePlaylistTag(s);
                         setState(() {});
                       }, (String s) {}, false, "", "Tag Name");
                     }
@@ -143,29 +144,52 @@ class _MainSite extends State<MainSite> {
           },
           items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.play_arrow),
-              backgroundColor: CFG.ContrastColor,
+              icon: const Icon(Icons.play_arrow),
+              backgroundColor: ContrastColor,
               label: "Current Song",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.music_note),
-              backgroundColor: CFG.ContrastColor,
+              icon: const Icon(Icons.music_note),
+              backgroundColor: ContrastColor,
               label: "Current Playlist",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.tag),
-              backgroundColor: CFG.ContrastColor,
+              icon: const Icon(Icons.tag),
+              backgroundColor: ContrastColor,
               label: "All Tags",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.all_inclusive_sharp),
-              backgroundColor: CFG.ContrastColor,
+              icon: const Icon(Icons.all_inclusive_sharp),
+              backgroundColor: ContrastColor,
               label: "All Songs",
             ),
           ],
         ),
-        drawer: Side.SongDrawer(c: update, Playlist: _audioHandler),
+        drawer: Side.SongDrawer(c: update, Playlist: _audioHandler, done: doneloading),
       ),
     );
   }
+}
+
+Future<bool> checkpermissions() async {
+  print("Checking permissions");
+  PermissionStatus status = await Permission.storage.status;
+  if (!status.isGranted) {
+    print("Requesting1");
+    await Permission.storage.request();
+  }
+  if (!await Permission.storage.status.isGranted) {
+    //return false;
+  }
+
+  status = await Permission.manageExternalStorage.status;
+  if (!status.isGranted) {
+    print("Requesting2");
+    await Permission.manageExternalStorage.request();
+  }
+  if (!await Permission.manageExternalStorage.status.isGranted) {
+    return false;
+  }
+
+  return true;
 }

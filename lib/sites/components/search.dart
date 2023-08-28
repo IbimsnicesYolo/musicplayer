@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../settings.dart' as CFG;
+
+import '../../settings.dart';
 
 // Search Page
 class SearchPage extends StatefulWidget {
-  SearchPage(this.content, this.s, {Key? key}) : super(key: key);
+  const SearchPage(this.content, this.s, {Key? key}) : super(key: key);
 
   final content;
-  String s;
+  final String s;
 
   @override
   State<SearchPage> createState() =>
@@ -40,10 +41,9 @@ class _SearchPageState extends State<SearchPage> {
       theme: ThemeData.dark(),
       home: SafeArea(
         child: Scaffold(
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
           floatingActionButton: FloatingActionButton(
-            backgroundColor: CFG.ContrastColor,
+            backgroundColor: ContrastColor,
             onPressed: () => Navigator.of(context).pop(),
             child: const Icon(Icons.arrow_back),
           ),
@@ -52,14 +52,14 @@ class _SearchPageState extends State<SearchPage> {
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const Icon(Icons.arrow_back),
               ),
-              backgroundColor: CFG.HomeColor,
+              backgroundColor: HomeColor,
               // The search area here
-              title: Container(
+              title: SizedBox(
                 height: 40,
                 child: Center(
                   child: TextField(
                     onChanged: (stext) {
-                      this.s = stext;
+                      s = stext;
                       setState(() {});
                     },
                     controller: myController,
@@ -68,11 +68,11 @@ class _SearchPageState extends State<SearchPage> {
                           icon: const Icon(Icons.clear),
                           onPressed: () {
                             myController.clear();
-                            this.s = "";
+                            s = "";
                             setState(() {});
                           },
                         ),
-                        border: OutlineInputBorder(),
+                        border: const OutlineInputBorder(),
                         labelText: 'Search'),
                   ),
                 ),

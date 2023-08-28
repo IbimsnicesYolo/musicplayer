@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../settings.dart' as CFG;
+
+import '../../settings.dart';
 
 class StyledElevatedButton extends ElevatedButton {
   StyledElevatedButton({
@@ -11,7 +12,7 @@ class StyledElevatedButton extends ElevatedButton {
           onPressed: onPressed,
           child: child,
           style: ElevatedButton.styleFrom(
-            primary: CFG.ContrastColor,
+            backgroundColor: ContrastColor,
             enableFeedback: true,
           ),
         );

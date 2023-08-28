@@ -1,25 +1,23 @@
 import 'package:flutter/material.dart';
 
 class CoolerCheckBox extends StatefulWidget {
-  CoolerCheckBox(
+  const CoolerCheckBox(
     this.b,
     this.c,
     this.Info, {
     Key? key,
   }) : super(key: key);
 
-  bool b;
-  String Info;
-  void Function(bool?) c;
+  final bool b;
+  final String Info;
+  final void Function(bool?) c;
 
   @override
-  State<CoolerCheckBox> createState() =>
-      _CoolerCheckBox(text: Info, c: c, isChecked: b);
+  State<CoolerCheckBox> createState() => _CoolerCheckBox(text: Info, c: c, isChecked: b);
 }
 
 class _CoolerCheckBox extends State<CoolerCheckBox> {
-  _CoolerCheckBox(
-      {required this.text, required this.c, required this.isChecked});
+  _CoolerCheckBox({required this.text, required this.c, required this.isChecked});
   bool isChecked;
 
   final void Function(bool?) c;
