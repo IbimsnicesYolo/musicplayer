@@ -397,7 +397,7 @@ class _ShowSongEdit extends State<ShowSongEdit> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         floatingActionButton: FloatingActionButton(
           backgroundColor: ContrastColor,
           onPressed: () => {
@@ -458,7 +458,9 @@ class _ShowConfig extends State<ShowConfig> {
                     StringInput(context, "Add Path", "Create", "Cancel", (String s) {
                       AddSearchPath(s);
                       setState(() {});
-                    }, (String s) {}, false, "", "");
+                    }, (String s) {
+                      setState(() {});
+                    }, false, "", "");
                     setState(() {});
                   },
                   child: const Text("Add Path")),

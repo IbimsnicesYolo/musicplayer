@@ -279,6 +279,7 @@ class _ArtistTagChoose extends State<ArtistTagChoose> {
                     child: Text(possibleinputs[i]),
                     onPressed: () {
                       create.text += " ${possibleinputs[i]}";
+                      setState(() {});
                     },
                   ),
                   if (possibleinputs.length > i + 1)
@@ -286,6 +287,7 @@ class _ArtistTagChoose extends State<ArtistTagChoose> {
                       child: Text(possibleinputs[i + 1]),
                       onPressed: () {
                         create.text += " ${possibleinputs[i + 1]}";
+                        setState(() {});
                       },
                     ),
                 ],
