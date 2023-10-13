@@ -104,6 +104,7 @@ ListView buildContent(
     sortedtags.sort((a, b) {
       return a.used.compareTo(b.used);
     });
+    sortedtags = sortedtags.reversed.toList();
   } else if (reverse == 3) {
     sortedtags = [];
     Tags.forEach((key, value) {
@@ -116,7 +117,6 @@ ListView buildContent(
     sortedtags.sort((a, b) {
       return a.used.compareTo(b.used);
     });
-    sortedtags = sortedtags.reversed.toList();
   }
   return ListView(
     children: [
