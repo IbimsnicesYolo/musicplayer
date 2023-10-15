@@ -700,6 +700,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     if (songs.isNotEmpty) {
       songs.add(songs.removeAt(0));
       if (player.playing || next) {
+        decreaseStack();
         await player.seek(const Duration(seconds: 0));
         play();
       } else {
