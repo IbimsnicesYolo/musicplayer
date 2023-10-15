@@ -90,17 +90,14 @@ PopupMenuButton SongTile(BuildContext context, Song s, void Function(void Functi
         );
       }
       if (result == 5) {
-        Playlist.RemoveSong(s);
         Playlist.InsertAsNext(s);
         // Play Song as Next Song
       }
       if (result == 6) {
-        Playlist.RemoveSong(s);
         Playlist.AddToPlaylist(s);
         // Add Song to End of Playlist
       }
       if (result == 7) {
-        Playlist.RemoveSong(s);
         Playlist.Stack(s);
         // Add Song to End of Added Songs
       }

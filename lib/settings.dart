@@ -480,14 +480,19 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void InsertAsNext(Song song) {
-    decreaseStack();
     if (!Contains(song) && songs.length > 0) {
       songs.insert(1, song);
+      last_added_pos = 0;
     } else if (!Contains(song)) {
       songs.insert(0, song);
-    } else {
+      last_added_pos = 0;
+    } else if (songs.length > 0) {
       songs.remove(song);
       songs.insert(1, song);
+      last_added_pos = 1;
+    } else {
+      songs.insert(0, song);
+      last_added_pos = 0;
     }
     UpDateMediaItem();
   }
@@ -768,7 +773,7 @@ Import Code
 Song? FindSongByFilename(filename) {
   Song? song;
   Songs.forEach((key, value) {
-    if (value.filename == filename) {
+    if (value.filename == filename || value.id == filename) {
       song = Songs[key];
     }
   });
@@ -983,8 +988,8 @@ Future<void> ExportToFile(MyAudioHandler audiohandler) async {
     Config["Playlist"] = filenames;
     File(appDocDirectory + '/config.json').create(recursive: true).then((File file) {
       file.writeAsString(jsonEncode(Config));
+      Config["Playlist"] = ids;
     });
-    Config["Playlist"] = ids;
     print("Config Exported");
   } catch (e) {
     print(e);
