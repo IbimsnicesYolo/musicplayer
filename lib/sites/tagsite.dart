@@ -214,10 +214,13 @@ ListTile TagTile(
         onSelected: (result) async {
           if (result == 0) {
             // Change Name
-            StringInput(context, "Rename Tag: $key", "Save", "Cancel", (String s) {
+            StringInput(context, "Rename Tag: $key", "Save", "Toggle Is_Artist", (String s) {
               UpdateTagName(Tags[key]!.id, s);
               c(() {});
-            }, (String s) {}, false, Tags[key]!.name, "");
+            }, (String s) {
+              UpdateTagIsArtist(Tags[key]!.id, !Tags[key]!.is_artist);
+              c(() {});
+            }, false, Tags[key]!.name, "");
           }
           if (result == 1) {
             Playlist.BulkAdd(GetSongsFromTag(Tags[key]!));

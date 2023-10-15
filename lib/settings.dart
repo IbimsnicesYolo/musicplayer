@@ -186,6 +186,15 @@ void UpdateTagName(tag, name) async {
   database.rawUpdate('UPDATE Tags SET name = ?, lastused = ? WHERE id = ?', [name, time, tag]);
 }
 
+void UpdateTagIsArtist(tag, is_artist) async {
+  if (Tags[tag] == null) {
+    return;
+  }
+  Tags[tag]!.is_artist = is_artist;
+
+  database.rawUpdate('UPDATE Tags SET is_artist = ? WHERE id = ?', [is_artist, tag]);
+}
+
 Future<void> DeleteTag(int key) async {
   await database.rawDelete('DELETE FROM Tags WHERE id = ?', [key]);
 }
