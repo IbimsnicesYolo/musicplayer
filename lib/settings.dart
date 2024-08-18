@@ -433,9 +433,8 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
 
   MyAudioHandler() {
     player.playerStateStream.listen((event) {
-      if (event.processingState == ProcessingState.completed && event.playing) {
+      if (event.processingState == ProcessingState.completed) {
         skipToNext(true);
-        decreaseStack();
       }
     });
     player.playbackEventStream.map(_transformEvent).pipe(playbackState);
