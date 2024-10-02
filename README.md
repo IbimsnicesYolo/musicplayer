@@ -1,6 +1,7 @@
 # Music Player v2
 
 TODO:
+- add dart run build_runner build to the workflow?
 - add drift as db package
 - new Player with Windows Support
 - setup Database Structure
@@ -11,3 +12,5 @@ TODO:
 - better UX
 - better song importer
 - better song search
+- add prelistening at the song sorting to identify the song better
+- use routes
