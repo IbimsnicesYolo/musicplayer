@@ -30,7 +30,7 @@ jobs:
       - run: flutter pub get
       - run: flutter build apk
       - name: Upload APK
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: apk
           path: build/app/outputs/flutter-apk/app-release.apk
@@ -45,9 +45,10 @@ jobs:
         run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
         id: branchname
       - name: Download APK from build
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: apk
+          path: apk
       - run: dir -R
       - run: mkdir -v upload
       - run: mv apk/app-release.apk upload/app.apk
