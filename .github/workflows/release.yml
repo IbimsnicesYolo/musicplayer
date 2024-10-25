@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - main
-
+      - dev
 
 jobs:
   build-android:
@@ -35,9 +35,28 @@ jobs:
           name: apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
+  build-windows:
+    name: Create Windows build
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Clone Flutter repository
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - run: flutter create .
+      - run: flutter pub get
+      - run: flutter build windows --release -v
+      - run: dir -R build\windows\x64\runner\Release
+      - name: Upload Windows
+        uses: actions/upload-artifact@v3
+        with:
+          name: exe
+          path: .\build\windows\x64\runner\Release\musicplayer.exe
+
   release:
     name: Release
-    needs: [build-android]
+    needs: [build-android, build-windows]
     runs-on: ubuntu-latest
     steps:
       - name: Get the current branch name
@@ -50,8 +69,15 @@ jobs:
           name: apk
           path: apk
       - run: dir -R
+      - name: Download EXE from build
+        uses: actions/download-artifact@v3
+        with:
+          name: exe
+          path: exe
+      - run: dir -R
       - run: mkdir -v upload
       - run: mv apk/app-release.apk upload/app.apk
+      - run: mv exe/musicplayer.exe upload/musicplayer.exe
       - name: Upload Programm to release
         uses: svenstaro/upload-release-action@v2
         with:
